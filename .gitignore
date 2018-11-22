@@ -1,0 +1,7 @@
+__pycache__
+dobackup.egg*
+build
+dist
+deb_dist
+*.pyc
+.pytest*
