@@ -22,6 +22,7 @@ pref_mods = [
     {'pref': '"browser.safebrowsing.phishing.enabled"', 'value': 'false'},
     {'pref': '"browser.safebrowsing.malware.enabled"', 'value': 'false'},
     {'pref': '"browser.safebrowsing.downloads.remote.enabled"', 'value': 'false'},
+    {'pref': '"privacy.clearOnShutdown.cookies"', 'value': 'true'},
 
     {'pref': '"browser.search.suggest.enabled"', 'value': ''},
     {'pref': '"keyword.enabled"', 'value': ''},         # don't block search from urlbar
@@ -35,9 +36,9 @@ pref_mods = [
     {'pref': '"browser.formfill.enable"', 'value': ''},
     {'pref': '"browser.newtabpage.enabled"', 'value': ''},
     {'pref': '"privacy.clearOnShutdown.history"', 'value': ''},
-    {'pref': '"browser.clearOnShutdown.formdata"', 'value': ''},
-    {'pref': '"browser.clearOnShutdown.openWindows"', 'value': ''},
-    {'pref': '"browser.clearOnShutdown.downloads"', 'value': ''},
+    {'pref': '"privacy.clearOnShutdown.formdata"', 'value': ''},
+    {'pref': '"privacy.clearOnShutdown.openWindows"', 'value': ''},
+    {'pref': '"privacy.clearOnShutdown.downloads"', 'value': ''},
     {'pref': '"browser.download.manager.retention"', 'value': 1},
     {'pref': '"browser.bookmarks.max_backups"', 'value': 5},
     {'pref': '"browser.newtabpage.activity-stream.enabled"', 'value': ''},
@@ -58,6 +59,8 @@ extensions = [
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1108171/canvasblocker-0.5.5-an+fx.xpi'},
     {'name': 'chameleon', 'id': '{3579f63b-d8ee-424f-bbb6-6d0ce3285e6a}.xpi',
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1148795/chameleon-0.9.21-an+fx.xpi'},
+    {'name': 'privacy_badger', 'id': 'jid1-MnnxcxisBPnSXQ@jetpack.xpi',
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1099313/privacy_badger-2018.10.3.1-an+fx.xpi'},
 
 ]
 
