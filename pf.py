@@ -58,9 +58,13 @@ extensions = [
     {'name': 'canvas_blocker', 'id': 'CanvasBlocker@kkapsner.de.xpi',
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1108171/canvasblocker-0.5.5-an+fx.xpi'},
     {'name': 'chameleon', 'id': '{3579f63b-d8ee-424f-bbb6-6d0ce3285e6a}.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1148795/chameleon-0.9.21-an+fx.xpi'},
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1157451/chameleon-0.9.23-an+fx.xpi'},
     {'name': 'privacy_badger', 'id': 'jid1-MnnxcxisBPnSXQ@jetpack.xpi',
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1099313/privacy_badger-2018.10.3.1-an+fx.xpi'},
+    {'name': 'clear_urls', 'id': '{74145f27-f039-47ce-a470-a662b129930a}.xpi',
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1101996/clearurls-1.3.4.0-an+fx.xpi'},
+    {'name': 'privacy_possum', 'id': 'woop-NoopscooPsnSXQ@jetpack.xpi',
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1062944/privacy_possum-2018.8.31-an+fx.xpi'},
 
 ]
 
