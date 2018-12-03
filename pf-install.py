@@ -46,6 +46,7 @@ def apply_one_time(profiles):
         {'pref': '"browser.startup.homepage"', 'value': '"https://duckduckgo.com"'},
     ]
 
+    print("\nApplying onetime prefferences to 'pref.js'\n")
     for pref in profiles:
         for line in fileinput.input(pref + "/prefs.js", inplace=True):
             for i in pref_one_time:
@@ -62,14 +63,16 @@ def get_firefox_path():
         firefox_path = os.path.join(Path.home(), ".mozilla/firefox/")
     elif detected_os == "win32":
         firefox_path = os.path.join(os.getenv('APPDATA'), "Mozilla\Firefox\Profiles""\\")
+    # firefox_path = Path.joinpath(Path(os.getenv('APPDATA')), Path("Mozilla/Firefox/Profiles/"))
 
     if not os.path.exists(firefox_path):
         print("Please download and install firefox first https://www.mozilla.org/en-US/firefox/new/")
         sys.exit(0)
-    print(os.listdir(firefox_path))
-    print(os.listdir("."))
-    # onlydirs = [d for d in os.listdir(firefox_path) if os.path.isdir(os.path.join(firefox_path, d))]
 
+    # print("List of All Firefox Profiles : ", os.listdir(firefox_path))
+    # print(os.listdir("."))
+
+    # onlydirs = [d for d in os.listdir(firefox_path) if os.path.isdir(os.path.join(firefox_path, d))]
     # print(onlydirs)
     return firefox_path
 
@@ -77,18 +80,16 @@ def get_firefox_path():
 def run(profile_name):
 
     privacy_fighter_profile = resource_path("profile")
-    print(privacy_fighter_profile)
+    # print(privacy_fighter_profile)
 
     firefox_path = get_firefox_path()
 
     profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
 
-    # firefox_path = Path.joinpath(Path(os.getenv('APPDATA')), Path("Mozilla/Firefox/Profiles/"))
-    # profiles = firefox_path.glob("TEST")
-
-    print(profiles)
+    print("Firefox Profiles to be secured/modified : ", profiles, "\n")
 
     for prof in profiles:
+        print("Modified Preferrences (Users.js) and Extensions will now be copied to {}".format(prof))
         for dirpath, dirnames, filenames in os.walk(privacy_fighter_profile):
             for dirname in dirnames:
                 src_path = os.path.join(dirpath, dirname)
@@ -103,11 +104,12 @@ def run(profile_name):
                 firefox_p_path = os.path.join(firefox_path, prof)
                 dst_path = os.path.join(firefox_p_path, src_file)
                 # print("file :", src_path, dst_path)
-                print("Copied: ", dst_path)
+                print("Copying: ", filename)
                 os.makedirs(os.path.dirname(dst_path), exist_ok=True)
                 shutil.copy(src_path, dst_path)
     apply_one_time(profiles)
-
+    print("------------------DONE-------------------")
+    print("You can now close this and run Firefox")
     # shutil.copy("profile/user.js", os.path.join(profile, "user.js"))
     # shutil.copy("profile/search.json.mozlz4", os.path.join(profile, "search.json.mozlz4"))
 
