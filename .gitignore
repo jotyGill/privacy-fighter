@@ -5,3 +5,5 @@ dist
 deb_dist
 *.pyc
 .pytest*
+
+.imdone
