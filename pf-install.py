@@ -5,6 +5,7 @@ import glob
 import os
 import sys
 import shutil
+import fileinput
 from gooey import Gooey, GooeyParser
 
 from pathlib import Path, PurePath
@@ -35,10 +36,26 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-def run(profile_name):
-    # pf_profile = os.path.abspath("profile")
-    pf_profile = resource_path("profile")
-    print(pf_profile)
+def apply_one_time(profiles):
+    ui_customization_raw = r'{\"placements\":{\"widget-overflow-fixed-list\":[],\"PersonalToolbar\":[\"personal-bookmarks\"],\"nav-bar\":[\"back-button\",\"forward-button\",\"stop-reload-button\",\"home-button\",\"customizableui-special-spring1\",\"urlbar-container\",\"downloads-button\",\"history-panelmenu\",\"bookmarks-menu-button\",\"library-button\",\"sidebar-button\",\"_3579f63b-d8ee-424f-bbb6-6d0ce3285e6a_-browser-action\",\"canvasblocker_kkapsner_de-browser-action\",\"cookieautodelete_kennydo_com-browser-action\",\"jid1-bofifl9vbdl2zq_jetpack-browser-action\",\"https-everywhere_eff_org-browser-action\",\"ublock0_raymondhill_net-browser-action\",\"jid1-mnnxcxisbpnsxq_jetpack-browser-action\",\"woop-noopscoopsnsxq_jetpack-browser-action\",\"_74145f27-f039-47ce-a470-a662b129930a_-browser-action\"],\"toolbar-menubar\":[\"menubar-items\"],\"TabsToolbar\":[\"tabbrowser-tabs\",\"new-tab-button\",\"alltabs-button\"]},\"seen\":[\"developer-button\",\"_3579f63b-d8ee-424f-bbb6-6d0ce3285e6a_-browser-action\",\"canvasblocker_kkapsner_de-browser-action\",\"cookieautodelete_kennydo_com-browser-action\",\"jid1-bofifl9vbdl2zq_jetpack-browser-action\",\"https-everywhere_eff_org-browser-action\",\"ublock0_raymondhill_net-browser-action\",\"jid1-mnnxcxisbpnsxq_jetpack-browser-action\",\"woop-noopscoopsnsxq_jetpack-browser-action\",\"_74145f27-f039-47ce-a470-a662b129930a_-browser-action\"],\"dirtyAreaCache\":[\"PersonalToolbar\",\"nav-bar\",\"toolbar-menubar\",\"TabsToolbar\"],\"currentVersion\":14,\"newElementCount\":4}'
+
+    ui_customization_str = '"' + ui_customization_raw + '"'
+
+    pref_one_time = [
+        {'pref': '"browser.uiCustomization.state"', 'value': ui_customization_str},
+        {'pref': '"browser.startup.homepage"', 'value': '"https://duckduckgo.com"'},
+    ]
+
+    for pref in profiles:
+        for line in fileinput.input(pref + "/prefs.js", inplace=True):
+            for i in pref_one_time:
+                if i['pref'] in line:
+                    line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
+                    # print(line)
+            sys.stdout.write(line)
+
+
+def get_firefox_path():
     detected_os = sys.platform
 
     if detected_os == "linux":
@@ -54,6 +71,15 @@ def run(profile_name):
     # onlydirs = [d for d in os.listdir(firefox_path) if os.path.isdir(os.path.join(firefox_path, d))]
 
     # print(onlydirs)
+    return firefox_path
+
+
+def run(profile_name):
+
+    privacy_fighter_profile = resource_path("profile")
+    print(privacy_fighter_profile)
+
+    firefox_path = get_firefox_path()
 
     profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
 
@@ -63,7 +89,7 @@ def run(profile_name):
     print(profiles)
 
     for prof in profiles:
-        for dirpath, dirnames, filenames in os.walk(pf_profile):
+        for dirpath, dirnames, filenames in os.walk(privacy_fighter_profile):
             for dirname in dirnames:
                 src_path = os.path.join(dirpath, dirname)
                 dst_path = os.path.join(prof, dirname)
@@ -80,17 +106,10 @@ def run(profile_name):
                 print("Copied: ", dst_path)
                 os.makedirs(os.path.dirname(dst_path), exist_ok=True)
                 shutil.copy(src_path, dst_path)
+    apply_one_time(profiles)
 
-                # shutil.copy("profile/user.js", os.path.join(profile, "user.js"))
-        # shutil.copy("profile/search.json.mozlz4", os.path.join(profile, "search.json.mozlz4"))
-
-    # for dirpath, dirnames, filenames in os.walk(os.path.join(Path.home(), ".mozilla/firefox/")):
-    #     for filename in filenames:
-    #         path = os.path.join(dirpath, filename)
-    #         print("file :", path)
-    #     for dirname in dirnames:
-    #         path = os.path.join(dirpath, filename)
-    #         print("dirs :", path)
+    # shutil.copy("profile/user.js", os.path.join(profile, "user.js"))
+    # shutil.copy("profile/search.json.mozlz4", os.path.join(profile, "search.json.mozlz4"))
 
 
 if __name__ == "__main__":
