@@ -103,6 +103,10 @@ def run(profile_name):
 
     profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
 
+    if not profiles:
+        print("ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(profile_name))
+        sys.exit(1)
+
     print("Firefox Profiles to be secured/modified : ", profiles, "\n")
 
     for prof in profiles:
@@ -113,20 +117,26 @@ def run(profile_name):
                 dst_path = os.path.join(prof, dirname)
                 # print("dirs :", src_path, dst_path)
             for filename in filenames:
-
                 src_path = os.path.join(dirpath, filename)
                 src_list = list(Path(src_path).parts)
+                # remove first element '/' from the list
                 src_list.pop(0)
+                # find last index of "profile" in location, in case there is another "profile" folder in path
+                pf_folder_index = len(src_list) - 1 - src_list[::-1].index("profile")
+
+                # extract section after 'profile' out of '/home/user/privacy-fighter/profile/extensions/ext.js'
+                src_list = src_list[pf_folder_index + 1:]
+                # now src_file would be e.g extensions/ext.js
                 src_file = Path(*src_list)
                 firefox_p_path = os.path.join(firefox_path, prof)
                 dst_path = os.path.join(firefox_p_path, src_file)
-                # print("file :", src_path, dst_path)
-                print("Copying: ", filename)
+                # print("file : ", src_path, dst_path)
+                print("Copying: ", src_file)
                 os.makedirs(os.path.dirname(dst_path), exist_ok=True)
                 shutil.copy(src_path, dst_path)
     apply_one_time(profiles)
-    print("------------------DONE-------------------")
-    print("You can now close this and run Firefox")
+    print("------------------DONE-------------------\n")
+    print("You can now close this and run Firefox :)")
     # shutil.copy("profile/user.js", os.path.join(profile, "user.js"))
     # shutil.copy("profile/search.json.mozlz4", os.path.join(profile, "search.json.mozlz4"))
 
