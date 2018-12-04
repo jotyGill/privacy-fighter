@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 
 import argparse
-import glob
-import os
 import sys
 import requests
 import fileinput
 
-from pathlib import Path
 
 pref_add = [
     # {'pref': '"browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts.searchEngines"',
     #  'value': '"duckduckgo"'},
-    {'pref': '"browser.startup.homepage"', 'value': '"https://duckduckgo.com"'},
     {'pref': '"dom.event.clipboardevents.enabled"', 'value': 'false'},
-
+    {'pref': '"app.update.auto"', 'value': 'true'},     # enable auto updates
 ]
 
+# preferences to be modified in the users.j. if 'value' is given in here, it will be overwritten
+# using these. If 'value' is '', that preference will be deleted from users.js , so Firefox's Default
+# or user's original preference stays in place.
+# '' is used to get rid of undesired preferences set in pyllyukko's user.js. such as "places.history.enabled", "false"
 pref_mods = [
     {'pref': '"browser.safebrowsing.enabled"', 'value': 'false'},
     {'pref': '"browser.safebrowsing.phishing.enabled"', 'value': 'false'},
@@ -43,7 +43,9 @@ pref_mods = [
     {'pref': '"browser.bookmarks.max_backups"', 'value': 5},
     {'pref': '"browser.newtabpage.activity-stream.enabled"', 'value': ''},
     {'pref': '"browser.newtab.url"', 'value': ''},
-
+    {'pref': '"privacy.sanitize.sanitizeOnShutdown"', 'value': ''},     # don't enforce history clear on shutdown
+    # // Sets time range to "Everything" as default in "Clear Recent History"
+    {'pref': '"privacy.sanitize.timeSpan"', 'value': ''},
 ]
 
 extensions = [
@@ -67,16 +69,6 @@ extensions = [
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1062944/privacy_possum-2018.8.31-an+fx.xpi'},
 
 ]
-
-
-firefox_path = os.path.join(Path.home(), ".mozilla/firefox/")
-# print(firefox_path)
-# print(os.listdir(firefox_path))
-
-onlydirs = [d for d in os.listdir(firefox_path) if os.path.isdir(os.path.join(firefox_path, d))]
-
-# print(onlydirs)
-print(glob.glob(firefox_path + "*.default"))
 
 
 def download_extension(url, extension_id):
@@ -108,6 +100,9 @@ for line in fileinput.input("profile/user.js", inplace=True):
         # remove comment lines
         # if line[:2] == '//':
             # line = ''
+        # remove todo lines
+        if line[:8] == '// TODO:':
+            line = ''
 
     sys.stdout.write(line)
 
