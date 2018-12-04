@@ -13,14 +13,16 @@ from pathlib import Path, PurePath
 __version__ = "0.0.2"
 
 
-@Gooey
+@Gooey(
+    program_name='Privacy Fighter',
+    requires_shell=False)
 def main():
     parser = argparse.ArgumentParser(
-        description="Privacy-Fighter: Easy privacy solution"
-        " Licensed Under: GPLv3"
+        description="Privacy-Fighter: A Browser Setup For Increased Privacy And Security"
     )
     # parser.add_argument("-v", "--version", action="version", version="Privacy-Fighter " + __version__)
-    parser.add_argument("-p", "--profile", dest="profile_name", default="TEST", help="Profile name", type=str)
+    parser.add_argument("-p", "--profile", dest="profile_name", default="TEST",
+                        help="Firefox Profile Name: Leave value to 'default' if unsure or using only single profile", type=str)
 
     args = parser.parse_args()
 
@@ -41,19 +43,34 @@ def apply_one_time(profiles):
 
     ui_customization_str = '"' + ui_customization_raw + '"'
 
-    pref_one_time = [
-        {'pref': '"browser.uiCustomization.state"', 'value': ui_customization_str},
-        {'pref': '"browser.startup.homepage"', 'value': '"https://duckduckgo.com"'},
-    ]
+    print("\nApplying onetime preferences to 'prefs.js'\n")
 
-    print("\nApplying onetime prefferences to 'pref.js'\n")
-    for pref in profiles:
-        for line in fileinput.input(pref + "/prefs.js", inplace=True):
+    for profile in profiles:
+        # prefs to be applied directly to 'prefs.js' instead of 'users.js' so end users can change these
+        # contains 'exists' to change if found and turn 'exists' True. the ones not found will be later added
+        # keep this in profile loop, so 'exists' True resets for next profile
+        pref_one_time = [
+            {'pref': '"browser.uiCustomization.state"', 'value': ui_customization_str, 'exists': False},
+            {'pref': '"browser.startup.homepage"', 'value': '"https://duckduckgo.com"', 'exists': False},
+            {'pref': '"browser.search.suggest.enabled"', 'value': 'true', 'exists': False},     # TEMP TEST
+        ]
+
+        for line in fileinput.input(os.path.join(profile, "prefs.js"), inplace=True):
             for i in pref_one_time:
                 if i['pref'] in line:
                     line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
+                    # it is found, turn 'exists' to True
+                    i['exists'] = True
                     # print(line)
             sys.stdout.write(line)
+
+        # now add the rest of preferences
+        with open(os.path.join(profile, "prefs.js"), "a") as prefsjs:
+            for i in pref_one_time:
+                if not i['exists']:
+                    line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
+                    print(i)
+                    prefsjs.write(line)
 
 
 def get_firefox_path():
@@ -89,7 +106,7 @@ def run(profile_name):
     print("Firefox Profiles to be secured/modified : ", profiles, "\n")
 
     for prof in profiles:
-        print("Modified Preferrences (Users.js) and Extensions will now be copied to {}".format(prof))
+        print("Modified Preferences (Users.js) and Extensions will now be copied to {}\n".format(prof))
         for dirpath, dirnames, filenames in os.walk(privacy_fighter_profile):
             for dirname in dirnames:
                 src_path = os.path.join(dirpath, dirname)
