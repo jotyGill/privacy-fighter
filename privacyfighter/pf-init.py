@@ -59,14 +59,22 @@ extensions = [
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1114441/ublock_origin-1.17.2-an+fx.xpi'},
     {'name': 'canvas_blocker', 'id': 'CanvasBlocker@kkapsner.de.xpi',
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1108171/canvasblocker-0.5.5-an+fx.xpi'},
-    {'name': 'chameleon', 'id': '{3579f63b-d8ee-424f-bbb6-6d0ce3285e6a}.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1157451/chameleon-0.9.23-an+fx.xpi'},
-    {'name': 'privacy_badger', 'id': 'jid1-MnnxcxisBPnSXQ@jetpack.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1099313/privacy_badger-2018.10.3.1-an+fx.xpi'},
+    # {'name': 'chameleon', 'id': '{3579f63b-d8ee-424f-bbb6-6d0ce3285e6a}.xpi',
+    #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1157451/chameleon-0.9.23-an+fx.xpi'},
+    # {'name': 'privacy_badger', 'id': 'jid1-MnnxcxisBPnSXQ@jetpack.xpi',
+    #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1099313/privacy_badger-2018.10.3.1-an+fx.xpi'},
     {'name': 'clear_urls', 'id': '{74145f27-f039-47ce-a470-a662b129930a}.xpi',
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1101996/clearurls-1.3.4.0-an+fx.xpi'},
     {'name': 'privacy_possum', 'id': 'woop-NoopscooPsnSXQ@jetpack.xpi',
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1062944/privacy_possum-2018.8.31-an+fx.xpi'},
+    {'name': 'multi_account_containers', 'id': '@testpilot-containers.xpi',
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1171317/firefox_multi_account_containers-6.0.1-fx.xpi'},
+    {'name': 'facebook_container', 'id': '@contain-facebook.xpi',
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1149344/facebook_container-1.4.2-fx.xpi'},
+    {'name': 'google_container', 'id': '@contain-google.xpi',
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1144065/google_container-1.3.4-fx.xpi'},
+    {'name': 'temporary_containers', 'id': '{c607c8df-14a7-4f28-894f-29e8722976af}.xpi',
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/957989/temporary_containers-0.90-an+fx-linux.xpi'},
 
 ]
 
@@ -81,9 +89,9 @@ def download_file(url, dest):
     open(dest, 'wb').write(r.content)
 
 
-# for i in extensions:
-#     print("Downloading {}".format(i['name']))
-#     download_extension(i['url'], i['id'])
+for i in extensions:
+    print("Downloading {}".format(i['name']))
+    download_extension(i['url'], i['id'])
 
 
 download_file("https://raw.githubusercontent.com/pyllyukko/user.js/relaxed/user.js", "profile/user.js")
