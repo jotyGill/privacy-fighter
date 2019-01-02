@@ -7,3 +7,6 @@ deb_dist
 .pytest*
 
 .imdone
+
+extensions
+user.js
