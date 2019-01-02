@@ -10,7 +10,6 @@ import fileinput
 from pathlib import Path, PurePath
 
 import requests
-
 from gooey import Gooey, GooeyParser
 
 
@@ -18,6 +17,8 @@ __version__ = "0.0.3"
 
 
 @Gooey(
+    progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
+    progress_expr="current / total * 100",
     program_name='Privacy Fighter',
     requires_shell=False)
 def main():
@@ -26,14 +27,25 @@ def main():
     )
     # parser.add_argument("-v", "--version", action="version", version="Privacy-Fighter " + __version__)
     parser.add_argument("-p", "--profile", dest="profile_name", default="TEST",
-                        help="Firefox Profile Name: Leave value to 'default' if unsure or using only single profile", type=str)
+                        help="Firefox Profile Name: Leave value to 'default' if unsure or using only single firefox profile", type=str)
 
     args = parser.parse_args()
     init()
     run(args.profile_name)
 
 
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
+
+
 def init():
+    total_steps = 12
+
     pref_add = [
         # {'pref': '"browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts.searchEngines"',
         #  'value': '"duckduckgo"'},
@@ -106,22 +118,34 @@ def init():
 
     ]
 
+    # Create folders
+    profile_folder = resource_path("profile")
+    extensions_folder = os.path.join(profile_folder, "extensions")
+
+    os.makedirs(profile_folder, exist_ok=True)
+    os.makedirs(extensions_folder, exist_ok=True)
+
     def download_extension(url, extension_id):
         r = requests.get(url, allow_redirects=True)
-        open('profile/extensions/' + extension_id, 'wb').write(r.content)
+        open(os.path.join(extensions_folder, extension_id), 'wb').write(r.content)
 
     def download_file(url, dest):
         r = requests.get(url, allow_redirects=True)
         open(dest, 'wb').write(r.content)
 
-    for i in extensions:
-        print("Downloading {}".format(i['name']))
-        download_extension(i['url'], i['id'])
+    for i in range(len(extensions)):
+        # for i in range(2):
+        print("Downloading {}".format(extensions[i]['name']))
+        download_extension(extensions[i]['url'], extensions[i]['id'])
 
-    download_file("https://raw.githubusercontent.com/pyllyukko/user.js/relaxed/user.js", "profile/user.js")
-    # download_file("https://github.com/ghacksuserjs/ghacks-user.js/raw/master/user.js", "profile/user.js")
+        print("progress: {}/{}".format(i + 1, total_steps))
+        sys.stdout.flush()
 
-    for line in fileinput.input("profile/user.js", inplace=True):
+    # download_file("https://raw.githubusercontent.com/pyllyukko/user.js/relaxed/user.js", os.path.join(profile_folder, "user.js"))
+    download_file("https://github.com/ghacksuserjs/ghacks-user.js/raw/master/user.js",
+                  os.path.join(profile_folder, "user.js"))
+
+    for line in fileinput.input(os.path.join(profile_folder, "user.js"), inplace=True):
         for i in pref_mods:
             if i['pref'] in line:
                 if not i['value']:
@@ -137,19 +161,10 @@ def init():
 
         sys.stdout.write(line)
 
-    with open("profile/user.js", "a") as userjs:
+    with open(os.path.join(profile_folder, "user.js"), "a") as userjs:
         for i in pref_add:
             line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
             userjs.write(line)
-
-
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-
-    return os.path.join(base_path, relative_path)
 
 
 def apply_one_time(profiles):
