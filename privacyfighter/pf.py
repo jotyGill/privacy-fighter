@@ -43,6 +43,16 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
+def download_extension(url, extensions_folder, extension_id):
+    r = requests.get(url, allow_redirects=True)
+    open(os.path.join(extensions_folder, extension_id), 'wb').write(r.content)
+
+
+def download_file(url, dest):
+    r = requests.get(url, allow_redirects=True)
+    open(dest, 'wb').write(r.content)
+
+
 def init():
     total_steps = 12
 
@@ -125,20 +135,12 @@ def init():
     os.makedirs(profile_folder, exist_ok=True)
     os.makedirs(extensions_folder, exist_ok=True)
 
-    def download_extension(url, extension_id):
-        r = requests.get(url, allow_redirects=True)
-        open(os.path.join(extensions_folder, extension_id), 'wb').write(r.content)
-
-    def download_file(url, dest):
-        r = requests.get(url, allow_redirects=True)
-        open(dest, 'wb').write(r.content)
-
-    for i in range(len(extensions)):
+    for index, ext in enumerate(extensions):
         # for i in range(2):
-        print("Downloading {}".format(extensions[i]['name']))
-        download_extension(extensions[i]['url'], extensions[i]['id'])
+        print("Downloading {}".format(ext['name']))
+        download_extension(ext['url'], extensions_folder, ext['id'])
 
-        print("progress: {}/{}".format(i + 1, total_steps))
+        print("progress: {}/{}".format(index + 1, total_steps))
         sys.stdout.flush()
 
     # download_file("https://raw.githubusercontent.com/pyllyukko/user.js/relaxed/user.js", os.path.join(profile_folder, "user.js"))
