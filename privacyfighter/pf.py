@@ -13,7 +13,8 @@ import requests
 from gooey import Gooey, GooeyParser
 
 
-__version__ = "0.0.3"
+__version__ = "0.0.5"
+__basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 
 @Gooey(
@@ -25,7 +26,8 @@ def main():
     parser = argparse.ArgumentParser(
         description="Privacy-Fighter: A Browser Setup For Increased Privacy And Security"
     )
-    # parser.add_argument("-v", "--version", action="version", version="Privacy-Fighter " + __version__)
+    # parser.add_argument("-v", "--version", action="version",
+    #                     version="Privacy-Fighter " + __version__ + __basefilepath__)
     parser.add_argument("-p", "--profile", dest="profile_name", default="TEST",
                         help="Firefox Profile Name: Leave value to 'default' if unsure or using only single firefox profile", type=str)
 
@@ -38,7 +40,7 @@ def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
     except Exception:
-        base_path = os.path.abspath(".")
+        base_path = __basefilepath__
 
     return os.path.join(base_path, relative_path)
 
@@ -68,10 +70,10 @@ def init():
     # or user's original preference stays in place.
     # '' is used to get rid of undesired preferences set in pyllyukko's user.js. such as "places.history.enabled", "false"
     pref_mods = [
-        {'pref': '"browser.safebrowsing.enabled"', 'value': 'false'},
-        {'pref': '"browser.safebrowsing.phishing.enabled"', 'value': 'false'},
-        {'pref': '"browser.safebrowsing.malware.enabled"', 'value': 'false'},
-        {'pref': '"browser.safebrowsing.downloads.remote.enabled"', 'value': 'false'},
+        {'pref': '"browser.safebrowsing.enabled"', 'value': 'true'},
+        {'pref': '"browser.safebrowsing.phishing.enabled"', 'value': 'true'},
+        {'pref': '"browser.safebrowsing.malware.enabled"', 'value': 'true'},
+        # {'pref': '"browser.safebrowsing.downloads.remote.enabled"', 'value': 'false'},
         {'pref': '"privacy.clearOnShutdown.cookies"', 'value': 'true'},
 
         {'pref': '"browser.search.suggest.enabled"', 'value': ''},
@@ -81,6 +83,12 @@ def init():
         # {'pref': '"browser.urlbar.suggest.searches"', 'value': ''},
         {'pref': '"browser.urlbar.autoFill"', 'value': ''},
         {'pref': '"browser.urlbar.autoFill.typed"', 'value': ''},
+        {'pref': '"browser.urlbar.autocomplete.enabled"', 'value': ''},
+        {'pref': '"browser.urlbar.suggest.bookmark"', 'value': ''},
+        {'pref': '"browser.urlbar.maxHistoricalSearchSuggestions"', 'value': ''},
+
+        {'pref': '"browser.startup.homepage"', 'value': ''},
+        {'pref': '"browser.startup.page"', 'value': ''},
 
         {'pref': '"places.history.enabled"', 'value': ''},
         {'pref': '"browser.formfill.enable"', 'value': ''},
@@ -96,6 +104,15 @@ def init():
         {'pref': '"privacy.sanitize.sanitizeOnShutdown"', 'value': ''},     # don't enforce history clear on shutdown
         # // Sets time range to "Everything" as default in "Clear Recent History"
         {'pref': '"privacy.sanitize.timeSpan"', 'value': ''},
+        {'pref': '"app.update.auto"', 'value': ''},
+        {'pref': '"extensions.update.autoUpdateDefault"', 'value': ''},
+        {'pref': '"app.update.service.enabled"', 'value': ''},
+        {'pref': '"app.update.silent"', 'value': ''},
+        {'pref': '"app.update.staging.enabled"', 'value': ''},
+        {'pref': '"browser.search.update"', 'value': ''},
+        {'pref': '"lightweightThemes.update.enabled"', 'value': ''},
+        {'pref': '"extensions.systemAddon.update.enabled"', 'value': ''},
+        {'pref': '"extensions.systemAddon.update.url"', 'value': ''},
     ]
 
     extensions = [
@@ -210,7 +227,9 @@ def get_firefox_path():
         firefox_path = os.path.join(Path.home(), ".mozilla/firefox/")
     elif detected_os == "win32":
         firefox_path = os.path.join(os.getenv('APPDATA'), "Mozilla\Firefox\Profiles""\\")
-    # firefox_path = Path.joinpath(Path(os.getenv('APPDATA')), Path("Mozilla/Firefox/Profiles/"))
+        # firefox_path = Path.joinpath(Path(os.getenv('APPDATA')), Path("Mozilla/Firefox/Profiles/"))
+    elif detected_os == "darwin":
+        firefox_path == os.path.join(Path.home(), "Library/Application Support/Firefox/Profiles")
 
     if not os.path.exists(firefox_path):
         print("Please download and install firefox first https://www.mozilla.org/en-US/firefox/new/")
