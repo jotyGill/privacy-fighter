@@ -123,7 +123,7 @@ def init():
         {'name': 'https_everywhere', 'id': 'https-everywhere@eff.org.xpi',
             'url': 'https://addons.mozilla.org/firefox/downloads/file/1132037/https_everywhere-2018.10.31-an+fx.xpi'},
         {'name': 'ublock_origin', 'id': 'uBlock0@raymondhill.net.xpi',
-            'url': 'https://addons.mozilla.org/firefox/downloads/file/1114441/ublock_origin-1.17.2-an+fx.xpi'},
+            'url': 'https://addons.mozilla.org/firefox/downloads/file/1166954/ublock_origin-1.17.4-an+fx.xpi'},
         {'name': 'canvas_blocker', 'id': 'CanvasBlocker@kkapsner.de.xpi',
             'url': 'https://addons.mozilla.org/firefox/downloads/file/1108171/canvasblocker-0.5.5-an+fx.xpi'},
         # {'name': 'chameleon', 'id': '{3579f63b-d8ee-424f-bbb6-6d0ce3285e6a}.xpi',
@@ -149,8 +149,13 @@ def init():
     profile_folder = resource_path("profile")
     extensions_folder = os.path.join(profile_folder, "extensions")
 
-    os.makedirs(profile_folder, exist_ok=True)
-    os.makedirs(extensions_folder, exist_ok=True)
+    try:
+        os.makedirs(profile_folder, exist_ok=True)
+        os.makedirs(extensions_folder, exist_ok=True)
+    except PermissionError:
+        print("ERROR: can't create directory in {}. ".format(profile_folder)
+              + "You must have installed PF using 'sudo pip install', you need to either "
+              "run as sudo 'sudo pf' or uninstall it then reinstall using 'pip install --user privacyfighter'")
 
     for index, ext in enumerate(extensions):
         # for i in range(2):
@@ -200,18 +205,21 @@ def apply_one_time(profiles):
         pref_one_time = [
             {'pref': '"browser.uiCustomization.state"', 'value': ui_customization_str, 'exists': False},
             {'pref': '"browser.startup.homepage"', 'value': '"https://duckduckgo.com"', 'exists': False},
+            {'pref': '"browser.startup.page"', 'value': '"https://duckduckgo.com"', 'exists': False},
         ]
 
-        for line in fileinput.input(os.path.join(profile, "prefs.js"), inplace=True):
-            for i in pref_one_time:
-                if i['pref'] in line:
-                    line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
-                    # it is found, turn 'exists' to True
-                    i['exists'] = True
-                    # print(line)
-            sys.stdout.write(line)
+        # If pref exists, overwrite it
+        with fileinput.input(os.path.join(profile, "prefs.js"), inplace=True) as prefs_file:
+            for line in prefs_file:
+                for i in pref_one_time:
+                    if i['pref'] in line:
+                        line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
+                        # it is found, turn 'exists' to True
+                        i['exists'] = True
+                        # print(line)
+                sys.stdout.write(line)
 
-        # now add the rest of preferences
+        # now append the rest of preferences
         with open(os.path.join(profile, "prefs.js"), "a") as prefsjs:
             for i in pref_one_time:
                 if not i['exists']:
@@ -233,7 +241,7 @@ def get_firefox_path():
 
     if not os.path.exists(firefox_path):
         print("Please download and install firefox first https://www.mozilla.org/en-US/firefox/new/")
-        sys.exit(0)
+        sys.exit(1)
 
     # print("List of All Firefox Profiles : ", os.listdir(firefox_path))
     # print(os.listdir("."))
@@ -289,6 +297,9 @@ def run(profile_name):
     print("You can now close this and run Firefox :)")
     # shutil.copy("profile/user.js", os.path.join(profile, "user.js"))
     # shutil.copy("profile/search.json.mozlz4", os.path.join(profile, "search.json.mozlz4"))
+
+    def cleaup():
+        print("cleanup")
 
 
 if __name__ == "__main__":
