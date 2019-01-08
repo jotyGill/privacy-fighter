@@ -169,21 +169,18 @@ def init():
     download_file("https://github.com/ghacksuserjs/ghacks-user.js/raw/master/user.js",
                   os.path.join(profile_folder, "user.js"))
 
-    for line in fileinput.input(os.path.join(profile_folder, "user.js"), inplace=True):
-        for i in pref_mods:
-            if i['pref'] in line:
-                if not i['value']:
-                    line = ''
-                else:
-                    line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
-            # remove comment lines
-            # if line[:2] == '//':
-                # line = ''
-            # remove todo lines
-            if line[:8] == '// TODO:':
-                line = ''
-
-        sys.stdout.write(line)
+    with fileinput.input(os.path.join(profile_folder, "user.js"), inplace=True) as userjs_file:
+        for line in userjs_file:
+            for i in pref_mods:
+                if i['pref'] in line:
+                    if not i['value']:
+                        line = ''
+                    else:
+                        line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
+                # remove comment lines
+                # if line[:2] == '//':
+                    # line = ''
+            sys.stdout.write(line)
 
     with open(os.path.join(profile_folder, "user.js"), "a") as userjs:
         for i in pref_add:
@@ -292,14 +289,15 @@ def run(profile_name):
                 os.makedirs(os.path.dirname(dst_path), exist_ok=True)
                 shutil.copy(src_path, dst_path)
     apply_one_time(profiles)
+
+    # cleanup
+    shutil.rmtree(os.path.join(privacy_fighter_profile, "extensions"))
+
     print("------------------DONE-------------------\n")
     # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
     print("You can now close this and run Firefox :)")
     # shutil.copy("profile/user.js", os.path.join(profile, "user.js"))
     # shutil.copy("profile/search.json.mozlz4", os.path.join(profile, "search.json.mozlz4"))
-
-    def cleaup():
-        print("cleanup")
 
 
 if __name__ == "__main__":
