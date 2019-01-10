@@ -154,8 +154,8 @@ def init():
         os.makedirs(profile_folder, exist_ok=True)
         os.makedirs(extensions_folder, exist_ok=True)
     except PermissionError:
-        print("ERROR: can't create directory in {}. ".format(profile_folder) +
-              "You must have installed PF using 'sudo pip install', you need to either "
+        print("ERROR: can't create directory in {}. ".format(profile_folder)
+              + "You must have installed PF using 'sudo pip install', you need to either "
               "run as sudo 'sudo pf' or uninstall it then reinstall using 'pip install --user privacyfighter'")
 
     for index, ext in enumerate(extensions):
@@ -266,29 +266,7 @@ def run(profile_name):
 
     for prof in profiles:
         print("Modified Preferences (Users.js) and Extensions will now be copied to {}\n".format(prof))
-        for dirpath, dirnames, filenames in os.walk(privacy_fighter_profile):
-            for dirname in dirnames:
-                src_path = os.path.join(dirpath, dirname)
-                dst_path = os.path.join(prof, dirname)
-                # print("dirs :", src_path, dst_path)
-            for filename in filenames:
-                src_path = os.path.join(dirpath, filename)
-                src_list = list(Path(src_path).parts)
-                # remove first element '/' from the list
-                src_list.pop(0)
-                # find last index of "profile" in location, in case there is another "profile" folder in path
-                pf_folder_index = len(src_list) - 1 - src_list[::-1].index("profile")
-
-                # extract section after 'profile' out of '/home/user/privacy-fighter/profile/extensions/ext.js'
-                src_list = src_list[pf_folder_index + 1:]
-                # now src_file would be e.g extensions/ext.js
-                src_file = Path(*src_list)
-                firefox_p_path = os.path.join(firefox_path, prof)
-                dst_path = os.path.join(firefox_p_path, src_file)
-                # print("file : ", src_path, dst_path)
-                print("Copying: ", src_file)
-                os.makedirs(os.path.dirname(dst_path), exist_ok=True)
-                shutil.copy(src_path, dst_path)
+        recusive_copy(privacy_fighter_profile, prof, firefox_path)
     apply_one_time(profiles)
 
     # cleanup
@@ -299,6 +277,32 @@ def run(profile_name):
     print("You can now close this and run Firefox :)")
     # shutil.copy("profile/user.js", os.path.join(profile, "user.js"))
     # shutil.copy("profile/search.json.mozlz4", os.path.join(profile, "search.json.mozlz4"))
+
+
+def recusive_copy(privacy_fighter_profile, prof, firefox_path):
+    for dirpath, dirnames, filenames in os.walk(privacy_fighter_profile):
+        for dirname in dirnames:
+            src_path = os.path.join(dirpath, dirname)
+            dst_path = os.path.join(prof, dirname)
+            # print("dirs :", src_path, dst_path)
+        for filename in filenames:
+            src_path = os.path.join(dirpath, filename)
+            src_list = list(Path(src_path).parts)
+            # remove first element '/' from the list
+            src_list.pop(0)
+            # find last index of "profile" in location, in case there is another "profile" folder in path
+            pf_folder_index = len(src_list) - 1 - src_list[::-1].index("profile")
+
+            # extract section after 'profile' out of '/home/user/privacy-fighter/profile/extensions/ext.js'
+            src_list = src_list[pf_folder_index + 1:]
+            # now src_file would be e.g extensions/ext.js
+            src_file = Path(*src_list)
+            firefox_p_path = os.path.join(firefox_path, prof)
+            dst_path = os.path.join(firefox_p_path, src_file)
+            # print("file : ", src_path, dst_path)
+            print("Copying: ", src_file)
+            os.makedirs(os.path.dirname(dst_path), exist_ok=True)
+            shutil.copy(src_path, dst_path)
 
 
 if __name__ == "__main__":
