@@ -1,5 +1,5 @@
 __pycache__
-dobackup.egg*
+*.egg*
 build
 dist
 deb_dist
