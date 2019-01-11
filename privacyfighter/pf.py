@@ -6,6 +6,7 @@ import os
 import sys
 import shutil
 import fileinput
+import tempfile
 
 from pathlib import Path, PurePath
 
@@ -13,8 +14,18 @@ import requests
 from gooey import Gooey, GooeyParser
 
 
-__version__ = "0.0.5"
+__version__ = "0.0.7"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
+
+# temporary folder to download files in
+temp_folder = tempfile.mkdtemp()
+
+# progress bar steps
+total_steps = 12
+
+# Create folders
+extensions_folder = os.path.join(temp_folder, "extensions")
+os.makedirs(extensions_folder, exist_ok=True)
 
 
 pref_add = [
@@ -120,7 +131,6 @@ def main():
                         help="Firefox Profile Name: Leave value to 'default' if unsure or using only single firefox profile", type=str)
 
     args = parser.parse_args()
-    init()
     run(args.profile_name)
 
 
@@ -133,9 +143,15 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-def download_extension(url, extensions_folder, extension_id):
-    r = requests.get(url, allow_redirects=True)
-    open(os.path.join(extensions_folder, extension_id), 'wb').write(r.content)
+def download_extensions():
+    for index, ext in enumerate(extensions):
+        print("Downloading {}".format(ext['name']))
+
+        r = requests.get(ext['url'], allow_redirects=True)
+        open(os.path.join(extensions_folder, ext['id']), 'wb').write(r.content)
+
+        print("progress: {}/{}".format(index + 1, total_steps))
+        sys.stdout.flush()
 
 
 def download_file(url, dest):
@@ -143,34 +159,13 @@ def download_file(url, dest):
     open(dest, 'wb').write(r.content)
 
 
-def init():
-    total_steps = 12
-
-    # Create folders
-    profile_folder = resource_path("profile")
-    extensions_folder = os.path.join(profile_folder, "extensions")
-
-    try:
-        os.makedirs(profile_folder, exist_ok=True)
-        os.makedirs(extensions_folder, exist_ok=True)
-    except PermissionError:
-        print("ERROR: can't create directory in {}. ".format(profile_folder)
-              + "You must have installed PF using 'sudo pip install', you need to either "
-              "run as sudo 'sudo pf' or uninstall it then reinstall using 'pip install --user privacyfighter'")
-
-    for index, ext in enumerate(extensions):
-        # for i in range(2):
-        print("Downloading {}".format(ext['name']))
-        download_extension(ext['url'], extensions_folder, ext['id'])
-
-        print("progress: {}/{}".format(index + 1, total_steps))
-        sys.stdout.flush()
-
-    # download_file("https://raw.githubusercontent.com/pyllyukko/user.js/relaxed/user.js", os.path.join(profile_folder, "user.js"))
+def setup_userjs():
+    # download_file("https://raw.githubusercontent.com/pyllyukko/user.js/relaxed/user.js", os.path.join(temp_folder, "user.js"))
     download_file("https://github.com/ghacksuserjs/ghacks-user.js/raw/master/user.js",
-                  os.path.join(profile_folder, "user.js"))
+                  os.path.join(temp_folder, "user.js"))
 
-    with fileinput.input(os.path.join(profile_folder, "user.js"), inplace=True) as userjs_file:
+    # Modifying user.js: if "pref_mods" value is empty, remove it from user.js, if given overwrite it
+    with fileinput.input(os.path.join(temp_folder, "user.js"), inplace=True) as userjs_file:
         for line in userjs_file:
             for i in pref_mods:
                 if i['pref'] in line:
@@ -183,13 +178,16 @@ def init():
                     # line = ''
             sys.stdout.write(line)
 
-    with open(os.path.join(profile_folder, "user.js"), "a") as userjs:
+    # Append additional prefs to user.js from "pref_add"
+    with open(os.path.join(temp_folder, "user.js"), "a") as userjs:
         for i in pref_add:
             line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
             userjs.write(line)
 
 
+# apply some prefs directly to "pref.js", users can change these later.
 def apply_one_time(profiles):
+    # To show all addons in the toolbar
     ui_customization_raw = r'{\"placements\":{\"widget-overflow-fixed-list\":[],\"PersonalToolbar\":[\"personal-bookmarks\"],\"nav-bar\":[\"back-button\",\"forward-button\",\"stop-reload-button\",\"home-button\",\"customizableui-special-spring1\",\"urlbar-container\",\"downloads-button\",\"history-panelmenu\",\"bookmarks-menu-button\",\"library-button\",\"sidebar-button\",\"_3579f63b-d8ee-424f-bbb6-6d0ce3285e6a_-browser-action\",\"canvasblocker_kkapsner_de-browser-action\",\"cookieautodelete_kennydo_com-browser-action\",\"jid1-bofifl9vbdl2zq_jetpack-browser-action\",\"https-everywhere_eff_org-browser-action\",\"ublock0_raymondhill_net-browser-action\",\"jid1-mnnxcxisbpnsxq_jetpack-browser-action\",\"woop-noopscoopsnsxq_jetpack-browser-action\",\"_74145f27-f039-47ce-a470-a662b129930a_-browser-action\"],\"toolbar-menubar\":[\"menubar-items\"],\"TabsToolbar\":[\"tabbrowser-tabs\",\"new-tab-button\",\"alltabs-button\"]},\"seen\":[\"developer-button\",\"_3579f63b-d8ee-424f-bbb6-6d0ce3285e6a_-browser-action\",\"canvasblocker_kkapsner_de-browser-action\",\"cookieautodelete_kennydo_com-browser-action\",\"jid1-bofifl9vbdl2zq_jetpack-browser-action\",\"https-everywhere_eff_org-browser-action\",\"ublock0_raymondhill_net-browser-action\",\"jid1-mnnxcxisbpnsxq_jetpack-browser-action\",\"woop-noopscoopsnsxq_jetpack-browser-action\",\"_74145f27-f039-47ce-a470-a662b129930a_-browser-action\"],\"dirtyAreaCache\":[\"PersonalToolbar\",\"nav-bar\",\"toolbar-menubar\",\"TabsToolbar\"],\"currentVersion\":14,\"newElementCount\":4}'
 
     ui_customization_str = '"' + ui_customization_raw + '"'
@@ -242,7 +240,6 @@ def get_firefox_path():
         sys.exit(1)
 
     # print("List of All Firefox Profiles : ", os.listdir(firefox_path))
-    # print(os.listdir("."))
 
     # onlydirs = [d for d in os.listdir(firefox_path) if os.path.isdir(os.path.join(firefox_path, d))]
     # print(onlydirs)
@@ -250,27 +247,34 @@ def get_firefox_path():
 
 
 def run(profile_name):
-
-    privacy_fighter_profile = resource_path("profile")
-    # print(privacy_fighter_profile)
+    # bundled "profile" folder that includes extension's config files
+    bundled_profile_folder = resource_path("profile")
+    # print(bundled_profile_folder)
 
     firefox_path = get_firefox_path()
 
     profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
 
+    # sys.exit()
     if not profiles:
         print("ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(profile_name))
         sys.exit(1)
 
     print("Firefox Profiles to be secured/modified : ", profiles, "\n")
 
+    download_extensions()
+    setup_userjs()
+
     for prof in profiles:
         print("Modified Preferences (Users.js) and Extensions will now be copied to {}\n".format(prof))
-        recusive_copy(privacy_fighter_profile, prof, firefox_path)
-    apply_one_time(profiles)
+        # firefox profile path on the os
+        firefox_p_path = os.path.join(firefox_path, prof)
+        recusive_copy(bundled_profile_folder, firefox_p_path)  # copies extension's config files
+        recusive_copy(temp_folder, firefox_p_path)         # copies modified user.js, extensions
+    apply_one_time(profiles)                                    # modifies "prefs.js"
 
     # cleanup
-    shutil.rmtree(os.path.join(privacy_fighter_profile, "extensions"))
+    shutil.rmtree(temp_folder)
 
     print("------------------DONE-------------------\n")
     # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
@@ -279,30 +283,34 @@ def run(profile_name):
     # shutil.copy("profile/search.json.mozlz4", os.path.join(profile, "search.json.mozlz4"))
 
 
-def recusive_copy(privacy_fighter_profile, prof, firefox_path):
-    for dirpath, dirnames, filenames in os.walk(privacy_fighter_profile):
+def recusive_copy(source_path, destination_path):
+    for dirpath, dirnames, filenames in os.walk(source_path):
         for dirname in dirnames:
-            src_path = os.path.join(dirpath, dirname)
-            dst_path = os.path.join(prof, dirname)
-            # print("dirs :", src_path, dst_path)
+            pass
+            # src_folder_path = os.path.join(dirpath, dirname)
+            # dst_path = os.path.join(prof, dirname)
         for filename in filenames:
-            src_path = os.path.join(dirpath, filename)
-            src_list = list(Path(src_path).parts)
+            src_file_path = os.path.join(dirpath, filename)
+            src_list = list(Path(src_file_path).parts)
             # remove first element '/' from the list
             src_list.pop(0)
-            # find last index of "profile" in location, in case there is another "profile" folder in path
-            pf_folder_index = len(src_list) - 1 - src_list[::-1].index("profile")
+            # find index of base folder in order to extract subfolder paths
+            # these subfolder paths will be created in dest location then appended to
+            # the full path of files ~/.mozilla/firefox/TEST/"extensions/uBlock0@raymondhill.net.xpi"
+            base_folder_ends = len(list(Path(source_path).parts)) - 1
 
-            # extract section after 'profile' out of '/home/user/privacy-fighter/profile/extensions/ext.js'
-            src_list = src_list[pf_folder_index + 1:]
-            # now src_file would be e.g extensions/ext.js
+            # extract section after 'profile' out of '/home/user/privacy-fighter/profile/extensions/ext.xpi'
+            src_list = src_list[base_folder_ends:]
+
+            # now src_file would be e.g extensions/ext.xpi
             src_file = Path(*src_list)
-            firefox_p_path = os.path.join(firefox_path, prof)
-            dst_path = os.path.join(firefox_p_path, src_file)
-            # print("file : ", src_path, dst_path)
+
+            dst_file_path = os.path.join(destination_path, src_file)
+            # print("file : ", src_file_path, dst_file_path)
             print("Copying: ", src_file)
-            os.makedirs(os.path.dirname(dst_path), exist_ok=True)
-            shutil.copy(src_path, dst_path)
+            # create parent directory
+            os.makedirs(os.path.dirname(dst_file_path), exist_ok=True)
+            shutil.copy(src_file_path, dst_file_path)
 
 
 if __name__ == "__main__":
