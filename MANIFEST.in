@@ -1,0 +1,13 @@
+recursive-include privacyfighter *.*
+include LICENSE.md README.md
+
+
+exclude privacyfighter/test.py
+
+prune privacyfighter/dist
+prune privacyfighter/build
+
+prune privacyfighter/__pycache__
+prune test*
+prune .git
+prune *.egg-info
