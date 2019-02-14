@@ -31,7 +31,6 @@ os.makedirs(extensions_folder, exist_ok=True)
 pref_add = [
     # {'pref': '"browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts.searchEngines"',
     #  'value': '"duckduckgo"'},
-    {'pref': '"dom.event.clipboardevents.enabled"', 'value': 'false'},
     {'pref': '"app.update.auto"', 'value': 'true'},     # enable auto updates
 ]
 
@@ -71,11 +70,12 @@ pref_mods = [
     {'pref': '"browser.bookmarks.max_backups"', 'value': 5},
     {'pref': '"browser.newtabpage.activity-stream.enabled"', 'value': ''},
     {'pref': '"browser.newtab.url"', 'value': ''},
-    {'pref': '"privacy.sanitize.sanitizeOnShutdown"', 'value': ''},     # don't enforce history clear on shutdown
+    # don't enforce history clear on shutdown
+    {'pref': '"privacy.sanitize.sanitizeOnShutdown"', 'value': ''},
     # // Sets time range to "Everything" as default in "Clear Recent History"
     {'pref': '"privacy.sanitize.timeSpan"', 'value': ''},
-    {'pref': '"app.update.auto"', 'value': ''},
-    {'pref': '"extensions.update.autoUpdateDefault"', 'value': ''},
+    {'pref': '"app.update.auto"', 'value': 'true'},
+    {'pref': '"extensions.update.autoUpdateDefault"', 'value': 'true'},
     {'pref': '"app.update.service.enabled"', 'value': ''},
     {'pref': '"app.update.silent"', 'value': ''},
     {'pref': '"app.update.staging.enabled"', 'value': ''},
@@ -87,31 +87,31 @@ pref_mods = [
 
 extensions = [
     {'name': 'decentraleyes', 'id': 'jid1-BoFifL9Vbdl2zQ@jetpack.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1078499/decentraleyes-2.0.8-an+fx.xpi'},
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1671300/decentraleyes-2.0.9-an+fx.xpi'},
     {'name': 'cookie_autodelete', 'id': 'CookieAutoDelete@kennydo.com.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/954445/cookie_autodelete-2.2.0-an+fx.xpi'},
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1209831/cookie_autodelete-3.0.1-an+fx.xpi'},
     {'name': 'https_everywhere', 'id': 'https-everywhere@eff.org.xpi',
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1132037/https_everywhere-2018.10.31-an+fx.xpi'},
     {'name': 'ublock_origin', 'id': 'uBlock0@raymondhill.net.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1166954/ublock_origin-1.17.4-an+fx.xpi'},
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1672871/ublock_origin-1.18.4-an+fx.xpi'},
     {'name': 'canvas_blocker', 'id': 'CanvasBlocker@kkapsner.de.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1108171/canvasblocker-0.5.5-an+fx.xpi'},
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1677846/canvasblocker-0.5.8-an+fx.xpi'},
     # {'name': 'chameleon', 'id': '{3579f63b-d8ee-424f-bbb6-6d0ce3285e6a}.xpi',
     #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1157451/chameleon-0.9.23-an+fx.xpi'},
     # {'name': 'privacy_badger', 'id': 'jid1-MnnxcxisBPnSXQ@jetpack.xpi',
     #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1099313/privacy_badger-2018.10.3.1-an+fx.xpi'},
     {'name': 'clear_urls', 'id': '{74145f27-f039-47ce-a470-a662b129930a}.xpi',
-        'url': 'https://addons.mozilla.org/fidownload_filerefox/downloads/file/1101996/clearurls-1.3.4.0-an+fx.xpi'},
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1670276/clearurls-1.3.4.2-an+fx.xpi'},
     {'name': 'privacy_possum', 'id': 'woop-NoopscooPsnSXQ@jetpack.xpi',
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1062944/privacy_possum-2018.8.31-an+fx.xpi'},
     {'name': 'multi_account_containers', 'id': '@testpilot-containers.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1171317/firefox_multi_account_containers-6.0.1-fx.xpi'},
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1400557/firefox_multi_account_containers-6.1.0-fx.xpi'},
     {'name': 'facebook_container', 'id': '@contain-facebook.xpi',
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1149344/facebook_container-1.4.2-fx.xpi'},
     {'name': 'google_container', 'id': '@contain-google.xpi',
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1144065/google_container-1.3.4-fx.xpi'},
     {'name': 'temporary_containers', 'id': '{c607c8df-14a7-4f28-894f-29e8722976af}.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/957989/temporary_containers-0.90-an+fx-linux.xpi'},
+        'url': 'https://addons.mozilla.org/firefox/downloads/file/1675556/temporary_containers-0.91-fx.xpi'},
 
 ]
 
@@ -257,7 +257,8 @@ def run(profile_name):
 
     # sys.exit()
     if not profiles:
-        print("ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(profile_name))
+        print("ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(
+            profile_name))
         sys.exit(1)
 
     print("Firefox Profiles to be secured/modified : ", profiles, "\n")
@@ -266,7 +267,7 @@ def run(profile_name):
     setup_userjs()
 
     for prof in profiles:
-        print("Modified Preferences (Users.js) and Extensions will now be copied to {}\n".format(prof))
+        print("\nModified Preferences (Users.js) and Extensions will now be copied to {}\n".format(prof))
         # firefox profile path on the os
         firefox_p_path = os.path.join(firefox_path, prof)
         recusive_copy(bundled_profile_folder, firefox_p_path)  # copies extension's config files
