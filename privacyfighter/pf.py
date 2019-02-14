@@ -32,6 +32,7 @@ pref_add = [
     # {'pref': '"browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts.searchEngines"',
     #  'value': '"duckduckgo"'},
     {'pref': '"app.update.auto"', 'value': 'true'},     # enable auto updates
+    {'pref': '"privacyfighter.version"', 'value': '{}'.format(__version__)},     # Privacy Fighter Version
 ]
 
 # preferences to be modified in the users.j. if 'value' is given in here, it will be overwritten
@@ -186,7 +187,7 @@ def setup_userjs():
 
 
 # apply some prefs directly to "pref.js", users can change these later.
-def apply_one_time(profiles):
+def apply_one_time_prefs(profile):
     # To show all addons in the toolbar
     ui_customization_raw = r'{\"placements\":{\"widget-overflow-fixed-list\":[],\"PersonalToolbar\":[\"personal-bookmarks\"],\"nav-bar\":[\"back-button\",\"forward-button\",\"stop-reload-button\",\"home-button\",\"customizableui-special-spring1\",\"urlbar-container\",\"downloads-button\",\"history-panelmenu\",\"bookmarks-menu-button\",\"library-button\",\"sidebar-button\",\"_3579f63b-d8ee-424f-bbb6-6d0ce3285e6a_-browser-action\",\"canvasblocker_kkapsner_de-browser-action\",\"cookieautodelete_kennydo_com-browser-action\",\"jid1-bofifl9vbdl2zq_jetpack-browser-action\",\"https-everywhere_eff_org-browser-action\",\"ublock0_raymondhill_net-browser-action\",\"jid1-mnnxcxisbpnsxq_jetpack-browser-action\",\"woop-noopscoopsnsxq_jetpack-browser-action\",\"_74145f27-f039-47ce-a470-a662b129930a_-browser-action\"],\"toolbar-menubar\":[\"menubar-items\"],\"TabsToolbar\":[\"tabbrowser-tabs\",\"new-tab-button\",\"alltabs-button\"]},\"seen\":[\"developer-button\",\"_3579f63b-d8ee-424f-bbb6-6d0ce3285e6a_-browser-action\",\"canvasblocker_kkapsner_de-browser-action\",\"cookieautodelete_kennydo_com-browser-action\",\"jid1-bofifl9vbdl2zq_jetpack-browser-action\",\"https-everywhere_eff_org-browser-action\",\"ublock0_raymondhill_net-browser-action\",\"jid1-mnnxcxisbpnsxq_jetpack-browser-action\",\"woop-noopscoopsnsxq_jetpack-browser-action\",\"_74145f27-f039-47ce-a470-a662b129930a_-browser-action\"],\"dirtyAreaCache\":[\"PersonalToolbar\",\"nav-bar\",\"toolbar-menubar\",\"TabsToolbar\"],\"currentVersion\":14,\"newElementCount\":4}'
 
@@ -194,34 +195,33 @@ def apply_one_time(profiles):
 
     print("\nApplying onetime preferences to 'prefs.js'\n")
 
-    for profile in profiles:
-        # prefs to be applied directly to 'prefs.js' instead of 'users.js' so end users can change these
-        # contains 'exists' to change if found and turn 'exists' True. the ones not found will be later added
-        # keep this in profile loop, so 'exists' True resets for next profile
-        pref_one_time = [
-            {'pref': '"browser.uiCustomization.state"', 'value': ui_customization_str, 'exists': False},
-            {'pref': '"browser.startup.homepage"', 'value': '"https://duckduckgo.com"', 'exists': False},
-            {'pref': '"browser.startup.page"', 'value': '"https://duckduckgo.com"', 'exists': False},
-        ]
+    # prefs to be applied directly to 'prefs.js' instead of 'users.js' so end users can change these
+    # contains 'exists' to change if found and turn 'exists' True. the ones not found will be later added
+    # keep this in profile loop, so 'exists' True resets for next profile
+    pref_one_time = [
+        {'pref': '"browser.uiCustomization.state"', 'value': ui_customization_str, 'exists': False},
+        {'pref': '"browser.startup.homepage"', 'value': '"https://duckduckgo.com"', 'exists': False},
+        {'pref': '"browser.startup.page"', 'value': '"https://duckduckgo.com"', 'exists': False},
+    ]
 
-        # If pref exists, overwrite it
-        with fileinput.input(os.path.join(profile, "prefs.js"), inplace=True) as prefs_file:
-            for line in prefs_file:
-                for i in pref_one_time:
-                    if i['pref'] in line:
-                        line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
-                        # it is found, turn 'exists' to True
-                        i['exists'] = True
-                        # print(line)
-                sys.stdout.write(line)
-
-        # now append the rest of preferences
-        with open(os.path.join(profile, "prefs.js"), "a") as prefsjs:
+    # If pref exists, overwrite it
+    with fileinput.input(os.path.join(profile, "prefs.js"), inplace=True) as prefs_file:
+        for line in prefs_file:
             for i in pref_one_time:
-                if not i['exists']:
+                if i['pref'] in line:
                     line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
-                    # print(i)      # pref being added
-                    prefsjs.write(line)
+                    # it is found, turn 'exists' to True
+                    i['exists'] = True
+                    # print(line)
+            sys.stdout.write(line)
+
+    # now append the rest of preferences
+    with open(os.path.join(profile, "prefs.js"), "a") as prefsjs:
+        for i in pref_one_time:
+            if not i['exists']:
+                line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
+                # print(i)      # pref being added
+                prefsjs.write(line)
 
 
 def get_firefox_path():
@@ -260,19 +260,22 @@ def run(profile_name):
         print("ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(
             profile_name))
         sys.exit(1)
-
-    print("Firefox Profiles to be secured/modified : ", profiles, "\n")
+    elif len(profiles) == 1:
+        profile = profiles[0]
+        print("Firefox Profile to be secured/modified : ", profile, "\n")
+    elif len(profiles) > 1:
+        print("ERROR: 'Profile Name' string matches more than one profile folders, please provide a full name instead: ", profiles, "\n")
+        sys.exit(1)
 
     download_extensions()
     setup_userjs()
 
-    for prof in profiles:
-        print("\nModified Preferences (Users.js) and Extensions will now be copied to {}\n".format(prof))
-        # firefox profile path on the os
-        firefox_p_path = os.path.join(firefox_path, prof)
-        recusive_copy(bundled_profile_folder, firefox_p_path)  # copies extension's config files
-        recusive_copy(temp_folder, firefox_p_path)         # copies modified user.js, extensions
-    apply_one_time(profiles)                                    # modifies "prefs.js"
+    print("\nModified Preferences (Users.js) and Extensions will now be copied to {}\n".format(profile))
+    # firefox profile path on the os
+    firefox_p_path = os.path.join(firefox_path, profile)
+    recusive_copy(bundled_profile_folder, firefox_p_path)  # copies extension's config files
+    recusive_copy(temp_folder, firefox_p_path)         # copies modified user.js, extensions
+    apply_one_time_prefs(profile)                                    # modifies "prefs.js"
 
     # cleanup
     shutil.rmtree(temp_folder)
