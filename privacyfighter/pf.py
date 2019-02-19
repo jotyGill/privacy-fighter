@@ -7,6 +7,7 @@ import sys
 import shutil
 import fileinput
 import tempfile
+import datetime
 
 from pathlib import Path, PurePath
 
@@ -14,7 +15,7 @@ import requests
 from gooey import Gooey, GooeyParser
 
 
-__version__ = "0.0.7"
+from .version import __version__
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 # temporary folder to download files in
@@ -273,6 +274,7 @@ def run(profile_name):
     print("\nModified Preferences (Users.js) and Extensions will now be copied to {}\n".format(profile))
     # firefox profile path on the os
     firefox_p_path = os.path.join(firefox_path, profile)
+    backup_prefsjs(firefox_p_path)
     recusive_copy(bundled_profile_folder, firefox_p_path)  # copies extension's config files
     recusive_copy(temp_folder, firefox_p_path)         # copies modified user.js, extensions
     apply_one_time_prefs(profile)                                    # modifies "prefs.js"
@@ -285,6 +287,17 @@ def run(profile_name):
     print("You can now close this and run Firefox :)")
     # shutil.copy("profile/user.js", os.path.join(profile, "user.js"))
     # shutil.copy("profile/search.json.mozlz4", os.path.join(profile, "search.json.mozlz4"))
+
+
+def backup_prefsjs(firefox_p_path):
+    prefsjs_path = os.path.join(firefox_p_path, "prefs.js")
+    prefsjs_backups_folder = os.path.join(firefox_p_path, "prefs-backups")
+    prefsjs_backup_name = os.path.join(prefsjs_backups_folder, ("prefs-" +
+                                                                str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js")))
+    # create directory to store "prefs.js" backups
+    os.makedirs(prefsjs_backups_folder, exist_ok=True)      # Changed in version 3.6: Accepts a path-like object.
+    print("Backing up the current 'prefs.js' to '{}'\n".format(prefsjs_backup_name))
+    shutil.copy(prefsjs_path, prefsjs_backup_name)
 
 
 def recusive_copy(source_path, destination_path):
