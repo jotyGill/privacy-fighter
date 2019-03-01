@@ -12,10 +12,10 @@ import datetime
 from pathlib import Path, PurePath
 
 import requests
+import psutil
 from gooey import Gooey, GooeyParser
 
-
-from .version import __version__
+__version__ = "0.0.9"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 # temporary folder to download files in
@@ -33,21 +33,25 @@ pref_add = [
     # {'pref': '"browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts.searchEngines"',
     #  'value': '"duckduckgo"'},
     {'pref': '"app.update.auto"', 'value': 'true'},     # enable auto updates
-    {'pref': '"privacyfighter.version"', 'value': '{}'.format(__version__)},     # Privacy Fighter Version
+    {'pref': '"privacyfighter.version"', 'value': '{}'.format(
+        __version__)},     # Privacy Fighter Version
 ]
 
 # preferences to be modified in the users.j. if 'value' is given in here, it will be overwritten
 # using these. If 'value' is '', that preference will be deleted from users.js , so Firefox's Default
 # or user's original preference stays in place.
-# '' is used to get rid of undesired preferences set in pyllyukko's user.js. such as "places.history.enabled", "false"
+# '' is used to get rid of undesired preferences set in ghacks's user.js. such as "places.history.enabled", "false"
 pref_mods = [
-    {'pref': '"browser.safebrowsing.enabled"', 'value': 'true'},
-    {'pref': '"browser.safebrowsing.phishing.enabled"', 'value': 'true'},
-    {'pref': '"browser.safebrowsing.malware.enabled"', 'value': 'true'},
-    # {'pref': '"browser.safebrowsing.downloads.remote.enabled"', 'value': 'false'},
-    {'pref': '"privacy.clearOnShutdown.cookies"', 'value': 'true'},
+    # SECTION 0100: STARTUP
+    # dont enforce not checking defalut browser
+    {'pref': '"browser.shell.checkDefaultBrowser"', 'value': ''},
+    {'pref': '"browser.startup.homepage"', 'value': ''},
+    {'pref': '"browser.startup.page"', 'value': ''},
+    {'pref': '"browser.newtabpage.enabled"', 'value': ''},
 
-    {'pref': '"browser.search.suggest.enabled"', 'value': ''},
+
+
+    # {'pref': '"browser.search.suggest.enabled"', 'value': ''},    # live searches in urlbar
     {'pref': '"keyword.enabled"', 'value': ''},         # don't block search from urlbar
 
     {'pref': '"browser.urlbar.suggest.history"', 'value': ''},
@@ -57,34 +61,72 @@ pref_mods = [
     {'pref': '"browser.urlbar.autocomplete.enabled"', 'value': ''},
     {'pref': '"browser.urlbar.suggest.bookmark"', 'value': ''},
     {'pref': '"browser.urlbar.maxHistoricalSearchSuggestions"', 'value': ''},
-
-    {'pref': '"browser.startup.homepage"', 'value': ''},
-    {'pref': '"browser.startup.page"', 'value': ''},
-
-    {'pref': '"places.history.enabled"', 'value': ''},
-    {'pref': '"browser.formfill.enable"', 'value': ''},
-    {'pref': '"browser.newtabpage.enabled"', 'value': ''},
-    {'pref': '"privacy.clearOnShutdown.history"', 'value': ''},
-    {'pref': '"privacy.clearOnShutdown.formdata"', 'value': ''},
-    {'pref': '"privacy.clearOnShutdown.openWindows"', 'value': ''},
-    {'pref': '"privacy.clearOnShutdown.downloads"', 'value': ''},
-    {'pref': '"browser.download.manager.retention"', 'value': ''},
-    {'pref': '"browser.bookmarks.max_backups"', 'value': 5},
     {'pref': '"browser.newtabpage.activity-stream.enabled"', 'value': ''},
-    {'pref': '"browser.newtab.url"', 'value': ''},
-    # don't enforce history clear on shutdown
-    {'pref': '"privacy.sanitize.sanitizeOnShutdown"', 'value': ''},
-    # // Sets time range to "Everything" as default in "Clear Recent History"
-    {'pref': '"privacy.sanitize.timeSpan"', 'value': ''},
-    {'pref': '"app.update.auto"', 'value': 'true'},
+
+    # [SECTION 0200]: GEOLOCATION
+    # [SECTION 0300]: QUIET FOX
+    {'pref': '"app.update.auto"', 'value': ''},
     {'pref': '"extensions.update.autoUpdateDefault"', 'value': 'true'},
     {'pref': '"app.update.service.enabled"', 'value': ''},
     {'pref': '"app.update.silent"', 'value': ''},
     {'pref': '"app.update.staging.enabled"', 'value': ''},
     {'pref': '"browser.search.update"', 'value': ''},
-    {'pref': '"lightweightThemes.update.enabled"', 'value': ''},
+
     {'pref': '"extensions.systemAddon.update.enabled"', 'value': ''},
+    {'pref': '"extensions.formautofill.addresses.enabled"', 'value': ''},
+    # {'pref': '"extensions.formautofill.creditCards.enabled"', 'value': ''},
+    {'pref': '"extensions.formautofill.heuristics.enabled"', 'value': ''},
     {'pref': '"extensions.systemAddon.update.url"', 'value': ''},
+    {'pref': '"network.dns.disableIPv6"', 'value': ''},
+    {'pref': '"network.http.spdy.enabled"', 'value': ''},
+    {'pref': '"network.http.spdy.enabled.deps"', 'value': ''},
+    {'pref': '"network.http.spdy.enabled.http2"', 'value': ''},
+    {'pref': '"network.http.spdy.websockets"', 'value': ''},
+
+    {'pref': '"network.http.altsvc.enabled"', 'value': ''},
+    {'pref': '"network.http.altsvc.oe"', 'value': ''},
+    {'pref': '"network.http.spdy.websockets"', 'value': ''},
+    {'pref': '"network.file.disable_unc_paths"', 'value': ''},
+
+
+
+    {'pref': '"places.history.enabled"', 'value': ''},
+    {'pref': '"browser.formfill.enable"', 'value': ''},
+    {'pref': '"privacy.clearOnShutdown.history"', 'value': ''},
+    {'pref': '"privacy.clearOnShutdown.formdata"', 'value': ''},
+    {'pref': '"privacy.clearOnShutdown.openWindows"', 'value': ''},
+    {'pref': '"privacy.clearOnShutdown.downloads"', 'value': ''},
+    {'pref': '"privacy.clearOnShutdown.cookies"', 'value': 'true'},
+
+    {'pref': '"browser.download.manager.retention"', 'value': ''},
+    {'pref': '"browser.bookmarks.max_backups"', 'value': ''},
+
+    {'pref': '"browser.newtab.url"', 'value': ''},
+    # don't enforce history clear on shutdown
+    {'pref': '"privacy.sanitize.sanitizeOnShutdown"', 'value': ''},
+    # // Sets time range to "Everything" as default in "Clear Recent History"
+    {'pref': '"privacy.sanitize.timeSpan"', 'value': ''},
+
+
+    # disable first party isolation, we use temporary_containers
+    {'pref': '"privacy.firstparty.isolate"', 'value': 'false'},
+    {'pref': '"security.ssl.require_safe_negotiation"', 'value': ''},
+    {'pref': '"security.OCSP.require"', 'value': ''},
+    {'pref': '"media.gmp-provider.enabled"', 'value': ''},
+    {'pref': '"media.gmp-widevinecdm.visible"', 'value': ''},
+    {'pref': '"media.gmp-widevinecdm.enabled"', 'value': ''},
+    {'pref': '"media.eme.enabled"', 'value': ''},
+    {'pref': '"media.gmp-gmpopenh264.enabled"', 'value': ''},
+    {'pref': '"media.gmp-gmpopenh264.autoupdate"', 'value': ''},
+    {'pref': '"media.autoplay.default"', 'value': ''},
+    {'pref': '"dom.event.clipboardevents.enabled"', 'value': ''},
+    {'pref': '"browser.tabs.remote.allowLinkedWebInFileUriProcess"', 'value': ''},
+
+    # keep WebRTC but expose only default ip (don't leak)
+    {'pref': '"media.peerconnection.enabled"', 'value': ''},
+    {'pref': '"pdfjs.disabled"', 'value': ''},  # allow inbuilt pdfviewer
+
+    {'pref': '"security.pki.sha1_enforcement_level"', 'value': ''},   # don't enforce certificate pinning
 ]
 
 extensions = [
@@ -104,8 +146,8 @@ extensions = [
     #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1099313/privacy_badger-2018.10.3.1-an+fx.xpi'},
     {'name': 'clear_urls', 'id': '{74145f27-f039-47ce-a470-a662b129930a}.xpi',
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1670276/clearurls-1.3.4.2-an+fx.xpi'},
-    {'name': 'privacy_possum', 'id': 'woop-NoopscooPsnSXQ@jetpack.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1062944/privacy_possum-2018.8.31-an+fx.xpi'},
+    # {'name': 'privacy_possum', 'id': 'woop-NoopscooPsnSXQ@jetpack.xpi',
+    #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1062944/privacy_possum-2018.8.31-an+fx.xpi'},
     {'name': 'multi_account_containers', 'id': '@testpilot-containers.xpi',
         'url': 'https://addons.mozilla.org/firefox/downloads/file/1400557/firefox_multi_account_containers-6.1.0-fx.xpi'},
     {'name': 'facebook_container', 'id': '@contain-facebook.xpi',
@@ -162,7 +204,6 @@ def download_file(url, dest):
 
 
 def setup_userjs():
-    # download_file("https://raw.githubusercontent.com/pyllyukko/user.js/relaxed/user.js", os.path.join(temp_folder, "user.js"))
     download_file("https://github.com/ghacksuserjs/ghacks-user.js/raw/master/user.js",
                   os.path.join(temp_folder, "user.js"))
 
@@ -172,7 +213,7 @@ def setup_userjs():
             for i in pref_mods:
                 if i['pref'] in line:
                     if not i['value']:
-                        line = ''
+                        line = '// [PRIVACYFIGHTER EXCLUDED] ' + line
                     else:
                         line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
                 # remove comment lines
@@ -204,9 +245,14 @@ def apply_one_time_prefs(profile):
         {'pref': '"browser.startup.homepage"', 'value': '"https://duckduckgo.com"', 'exists': False},
         {'pref': '"browser.startup.page"', 'value': '"https://duckduckgo.com"', 'exists': False},
     ]
+    prefsjs_file = os.path.join(profile, "prefs.js")
+
+    # touch prefs.js because the old one was moved to prefs-backups
+    if not os.path.exists(prefsjs_file):
+        Path(prefsjs_file).touch()
 
     # If pref exists, overwrite it
-    with fileinput.input(os.path.join(profile, "prefs.js"), inplace=True) as prefs_file:
+    with fileinput.input(prefsjs_file, inplace=True) as prefs_file:
         for line in prefs_file:
             for i in pref_one_time:
                 if i['pref'] in line:
@@ -217,7 +263,7 @@ def apply_one_time_prefs(profile):
             sys.stdout.write(line)
 
     # now append the rest of preferences
-    with open(os.path.join(profile, "prefs.js"), "a") as prefsjs:
+    with open(prefsjs_file, "a") as prefsjs:
         for i in pref_one_time:
             if not i['exists']:
                 line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
@@ -248,6 +294,10 @@ def get_firefox_path():
 
 
 def run(profile_name):
+    if firefox_is_running():
+        print("Firefox is currently running, please close firefox first then run Privacy Fighter again")
+        sys.exit(1)
+
     # bundled "profile" folder that includes extension's config files
     bundled_profile_folder = resource_path("profile")
     # print(bundled_profile_folder)
@@ -295,9 +345,10 @@ def backup_prefsjs(firefox_p_path):
     prefsjs_backup_name = os.path.join(prefsjs_backups_folder, ("prefs-" +
                                                                 str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js")))
     # create directory to store "prefs.js" backups
-    os.makedirs(prefsjs_backups_folder, exist_ok=True)      # Changed in version 3.6: Accepts a path-like object.
+    # Changed in version 3.6: Accepts a path-like object.
+    os.makedirs(prefsjs_backups_folder, exist_ok=True)
     print("Backing up the current 'prefs.js' to '{}'\n".format(prefsjs_backup_name))
-    shutil.copy(prefsjs_path, prefsjs_backup_name)
+    shutil.move(prefsjs_path, prefsjs_backup_name)
 
 
 def recusive_copy(source_path, destination_path):
@@ -328,6 +379,20 @@ def recusive_copy(source_path, destination_path):
             # create parent directory
             os.makedirs(os.path.dirname(dst_file_path), exist_ok=True)
             shutil.copy(src_file_path, dst_file_path)
+
+
+def firefox_is_running():
+    # Iterate over the all the running process
+    for proc in psutil.process_iter():
+        try:
+            pinfo = proc.as_dict(attrs=['pid', 'name', 'create_time'])
+            # Check if process name contains the given name string.
+            if "firefox" in pinfo['name'].lower():
+                print(pinfo)
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False
 
 
 if __name__ == "__main__":
