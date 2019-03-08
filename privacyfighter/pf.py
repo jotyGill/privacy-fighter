@@ -15,7 +15,7 @@ import requests
 import psutil
 from gooey import Gooey, GooeyParser
 
-__version__ = "0.0.9"
+__version__ = "0.0.10"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 # temporary folder to download files in
@@ -35,6 +35,9 @@ pref_add = [
     {'pref': '"app.update.auto"', 'value': 'true'},     # enable auto updates
     {'pref': '"privacyfighter.version"', 'value': '{}'.format(
         __version__)},     # Privacy Fighter Version
+    # remove auto included Google, Youtube and Facebook shortcuts on newtabpage
+    {'pref': '"browser.newtabpage.blocked"',
+        'value': r'"{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00ILysCaEq8+bEqV/3nuw==\":1,\"26UbzFJ7qT9/4DhodHKA1Q==\":1}"', 'exists': False},
 ]
 
 # preferences to be modified in the users.j. if 'value' is given in here, it will be overwritten
@@ -49,19 +52,6 @@ pref_mods = [
     {'pref': '"browser.startup.page"', 'value': ''},
     {'pref': '"browser.newtabpage.enabled"', 'value': ''},
 
-
-
-    # {'pref': '"browser.search.suggest.enabled"', 'value': ''},    # live searches in urlbar
-    {'pref': '"keyword.enabled"', 'value': ''},         # don't block search from urlbar
-
-    {'pref': '"browser.urlbar.suggest.history"', 'value': ''},
-    # {'pref': '"browser.urlbar.suggest.searches"', 'value': ''},
-    {'pref': '"browser.urlbar.autoFill"', 'value': ''},
-    {'pref': '"browser.urlbar.autoFill.typed"', 'value': ''},
-    {'pref': '"browser.urlbar.autocomplete.enabled"', 'value': ''},
-    {'pref': '"browser.urlbar.suggest.bookmark"', 'value': ''},
-    {'pref': '"browser.urlbar.maxHistoricalSearchSuggestions"', 'value': ''},
-    {'pref': '"browser.newtabpage.activity-stream.enabled"', 'value': ''},
 
     # [SECTION 0200]: GEOLOCATION
     # [SECTION 0300]: QUIET FOX
@@ -87,46 +77,152 @@ pref_mods = [
     {'pref': '"network.http.altsvc.oe"', 'value': ''},
     {'pref': '"network.http.spdy.websockets"', 'value': ''},
     {'pref': '"network.file.disable_unc_paths"', 'value': ''},
+    {'pref': '"captivedetect.canonicalURL"', 'value': ''},
+    {'pref': '"network.captive-portal-service.enabled"', 'value': ''},
+    {'pref': '"network.gio.supported-protocols"', 'value': ''},
+    # [SECTION 0500]: SYSTEM ADD-ONS / EXPERIMENTS
+    {'pref': '"extensions.formautofill.addresses.enabled"', 'value': ''},
+    {'pref': '"extensions.formautofill.available"', 'value': ''},
+    {'pref': '"extensions.formautofill.heuristics.enabled"', 'value': ''},
+
+    # [SECTION 0800]: LOCATION BAR / SEARCH BAR / SUGGESTIONS / HISTORY / FORMS
 
 
-
-    {'pref': '"places.history.enabled"', 'value': ''},
+    {'pref': '"keyword.enabled"', 'value': ''},         # don't block search from urlbar
+    # {'pref': '"browser.search.suggest.enabled"', 'value': ''},    # live searches in urlbar
+    # {'pref': '"browser.urlbar.suggest.searches"', 'value': ''},
+    {'pref': '"network.file.disable_unc_paths"', 'value': ''},
     {'pref': '"browser.formfill.enable"', 'value': ''},
-    {'pref': '"privacy.clearOnShutdown.history"', 'value': ''},
-    {'pref': '"privacy.clearOnShutdown.formdata"', 'value': ''},
-    {'pref': '"privacy.clearOnShutdown.openWindows"', 'value': ''},
-    {'pref': '"privacy.clearOnShutdown.downloads"', 'value': ''},
-    {'pref': '"privacy.clearOnShutdown.cookies"', 'value': 'true'},
 
-    {'pref': '"browser.download.manager.retention"', 'value': ''},
-    {'pref': '"browser.bookmarks.max_backups"', 'value': ''},
+    # [SECTION 0900]: PASSWORDS
 
-    {'pref': '"browser.newtab.url"', 'value': ''},
-    # don't enforce history clear on shutdown
-    {'pref': '"privacy.sanitize.sanitizeOnShutdown"', 'value': ''},
-    # // Sets time range to "Everything" as default in "Clear Recent History"
-    {'pref': '"privacy.sanitize.timeSpan"', 'value': ''},
+    {'pref': '"security.ask_for_password"', 'value': ''},
+    {'pref': '"security.password_lifetime"', 'value': ''},
+    {'pref': '"signon.autofillForms"', 'value': ''},     # allow over tls but not for http
+    {'pref': '"signon.autofillForms.http"', 'value': 'false'},  # DEL
+    {'pref': '"network.auth.subresource-http-auth-allow"', 'value': ''},
+    {'pref': '"signon.formlessCapture.enabled"', 'value': ''},
 
+    # [SECTION 1000]: CACHE / SESSION (RE)STORE / FAVICONS
+    {'pref': '"browser.sessionstore.interval"', 'value': ''},
 
-    # disable first party isolation, we use temporary_containers
-    {'pref': '"privacy.firstparty.isolate"', 'value': 'false'},
+    # [SECTION 1200]: HTTPS (SSL/TLS / OCSP / CERTS / HPKP / CIPHERS)
     {'pref': '"security.ssl.require_safe_negotiation"', 'value': ''},
+    {'pref': '"security.tls.enable_0rtt_data"', 'value': ''},
+
     {'pref': '"security.OCSP.require"', 'value': ''},
+    {'pref': '"security.pki.sha1_enforcement_level"', 'value': ''},     # dont disable SHA-1 certificates
+    {'pref': '"security.family_safety.mode"', 'value': ''},     # dont disable windows family safety cert
+    {'pref': '"security.cert_pinning.enforcement_level"', 'value': ''},  # dont inforce cert pinning
+    {'pref': '"security.mixed_content.block_display_content"', 'value': ''},
+
+    # [SECTION 1400]: FONTS
+    {'pref': '"browser.display.use_document_fonts"', 'value': ''},  #
+    {'pref': '"gfx.font_rendering.opentype_svg.enabled"', 'value': ''},
+    {'pref': '"gfx.downloadable_fonts.woff2.enabled"', 'value': ''},
+    {'pref': '"layout.css.font-loading-api.enabled"', 'value': ''},
+    {'pref': '"gfx.font_rendering.graphite.enabled"', 'value': ''},
+
+    # [SECTION 1600]: HEADERS / REFERERS
+    {'pref': '"network.http.referer.XOriginPolicy"', 'value': ''},
+    # [SECTION 1700]: CONTAINERS
+    # [SECTION 1800]: PLUGINS
+    {'pref': '"plugin.default.state"', 'value': ''},
+    {'pref': '"plugin.defaultXpi.state"', 'value': ''},
+    {'pref': '"plugin.sessionPermissionNow.intervalInMinutes"', 'value': ''},
+
+    {'pref': '"plugin.state.flash"', 'value': ''},  # dont force disable flash
+    {'pref': '"plugin.scan.plid.all"', 'value': ''},  # dont disable flash
+    # dont disable all GMP (Gecko Media Plugins)
     {'pref': '"media.gmp-provider.enabled"', 'value': ''},
+    {'pref': '"media.gmp.trial-create.enabled"', 'value': ''},
+    {'pref': '"media.gmp-manager.url"', 'value': ''},
+    {'pref': '"media.gmp-manager.url.override"', 'value': ''},
+    {'pref': '"media.gmp-manager.updateEnabled"', 'value': ''},
+
+    # dont disable widevine CDM (Content Decryption Module)
     {'pref': '"media.gmp-widevinecdm.visible"', 'value': ''},
     {'pref': '"media.gmp-widevinecdm.enabled"', 'value': ''},
+    {'pref': '"media.gmp-widevinecdm.autoupdate"', 'value': ''},
+
+    # dont disable all DRM content (EME: Encryption Media Extension)
     {'pref': '"media.eme.enabled"', 'value': ''},
+    # dont disable the OpenH264 Video Codec by Cisco to
     {'pref': '"media.gmp-gmpopenh264.enabled"', 'value': ''},
     {'pref': '"media.gmp-gmpopenh264.autoupdate"', 'value': ''},
-    {'pref': '"media.autoplay.default"', 'value': ''},
-    {'pref': '"dom.event.clipboardevents.enabled"', 'value': ''},
-    {'pref': '"browser.tabs.remote.allowLinkedWebInFileUriProcess"', 'value': ''},
-
+    # [SECTION 2000]: MEDIA / CAMERA / MIC
     # keep WebRTC but expose only default ip (don't leak)
     {'pref': '"media.peerconnection.enabled"', 'value': ''},
+    {'pref': '"media.peerconnection.ice.default_address_only"', 'value': 'true'},
+    {'pref': '"media.peerconnection.ice.no_host"', 'value': 'true'},
+
+    # dont disable screensharing
+    {'pref': '"media.getusermedia.screensharing.enabled"', 'value': ''},
+    {'pref': '"media.getusermedia.browser.enabled"', 'value': ''},
+    {'pref': '"media.getusermedia.audiocapture.enabled"', 'value': ''},
+    {'pref': '"media.peerconnection.enabled"', 'value': ''},
+
+    {'pref': '"canvas.capturestream.enabled"', 'value': ''},
+    {'pref': '"media.autoplay.default"', 'value': ''},
+    # [SECTION 2200]: WINDOW MEDDLING & LEAKS / POPUPS
+    # [SECTION 2300]: WEB WORKERS
+    # dont disable web workers, webnotifications
+    {'pref': '"dom.serviceWorkers.enabled"', 'value': ''},
+    {'pref': '"dom.webnotifications.enabled"', 'value': ''},
+    {'pref': '"dom.webnotifications.serviceworker.enabled"', 'value': ''},
+    # dont disable push notifications
+    {'pref': '"dom.push.enabled"', 'value': ''},
+    {'pref': '"dom.push.connection.enabled"', 'value': ''},
+    {'pref': '"dom.push.serverURL"', 'value': ''},
+    {'pref': '"dom.push.userAgentID"', 'value': ''},
+    # [SECTION 2400]: DOM (DOCUMENT OBJECT MODEL) & JAVASCRIPT
+    {'pref': '"dom.event.clipboardevents.enabled"', 'value': ''},
+    # reconsider, disable "Confirm you want to leave" dialog on page close
+    {'pref': '"dom.disable_beforeunload"', 'value': ''},
+    {'pref': '"dom.allow_cut_copy"', 'value': ''},
+
+    {'pref': '"javascript.options.asmjs"', 'value': ''},    # dont disable asm.js
+    {'pref': '"javascript.options.wasm"', 'value': ''},    # dont disable WebAssembly
+    {'pref': '"dom.vibrator.enabled"', 'value': ''},
+    {'pref': '"dom.IntersectionObserver.enabled"', 'value': ''},
+
+    {'pref': '"javascript.options.shared_memory"', 'value': ''},
+
+    # [SECTION 2500]: HARDWARE FINGERPRINTING
+    # [SECTION 2600]: MISCELLANEOUS
+    {'pref': '"browser.tabs.remote.allowLinkedWebInFileUriProcess"', 'value': ''},
+    {'pref': '"browser.pagethumbnails.capturing_disabled"', 'value': ''},
+    {'pref': '"browser.uitour.enabled"', 'value': ''},
+    {'pref': '"browser.uitour.url"', 'value': ''},
+    {'pref': '"mathml.disabled"', 'value': ''},
+    {'pref': '"network.IDN_show_punycode"', 'value': ''},
     {'pref': '"pdfjs.disabled"', 'value': ''},  # allow inbuilt pdfviewer
 
-    {'pref': '"security.pki.sha1_enforcement_level"', 'value': ''},   # don't enforce certificate pinning
+    {'pref': '"network.protocol-handler.external.ms-windows-store"', 'value': ''},
+    {'pref': '"devtools.chrome.enabled"', 'value': ''},
+    {'pref': '"browser.download.manager.addToRecentDocs"', 'value': ''},
+    {'pref': '"browser.download.forbid_open_with"', 'value': ''},
+    {'pref': '"security.csp.experimentalEnabled"', 'value': ''},
+
+    # [SECTION 2700]: PERSISTENT STORAGE
+    # allow third party cookies, but session only and "4" exclude known trackers
+    {'pref': '"network.cookie.cookieBehavior"', 'value': '4'},
+
+    # don't enforce history and downloads to clear on shutdown
+    {'pref': '"privacy.sanitize.sanitizeOnShutdown"', 'value': 'true'},
+    {'pref': '"privacy.clearOnShutdown.history"', 'value': 'false'},
+    {'pref': '"privacy.clearOnShutdown.formdata"', 'value': 'false'},
+    {'pref': '"privacy.clearOnShutdown.openWindows"', 'value': 'false'},
+    {'pref': '"privacy.clearOnShutdown.downloads"', 'value': 'false'},
+    # // dont set time range to "Everything" as default in "Clear Recent History"
+    {'pref': '"privacy.sanitize.timeSpan"', 'value': ''},
+    {'pref': '"dom.caches.enabled"', 'value': ''},
+
+    # [SECTION 4000]: FPI (FIRST PARTY ISOLATION)
+    # disable first party isolation, we use temporary_containers
+    {'pref': '"privacy.firstparty.isolate"', 'value': 'false'},
+    # [SECTION 4500]: RFP (RESIST FINGERPRINTING)
+
 ]
 
 extensions = [
@@ -388,7 +484,7 @@ def firefox_is_running():
             pinfo = proc.as_dict(attrs=['pid', 'name', 'create_time'])
             # Check if process name contains the given name string.
             if "firefox" in pinfo['name'].lower():
-                print(pinfo)
+                # print(pinfo)
                 return True
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
