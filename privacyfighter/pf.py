@@ -36,8 +36,13 @@ pref_add = [
     {'pref': '"privacyfighter.version"', 'value': '{}'.format(
         __version__)},     # Privacy Fighter Version
     # remove auto included Google, Youtube and Facebook shortcuts on newtabpage
+    # {'pref': '"browser.newtabpage.blocked"',
+    #     'value': r'"{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00ILysCaEq8+bEqV/3nuw==\":1,\"26UbzFJ7qT9/4DhodHKA1Q==\":1}"', 'exists': False},
     {'pref': '"browser.newtabpage.blocked"',
-        'value': r'"{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00ILysCaEq8+bEqV/3nuw==\":1,\"26UbzFJ7qT9/4DhodHKA1Q==\":1}"', 'exists': False},
+        'value': r'"{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00ILysCaEq8+bEqV/3nuw==\":1,\"26UbzFJ7qT9/4DhodHKA1Q==\":1,\"mZmevP23jfB3rScn/QCWnw==\":1,\"BRX66S9KVyZQ1z3AIk0A7w==\":1}"', 'exists': False},
+
+    {'pref': '"privacy.window.maxInnerWidth"', 'value': '1600'},
+    {'pref': '"privacy.window.maxInnerHeight"', 'value': '900'},
 ]
 
 # preferences to be modified in the users.j. if 'value' is given in here, it will be overwritten
@@ -117,10 +122,10 @@ pref_mods = [
     {'pref': '"security.mixed_content.block_display_content"', 'value': ''},
 
     # [SECTION 1400]: FONTS
-    {'pref': '"browser.display.use_document_fonts"', 'value': ''},  #
+    # {'pref': '"browser.display.use_document_fonts"', 'value': ''},  #
     {'pref': '"gfx.font_rendering.opentype_svg.enabled"', 'value': ''},
     {'pref': '"gfx.downloadable_fonts.woff2.enabled"', 'value': ''},
-    {'pref': '"layout.css.font-loading-api.enabled"', 'value': ''},
+    # {'pref': '"layout.css.font-loading-api.enabled"', 'value': ''},
     {'pref': '"gfx.font_rendering.graphite.enabled"', 'value': ''},
 
     # [SECTION 1600]: HEADERS / REFERERS
