@@ -68,9 +68,6 @@ pref_mods = [
     {'pref': '"browser.search.update"', 'value': ''},
 
     {'pref': '"extensions.systemAddon.update.enabled"', 'value': ''},
-    {'pref': '"extensions.formautofill.addresses.enabled"', 'value': ''},
-    # {'pref': '"extensions.formautofill.creditCards.enabled"', 'value': ''},
-    {'pref': '"extensions.formautofill.heuristics.enabled"', 'value': ''},
     {'pref': '"extensions.systemAddon.update.url"', 'value': ''},
     {'pref': '"network.dns.disableIPv6"', 'value': ''},
     {'pref': '"network.http.spdy.enabled"', 'value': ''},
@@ -80,7 +77,6 @@ pref_mods = [
 
     {'pref': '"network.http.altsvc.enabled"', 'value': ''},
     {'pref': '"network.http.altsvc.oe"', 'value': ''},
-    {'pref': '"network.http.spdy.websockets"', 'value': ''},
     {'pref': '"network.file.disable_unc_paths"', 'value': ''},
     {'pref': '"captivedetect.canonicalURL"', 'value': ''},
     {'pref': '"network.captive-portal-service.enabled"', 'value': ''},
@@ -117,7 +113,8 @@ pref_mods = [
 
     {'pref': '"security.OCSP.require"', 'value': ''},
     {'pref': '"security.pki.sha1_enforcement_level"', 'value': ''},     # dont disable SHA-1 certificates
-    {'pref': '"security.family_safety.mode"', 'value': ''},     # dont disable windows family safety cert
+    # dont disable windows family safety cert
+    {'pref': '"security.family_safety.mode"', 'value': ''},
     {'pref': '"security.cert_pinning.enforcement_level"', 'value': ''},  # dont inforce cert pinning
     {'pref': '"security.mixed_content.block_display_content"', 'value': ''},
 
@@ -165,7 +162,6 @@ pref_mods = [
     {'pref': '"media.getusermedia.screensharing.enabled"', 'value': ''},
     {'pref': '"media.getusermedia.browser.enabled"', 'value': ''},
     {'pref': '"media.getusermedia.audiocapture.enabled"', 'value': ''},
-    {'pref': '"media.peerconnection.enabled"', 'value': ''},
 
     {'pref': '"canvas.capturestream.enabled"', 'value': ''},
     {'pref': '"media.autoplay.default"', 'value': ''},
@@ -308,18 +304,21 @@ def setup_userjs():
     download_file("https://github.com/ghacksuserjs/ghacks-user.js/raw/master/user.js",
                   os.path.join(temp_folder, "user.js"))
 
-    # Modifying user.js: if "pref_mods" value is empty, remove it from user.js, if given overwrite it
+    remove_prefs = extract_user_overrides()
+
+    # Modifying user.js: if a pref set to be removed in "user-overrides.js", remove it from user.js
+    # the pattern to remove a pref is "//// --- comment-out --- 'preference'"
+    # this is taken from ghacksuserjs Updater Script. making it cross complatable with it.
+    # https://github.com/ghacksuserjs/ghacks-user.js/wiki/3.3-Updater-Scripts
     with fileinput.input(os.path.join(temp_folder, "user.js"), inplace=True) as userjs_file:
         for line in userjs_file:
-            for i in pref_mods:
-                if i['pref'] in line:
-                    if not i['value']:
-                        line = '// [PRIVACYFIGHTER EXCLUDED] ' + line
-                    else:
-                        line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
-                # remove comment lines
-                # if line[:2] == '//':
-                    # line = ''
+            for i in remove_prefs:
+                if line[:9] == "user_pref":  # active pref
+                    pref = '"{}"'.format(i[0])
+                    comment = i[1]
+                    if pref in line:        # TODO make sure pref.subpref doens't mess up parent
+                        line = "// {}   // [PRIVACYFIGHTER EXCLUDED] {}\n".format(line.strip("\n"), comment)
+
             sys.stdout.write(line)
 
     # Append additional prefs to user.js from "pref_add"
@@ -327,6 +326,29 @@ def setup_userjs():
         for i in pref_add:
             line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
             userjs.write(line)
+
+
+def extract_user_overrides():
+    remove_prefs = []
+    with open(os.path.join(resource_path("profile"), "user-overrides.js"), "r") as user_overrides:
+        # user_overrides = ["//// --- comment-out --- 'app.update.auto'",
+        # "//// --- comment-out --- 'keyword.enabled'         // don't block search from urlbar"]
+        for line in user_overrides:
+            if line[:24] == "//// --- comment-out ---":
+                pref_comment_pair = []
+                pref_begins = line[line.find("'") + 1:]
+                pref = pref_begins[:pref_begins.find("'")]
+                print(pref)
+
+                comment = pref_begins[pref_begins.find("'") + 1:]
+                pref_comment_pair.append(pref)
+                pref_comment_pair.append(comment.strip("\n"))
+                remove_prefs.append(pref_comment_pair)
+            elif line[:9] == "user_pref":
+                pref_comment_pair = []
+                pref_comment_pair.append(line.stip("\n"))
+    # print(remove_prefs)
+    return(remove_prefs)
 
 
 # apply some prefs directly to "pref.js", users can change these later.
@@ -443,8 +465,8 @@ def run(profile_name):
 def backup_prefsjs(firefox_p_path):
     prefsjs_path = os.path.join(firefox_p_path, "prefs.js")
     prefsjs_backups_folder = os.path.join(firefox_p_path, "prefs-backups")
-    prefsjs_backup_name = os.path.join(prefsjs_backups_folder, ("prefs-" +
-                                                                str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js")))
+    prefsjs_backup_name = os.path.join(prefsjs_backups_folder, ("prefs-"
+                                                                + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js")))
     # create directory to store "prefs.js" backups
     # Changed in version 3.6: Accepts a path-like object.
     os.makedirs(prefsjs_backups_folder, exist_ok=True)
