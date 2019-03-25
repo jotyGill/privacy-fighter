@@ -7,7 +7,7 @@ import setuptools
 
 # pf_location = os.path.join(os.path.abspath(os.path.dirname(__file__)), "privacyfighter")
 # exec(open(os.path.join(pf_location, "version.py")).read())
-__version__ = "0.0.9"
+__version__ = "0.0.11"
 
 if sys.version_info < (3, 5):
     sys.stderr.write(
@@ -31,7 +31,7 @@ setuptools.setup(
     url="https://github.com/jotyGill/",
     keywords=["privacy", "firefox", "browser"],
     python_requires='>=3.5',
-    install_requires=['requests'],
+    install_requires=['requests', 'psutil'],
     platforms=["GNU/Linux", "Ubuntu", "Debian", "Kali", "CentOS", "Arch", "Fedora"],
     packages=setuptools.find_packages(),
     entry_points={
