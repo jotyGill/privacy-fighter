@@ -138,8 +138,7 @@ def extract_user_overrides():
                 pref_comment_pair = []
                 pref_begins = line[line.find("'") + 1:]
                 pref = pref_begins[:pref_begins.find("'")]
-                print(pref)
-
+                # print(pref)
                 comment = pref_begins[pref_begins.find("'") + 1:]
                 pref_comment_pair.append(pref)
                 pref_comment_pair.append(comment.strip("\n"))
@@ -153,21 +152,17 @@ def extract_user_overrides():
 
 # apply some prefs directly to "pref.js", users can change these later.
 def apply_one_time_prefs(profile):
-    # To show all addons in the toolbar
-    ui_customization_raw = r'{\"placements\":{\"widget-overflow-fixed-list\":[],\"PersonalToolbar\":[\"personal-bookmarks\"],\"nav-bar\":[\"back-button\",\"forward-button\",\"stop-reload-button\",\"home-button\",\"customizableui-special-spring1\",\"urlbar-container\",\"downloads-button\",\"history-panelmenu\",\"bookmarks-menu-button\",\"library-button\",\"sidebar-button\",\"_3579f63b-d8ee-424f-bbb6-6d0ce3285e6a_-browser-action\",\"canvasblocker_kkapsner_de-browser-action\",\"cookieautodelete_kennydo_com-browser-action\",\"jid1-bofifl9vbdl2zq_jetpack-browser-action\",\"https-everywhere_eff_org-browser-action\",\"ublock0_raymondhill_net-browser-action\",\"jid1-mnnxcxisbpnsxq_jetpack-browser-action\",\"woop-noopscoopsnsxq_jetpack-browser-action\",\"_74145f27-f039-47ce-a470-a662b129930a_-browser-action\"],\"toolbar-menubar\":[\"menubar-items\"],\"TabsToolbar\":[\"tabbrowser-tabs\",\"new-tab-button\",\"alltabs-button\"]},\"seen\":[\"developer-button\",\"_3579f63b-d8ee-424f-bbb6-6d0ce3285e6a_-browser-action\",\"canvasblocker_kkapsner_de-browser-action\",\"cookieautodelete_kennydo_com-browser-action\",\"jid1-bofifl9vbdl2zq_jetpack-browser-action\",\"https-everywhere_eff_org-browser-action\",\"ublock0_raymondhill_net-browser-action\",\"jid1-mnnxcxisbpnsxq_jetpack-browser-action\",\"woop-noopscoopsnsxq_jetpack-browser-action\",\"_74145f27-f039-47ce-a470-a662b129930a_-browser-action\"],\"dirtyAreaCache\":[\"PersonalToolbar\",\"nav-bar\",\"toolbar-menubar\",\"TabsToolbar\"],\"currentVersion\":14,\"newElementCount\":4}'
-
-    ui_customization_str = '"' + ui_customization_raw + '"'
-
     print("\nApplying onetime preferences to 'prefs.js'\n")
 
     # prefs to be applied directly to 'prefs.js' instead of 'users.js' so end users can change these
     # contains 'exists' to change if found and turn 'exists' True. the ones not found will be later added
     # keep this in profile loop, so 'exists' True resets for next profile
-    pref_one_time = [
-        {'pref': '"browser.uiCustomization.state"', 'value': ui_customization_str, 'exists': False},
-        {'pref': '"browser.startup.homepage"', 'value': '"https://duckduckgo.com"', 'exists': False},
-        {'pref': '"browser.startup.page"', 'value': '"https://duckduckgo.com"', 'exists': False},
-    ]
+
+    # Download the "one time prefs" from the repo
+    r = requests.get(
+        'https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/one-time-prefs.json')
+    one_time_prefs = r.json()["prefs"]
+
     prefsjs_file = os.path.join(profile, "prefs.js")
 
     # touch prefs.js because the old one was moved to prefs-backups
@@ -177,7 +172,7 @@ def apply_one_time_prefs(profile):
     # If pref exists, overwrite it
     with fileinput.input(prefsjs_file, inplace=True) as prefs_file:
         for line in prefs_file:
-            for i in pref_one_time:
+            for i in one_time_prefs:
                 if i['pref'] in line:
                     line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
                     # it is found, turn 'exists' to True
@@ -187,7 +182,7 @@ def apply_one_time_prefs(profile):
 
     # now append the rest of preferences
     with open(prefsjs_file, "a") as prefsjs:
-        for i in pref_one_time:
+        for i in one_time_prefs:
             if not i['exists']:
                 line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
                 # print(i)      # pref being added
@@ -221,10 +216,6 @@ def run(profile_name):
         print("Firefox is currently running, please close firefox first then run Privacy Fighter again")
         sys.exit(1)
 
-    # bundled "profile" folder that includes extension's config files
-    bundled_profile_folder = resource_path("profile")
-    # print(bundled_profile_folder)
-
     firefox_path = get_firefox_path()
 
     profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
@@ -244,11 +235,10 @@ def run(profile_name):
     setup_userjs()
     setup_extensions()
 
-    print("\nModified Preferences (Users.js) and Extensions will now be copied to {}\n".format(profile))
     # firefox profile path on the os
     firefox_p_path = os.path.join(firefox_path, profile)
     backup_prefsjs(firefox_p_path)
-    # recusive_copy(bundled_profile_folder, firefox_p_path)  # copies extension's config files
+    print("\nModified Preferences (Users.js) and Extensions will now be copied to {}\n".format(profile))
     recusive_copy(temp_folder, firefox_p_path)         # copies modified user.js, extensions
     apply_one_time_prefs(profile)                                    # modifies "prefs.js"
 
