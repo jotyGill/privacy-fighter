@@ -7,7 +7,7 @@ import setuptools
 
 # pf_location = os.path.join(os.path.abspath(os.path.dirname(__file__)), "privacyfighter")
 # exec(open(os.path.join(pf_location, "version.py")).read())
-__version__ = "0.0.11"
+__version__ = "0.0.12"
 
 if sys.version_info < (3, 5):
     sys.stderr.write(

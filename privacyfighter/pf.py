@@ -8,6 +8,8 @@ import shutil
 import fileinput
 import tempfile
 import datetime
+import zipfile
+import io
 
 from pathlib import Path, PurePath
 
@@ -15,7 +17,7 @@ import requests
 import psutil
 from gooey import Gooey, GooeyParser
 
-__version__ = "0.0.11"
+__version__ = "0.0.12"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 # temporary folder to download files in
@@ -37,16 +39,6 @@ os.makedirs(extensions_folder, exist_ok=True)
 #     #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1099313/privacy_badger-2018.10.3.1-an+fx.xpi'},
 #     # {'name': 'privacy_possum', 'id': 'woop-NoopscooPsnSXQ@jetpack.xpi',
 #     #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1062944/privacy_possum-2018.8.31-an+fx.xpi'},
-
-# Download the extensions list with their download links from the repo
-r = requests.get(
-    'https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/config/extensions.json')
-extensions = r.json()["extensions"]
-
-# Download the "user-overrides.js" with the latest ruleset from the repo
-r = requests.get(
-    "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/config/user-overrides.js", allow_redirects=True)
-open(os.path.join(temp_folder, "user-overrides.js"), 'wb').write(r.content)
 
 
 @Gooey(
@@ -76,7 +68,12 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-def download_extensions():
+def setup_extensions():
+    # Download the extensions list with their download links from the repo
+    r = requests.get(
+        'https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/extensions.json')
+    extensions = r.json()["extensions"]
+
     for index, ext in enumerate(extensions):
         print("Downloading {}".format(ext['name']))
 
@@ -86,6 +83,12 @@ def download_extensions():
         print("progress: {}/{}".format(index + 1, total_steps))
         sys.stdout.flush()
 
+    # Download the "browser-extensions-data". these are extension's configuration files
+    extensions_configs = requests.get(
+        "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/browser-extension-data.zip")
+    with zipfile.ZipFile(io.BytesIO(extensions_configs.content)) as thezip:
+        thezip.extractall(temp_folder)
+
 
 def download_file(url, dest):
     r = requests.get(url, allow_redirects=True)
@@ -93,8 +96,12 @@ def download_file(url, dest):
 
 
 def setup_userjs():
+    # Download the ghacks user.js
     download_file("https://github.com/ghacksuserjs/ghacks-user.js/raw/master/user.js",
                   os.path.join(temp_folder, "user.js"))
+    # Download the "user-overrides.js" with the latest ruleset from the repo
+    download_file("https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/user-overrides.js",
+                  os.path.join(temp_folder, "user-overrides.js"))
 
     remove_prefs = extract_user_overrides()
 
@@ -235,13 +242,13 @@ def run(profile_name):
         sys.exit(1)
 
     setup_userjs()
-    download_extensions()
+    setup_extensions()
 
     print("\nModified Preferences (Users.js) and Extensions will now be copied to {}\n".format(profile))
     # firefox profile path on the os
     firefox_p_path = os.path.join(firefox_path, profile)
     backup_prefsjs(firefox_p_path)
-    recusive_copy(bundled_profile_folder, firefox_p_path)  # copies extension's config files
+    # recusive_copy(bundled_profile_folder, firefox_p_path)  # copies extension's config files
     recusive_copy(temp_folder, firefox_p_path)         # copies modified user.js, extensions
     apply_one_time_prefs(profile)                                    # modifies "prefs.js"
 
@@ -258,8 +265,8 @@ def run(profile_name):
 def backup_prefsjs(firefox_p_path):
     prefsjs_path = os.path.join(firefox_p_path, "prefs.js")
     prefsjs_backups_folder = os.path.join(firefox_p_path, "prefs-backups")
-    prefsjs_backup_name = os.path.join(prefsjs_backups_folder, ("prefs-"
-                                                                + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js")))
+    prefsjs_backup_name = os.path.join(prefsjs_backups_folder, ("prefs-" +
+                                                                str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js")))
     # create directory to store "prefs.js" backups
     # Changed in version 3.6: Accepts a path-like object.
     os.makedirs(prefsjs_backups_folder, exist_ok=True)
