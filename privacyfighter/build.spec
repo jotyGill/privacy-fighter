@@ -3,7 +3,7 @@ gooey_root = os.path.dirname(gooey.__file__)
 gooey_languages = Tree(os.path.join(gooey_root, 'languages'), prefix = 'gooey/languages')
 gooey_images = Tree(os.path.join(gooey_root, 'images'), prefix = 'gooey/images')
 
-added_files = [('profile', 'profile')]
+added_files = [('profile/browser-extension-data', 'profile/browser-extension-data')]
 
 a = Analysis(['pf.py'],
              datas= added_files,

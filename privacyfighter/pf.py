@@ -29,51 +29,24 @@ extensions_folder = os.path.join(temp_folder, "extensions")
 os.makedirs(extensions_folder, exist_ok=True)
 
 
-pref_add = [
-    # {'pref': '"browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts.searchEngines"',
-    #  'value': '"duckduckgo"'},
-    {'pref': '"privacyfighter.version"', 'value': '{}'.format(
-        __version__)},     # Privacy Fighter Version
-    # remove auto included Google, Youtube and Facebook shortcuts on newtabpage
-    # {'pref': '"browser.newtabpage.blocked"',
-    #     'value': r'"{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00ILysCaEq8+bEqV/3nuw==\":1,\"26UbzFJ7qT9/4DhodHKA1Q==\":1}"', 'exists': False},
-    {'pref': '"browser.newtabpage.blocked"',
-        'value': r'"{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00ILysCaEq8+bEqV/3nuw==\":1,\"26UbzFJ7qT9/4DhodHKA1Q==\":1,\"mZmevP23jfB3rScn/QCWnw==\":1,\"BRX66S9KVyZQ1z3AIk0A7w==\":1}"', 'exists': False},
+# Now excluded extensions
 
-    {'pref': '"privacy.window.maxInnerWidth"', 'value': '1600'},
-    {'pref': '"privacy.window.maxInnerHeight"', 'value': '900'},
-]
+#     # {'name': 'chameleon', 'id': '{3579f63b-d8ee-424f-bbb6-6d0ce3285e6a}.xpi',
+#     #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1157451/chameleon-0.9.23-an+fx.xpi'},
+#     # {'name': 'privacy_badger', 'id': 'jid1-MnnxcxisBPnSXQ@jetpack.xpi',
+#     #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1099313/privacy_badger-2018.10.3.1-an+fx.xpi'},
+#     # {'name': 'privacy_possum', 'id': 'woop-NoopscooPsnSXQ@jetpack.xpi',
+#     #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1062944/privacy_possum-2018.8.31-an+fx.xpi'},
 
+# Download the extensions list with their download links from the repo
+r = requests.get(
+    'https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/config/extensions.json')
+extensions = r.json()["extensions"]
 
-extensions = [
-    {'name': 'decentraleyes', 'id': 'jid1-BoFifL9Vbdl2zQ@jetpack.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1671300/decentraleyes-2.0.9-an+fx.xpi'},
-    {'name': 'cookie_autodelete', 'id': 'CookieAutoDelete@kennydo.com.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1209831/cookie_autodelete-3.0.1-an+fx.xpi'},
-    {'name': 'https_everywhere', 'id': 'https-everywhere@eff.org.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1132037/https_everywhere-2018.10.31-an+fx.xpi'},
-    {'name': 'ublock_origin', 'id': 'uBlock0@raymondhill.net.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1672871/ublock_origin-1.18.4-an+fx.xpi'},
-    {'name': 'canvas_blocker', 'id': 'CanvasBlocker@kkapsner.de.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1677846/canvasblocker-0.5.8-an+fx.xpi'},
-    # {'name': 'chameleon', 'id': '{3579f63b-d8ee-424f-bbb6-6d0ce3285e6a}.xpi',
-    #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1157451/chameleon-0.9.23-an+fx.xpi'},
-    # {'name': 'privacy_badger', 'id': 'jid1-MnnxcxisBPnSXQ@jetpack.xpi',
-    #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1099313/privacy_badger-2018.10.3.1-an+fx.xpi'},
-    {'name': 'clear_urls', 'id': '{74145f27-f039-47ce-a470-a662b129930a}.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1670276/clearurls-1.3.4.2-an+fx.xpi'},
-    # {'name': 'privacy_possum', 'id': 'woop-NoopscooPsnSXQ@jetpack.xpi',
-    #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1062944/privacy_possum-2018.8.31-an+fx.xpi'},
-    {'name': 'multi_account_containers', 'id': '@testpilot-containers.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1400557/firefox_multi_account_containers-6.1.0-fx.xpi'},
-    {'name': 'facebook_container', 'id': '@contain-facebook.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1149344/facebook_container-1.4.2-fx.xpi'},
-    {'name': 'google_container', 'id': '@contain-google.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1144065/google_container-1.3.4-fx.xpi'},
-    {'name': 'temporary_containers', 'id': '{c607c8df-14a7-4f28-894f-29e8722976af}.xpi',
-        'url': 'https://addons.mozilla.org/firefox/downloads/file/1675556/temporary_containers-0.91-fx.xpi'},
-
-]
+# Download the "user-overrides.js" with the latest ruleset from the repo
+r = requests.get(
+    "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/user-overrides.js", allow_redirects=True)
+open(os.path.join(temp_folder, "user-overrides.js"), 'wb').write(r.content)
 
 
 @Gooey(
@@ -136,20 +109,21 @@ def setup_userjs():
                     pref = '"{}"'.format(i[0])
                     comment = i[1]
                     if pref in line:        # TODO make sure pref.subpref doens't mess up parent
-                        line = "// {}   // [PRIVACYFIGHTER EXCLUDED] {}\n".format(line.strip("\n"), comment)
+                        line = "// {}   // [PRIVACYFIGHTER EXCLUDED] {}\n".format(
+                            line.strip("\n"), comment)
 
             sys.stdout.write(line)
 
     # Append "user-overrides.js", to "user.js". this will add additional prefs
     with open(os.path.join(temp_folder, "user.js"), "a") as userjs:
-        with open(os.path.join(resource_path("profile"), "user-overrides.js"), "r") as user_overrides:
+        with open(os.path.join(temp_folder, "user-overrides.js"), "r") as user_overrides:
             for line in user_overrides:
                 userjs.write(line)
 
 
 def extract_user_overrides():
     remove_prefs = []
-    with open(os.path.join(resource_path("profile"), "user-overrides.js"), "r") as user_overrides:
+    with open(os.path.join(temp_folder, "user-overrides.js"), "r") as user_overrides:
         # user_overrides = ["//// --- comment-out --- 'app.update.auto'",
         # "//// --- comment-out --- 'keyword.enabled'         // don't block search from urlbar"]
         for line in user_overrides:
