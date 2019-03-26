@@ -45,7 +45,7 @@ extensions = r.json()["extensions"]
 
 # Download the "user-overrides.js" with the latest ruleset from the repo
 r = requests.get(
-    "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/user-overrides.js", allow_redirects=True)
+    "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/config/user-overrides.js", allow_redirects=True)
 open(os.path.join(temp_folder, "user-overrides.js"), 'wb').write(r.content)
 
 
