@@ -31,16 +31,6 @@ extensions_folder = os.path.join(temp_folder, "extensions")
 os.makedirs(extensions_folder, exist_ok=True)
 
 
-# Now excluded extensions
-
-#     # {'name': 'chameleon', 'id': '{3579f63b-d8ee-424f-bbb6-6d0ce3285e6a}.xpi',
-#     #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1157451/chameleon-0.9.23-an+fx.xpi'},
-#     # {'name': 'privacy_badger', 'id': 'jid1-MnnxcxisBPnSXQ@jetpack.xpi',
-#     #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1099313/privacy_badger-2018.10.3.1-an+fx.xpi'},
-#     # {'name': 'privacy_possum', 'id': 'woop-NoopscooPsnSXQ@jetpack.xpi',
-#     #     'url': 'https://addons.mozilla.org/firefox/downloads/file/1062944/privacy_possum-2018.8.31-an+fx.xpi'},
-
-
 @Gooey(
     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
     progress_expr="current / total * 100",
@@ -70,29 +60,44 @@ def resource_path(relative_path):
 
 def setup_extensions():
     # Download the extensions list with their download links from the repo
-    r = requests.get(
+    ext_list = get_file(
         'https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/extensions.json')
-    extensions = r.json()["extensions"]
+    extensions = ext_list.json()["extensions"]
 
     for index, ext in enumerate(extensions):
         print("Downloading {}".format(ext['name']))
 
-        r = requests.get(ext['url'], allow_redirects=True)
-        open(os.path.join(extensions_folder, ext['id']), 'wb').write(r.content)
+        extension_xpi = get_file(ext['url'])
+        open(os.path.join(extensions_folder, ext['id']), 'wb').write(extension_xpi.content)
 
         print("progress: {}/{}".format(index + 1, total_steps))
         sys.stdout.flush()
 
     # Download the "browser-extensions-data". these are extension's configuration files
-    extensions_configs = requests.get(
+    extensions_configs = get_file(
         "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/browser-extension-data.zip")
     with zipfile.ZipFile(io.BytesIO(extensions_configs.content)) as thezip:
         thezip.extractall(temp_folder)
 
 
+# Download files using request.get(), throw error on exceptions
+def get_file(url):
+    try:
+        r = requests.get(url, allow_redirects=True)
+    except requests.RequestException:
+        print("Error while trying to download {} . Make sure internet connection is working then try again.".format(url))
+        sys.exit(1)
+    return r
+
+
+# Download files using request.get() and save them locally, throw error on exceptions
 def download_file(url, dest):
-    r = requests.get(url, allow_redirects=True)
-    open(dest, 'wb').write(r.content)
+    try:
+        r = requests.get(url, allow_redirects=True)
+        open(dest, 'wb').write(r.content)
+    except requests.RequestException:
+        print("Error while trying to download {} . Make sure internet connection is working then try again.".format(url))
+        sys.exit(1)
 
 
 def setup_userjs():
@@ -159,7 +164,7 @@ def apply_one_time_prefs(profile):
     # keep this in profile loop, so 'exists' True resets for next profile
 
     # Download the "one time prefs" from the repo
-    r = requests.get(
+    r = get_file(
         'https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/one-time-prefs.json')
     one_time_prefs = r.json()["prefs"]
 
@@ -255,8 +260,8 @@ def run(profile_name):
 def backup_prefsjs(firefox_p_path):
     prefsjs_path = os.path.join(firefox_p_path, "prefs.js")
     prefsjs_backups_folder = os.path.join(firefox_p_path, "prefs-backups")
-    prefsjs_backup_name = os.path.join(prefsjs_backups_folder, ("prefs-" +
-                                                                str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js")))
+    prefsjs_backup_name = os.path.join(prefsjs_backups_folder, ("prefs-"
+                                                                + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js")))
     # create directory to store "prefs.js" backups
     # Changed in version 3.6: Accepts a path-like object.
     os.makedirs(prefsjs_backups_folder, exist_ok=True)
