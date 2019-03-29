@@ -67,6 +67,7 @@ def setup_extensions():
     for index, ext in enumerate(extensions):
         print("Downloading {}".format(ext['name']))
 
+        # Download and save extension.xpi files
         extension_xpi = get_file(ext['url'])
         open(os.path.join(extensions_folder, ext['id']), 'wb').write(extension_xpi.content)
 
@@ -225,7 +226,6 @@ def run(profile_name):
 
     profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
 
-    # sys.exit()
     if not profiles:
         print("ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(
             profile_name))
@@ -253,8 +253,6 @@ def run(profile_name):
     print("------------------DONE-------------------\n")
     # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
     print("You can now close this and run Firefox :)")
-    # shutil.copy("profile/user.js", os.path.join(profile, "user.js"))
-    # shutil.copy("profile/search.json.mozlz4", os.path.join(profile, "search.json.mozlz4"))
 
 
 def backup_prefsjs(firefox_p_path):
