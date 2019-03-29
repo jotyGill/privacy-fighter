@@ -51,9 +51,17 @@ def main():
         help="Firefox Profile Name: Leave value to 'default' if unsure or using only single firefox profile",
         type=str,
     )
+    parser.add_argument(
+        "-u",
+        "--user-overrides-url",
+        dest="user_overrides_url",
+        default="https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/user-overrides.js",
+        help="Firefox Profile Name: Leave value to 'default' if unsure or using only single firefox profile",
+        type=str,
+    )
 
     args = parser.parse_args()
-    run(args.profile_name)
+    run(args.profile_name, args.user_overrides_url)
 
 
 def resource_path(relative_path):
@@ -118,17 +126,14 @@ def download_file(url, dest):
         sys.exit(1)
 
 
-def setup_userjs():
+def setup_userjs(user_overrides_url):
     # Download the ghacks user.js
     download_file(
         "https://github.com/ghacksuserjs/ghacks-user.js/raw/master/user.js",
         os.path.join(temp_folder, "user.js"),
     )
     # Download the "user-overrides.js" with the latest ruleset from the repo
-    download_file(
-        "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/user-overrides.js",
-        os.path.join(temp_folder, "user-overrides.js"),
-    )
+    download_file(user_overrides_url, os.path.join(temp_folder, "user-overrides.js"))
 
     remove_prefs = extract_user_overrides()
 
@@ -142,7 +147,7 @@ def setup_userjs():
                 if line[:9] == "user_pref":  # active pref
                     pref = '"{}"'.format(i[0])
                     comment = i[1]
-                    if pref in line:  # TODO make sure pref.subpref doens't mess up parent
+                    if pref in line:
                         line = "// {}   // [PRIVACYFIGHTER EXCLUDED] {}\n".format(line.strip("\n"), comment)
 
             sys.stdout.write(line)
@@ -249,7 +254,7 @@ def latest_version():
     return False
 
 
-def run(profile_name):
+def run(profile_name, user_overrides_url):
     if not latest_version():
         print(
             "NEWER VERSION OF THE SOFTWARE IS AVAILABLE,\nPLEASE DOWNLOAD IT FROM https://gitlab.com/JGill/privacy-fighter"
@@ -281,7 +286,7 @@ def run(profile_name):
         )
         sys.exit(1)
 
-    setup_userjs()
+    setup_userjs(user_overrides_url)
     setup_extensions()
 
     # firefox profile path on the os
