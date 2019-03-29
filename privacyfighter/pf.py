@@ -217,7 +217,18 @@ def get_firefox_path():
     return firefox_path
 
 
+def latest_version():
+    latest_version = get_file("https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/version.txt").text
+    print(latest_version)
+    if __version__ == latest_version:
+        return True
+    return False
+
+
 def run(profile_name):
+    if not latest_version():
+        print("NEWER VERSION OF THE SOFTWARE IS AVAILABLE,\nPLEASE DOWNLOAD THE LATEST VERSION FROM https://gitlab.com/JGill/privacy-fighter")
+        sys.exit(1)
     if firefox_is_running():
         print("Firefox is currently running, please close firefox first then run Privacy Fighter again")
         sys.exit(1)
