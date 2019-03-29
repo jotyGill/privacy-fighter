@@ -34,16 +34,23 @@ os.makedirs(extensions_folder, exist_ok=True)
 @Gooey(
     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
     progress_expr="current / total * 100",
-    program_name='Privacy Fighter',
-    requires_shell=False)
+    program_name="Privacy Fighter",
+    requires_shell=False,
+)
 def main():
     parser = argparse.ArgumentParser(
         description="Privacy-Fighter: A Browser Setup For Increased Privacy And Security"
     )
     # parser.add_argument("-v", "--version", action="version",
     #                     version="Privacy-Fighter " + __version__ + __basefilepath__)
-    parser.add_argument("-p", "--profile", dest="profile_name", default="TEST",
-                        help="Firefox Profile Name: Leave value to 'default' if unsure or using only single firefox profile", type=str)
+    parser.add_argument(
+        "-p",
+        "--profile",
+        dest="profile_name",
+        default="TEST",
+        help="Firefox Profile Name: Leave value to 'default' if unsure or using only single firefox profile",
+        type=str,
+    )
 
     args = parser.parse_args()
     run(args.profile_name)
@@ -61,22 +68,24 @@ def resource_path(relative_path):
 def setup_extensions():
     # Download the extensions list with their download links from the repo
     ext_list = get_file(
-        'https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/extensions.json')
+        "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/extensions.json"
+    )
     extensions = ext_list.json()["extensions"]
 
     for index, ext in enumerate(extensions):
-        print("Downloading {}".format(ext['name']))
+        print("Downloading {}".format(ext["name"]))
 
         # Download and save extension.xpi files
-        extension_xpi = get_file(ext['url'])
-        open(os.path.join(extensions_folder, ext['id']), 'wb').write(extension_xpi.content)
+        extension_xpi = get_file(ext["url"])
+        open(os.path.join(extensions_folder, ext["id"]), "wb").write(extension_xpi.content)
 
         print("progress: {}/{}".format(index + 1, total_steps))
         sys.stdout.flush()
 
     # Download the "browser-extensions-data". these are extension's configuration files
     extensions_configs = get_file(
-        "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/browser-extension-data.zip")
+        "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/browser-extension-data.zip"
+    )
     with zipfile.ZipFile(io.BytesIO(extensions_configs.content)) as thezip:
         thezip.extractall(temp_folder)
 
@@ -86,7 +95,11 @@ def get_file(url):
     try:
         r = requests.get(url, allow_redirects=True)
     except requests.RequestException:
-        print("Error while trying to download {} . Make sure internet connection is working then try again.".format(url))
+        print(
+            "Error while trying to download {} . Make sure internet connection is working then try again.".format(
+                url
+            )
+        )
         sys.exit(1)
     return r
 
@@ -95,19 +108,27 @@ def get_file(url):
 def download_file(url, dest):
     try:
         r = requests.get(url, allow_redirects=True)
-        open(dest, 'wb').write(r.content)
+        open(dest, "wb").write(r.content)
     except requests.RequestException:
-        print("Error while trying to download {} . Make sure internet connection is working then try again.".format(url))
+        print(
+            "Error while trying to download {} . Make sure internet connection is working then try again.".format(
+                url
+            )
+        )
         sys.exit(1)
 
 
 def setup_userjs():
     # Download the ghacks user.js
-    download_file("https://github.com/ghacksuserjs/ghacks-user.js/raw/master/user.js",
-                  os.path.join(temp_folder, "user.js"))
+    download_file(
+        "https://github.com/ghacksuserjs/ghacks-user.js/raw/master/user.js",
+        os.path.join(temp_folder, "user.js"),
+    )
     # Download the "user-overrides.js" with the latest ruleset from the repo
-    download_file("https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/user-overrides.js",
-                  os.path.join(temp_folder, "user-overrides.js"))
+    download_file(
+        "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/user-overrides.js",
+        os.path.join(temp_folder, "user-overrides.js"),
+    )
 
     remove_prefs = extract_user_overrides()
 
@@ -121,9 +142,8 @@ def setup_userjs():
                 if line[:9] == "user_pref":  # active pref
                     pref = '"{}"'.format(i[0])
                     comment = i[1]
-                    if pref in line:        # TODO make sure pref.subpref doens't mess up parent
-                        line = "// {}   // [PRIVACYFIGHTER EXCLUDED] {}\n".format(
-                            line.strip("\n"), comment)
+                    if pref in line:  # TODO make sure pref.subpref doens't mess up parent
+                        line = "// {}   // [PRIVACYFIGHTER EXCLUDED] {}\n".format(line.strip("\n"), comment)
 
             sys.stdout.write(line)
 
@@ -143,7 +163,7 @@ def extract_user_overrides():
             if line[:24] == "//// --- comment-out ---":
                 pref_comment_pair = []
                 pref_begins = line[line.find("'") + 1:]
-                pref = pref_begins[:pref_begins.find("'")]
+                pref = pref_begins[: pref_begins.find("'")]
                 # print(pref)
                 comment = pref_begins[pref_begins.find("'") + 1:]
                 pref_comment_pair.append(pref)
@@ -153,7 +173,7 @@ def extract_user_overrides():
                 pref_comment_pair = []
                 pref_comment_pair.append(line.strip("\n"))
     # print(remove_prefs)
-    return(remove_prefs)
+    return remove_prefs
 
 
 # apply some prefs directly to "pref.js", users can change these later.
@@ -166,7 +186,8 @@ def apply_one_time_prefs(profile):
 
     # Download the "one time prefs" from the repo
     r = get_file(
-        'https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/one-time-prefs.json')
+        "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/one-time-prefs.json"
+    )
     one_time_prefs = r.json()["prefs"]
 
     prefsjs_file = os.path.join(profile, "prefs.js")
@@ -179,18 +200,18 @@ def apply_one_time_prefs(profile):
     with fileinput.input(prefsjs_file, inplace=True) as prefs_file:
         for line in prefs_file:
             for i in one_time_prefs:
-                if i['pref'] in line:
-                    line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
+                if i["pref"] in line:
+                    line = "user_pref({}, {});\n".format(i["pref"], i["value"])
                     # it is found, turn 'exists' to True
-                    i['exists'] = True
+                    i["exists"] = True
                     # print(line)
             sys.stdout.write(line)
 
     # now append the rest of preferences
     with open(prefsjs_file, "a") as prefsjs:
         for i in one_time_prefs:
-            if not i['exists']:
-                line = 'user_pref({}, {});\n'.format(i['pref'], i['value'])
+            if not i["exists"]:
+                line = "user_pref({}, {});\n".format(i["pref"], i["value"])
                 # print(i)      # pref being added
                 prefsjs.write(line)
 
@@ -201,7 +222,7 @@ def get_firefox_path():
     if detected_os == "linux":
         firefox_path = os.path.join(Path.home(), ".mozilla/firefox/")
     elif detected_os == "win32":
-        firefox_path = os.path.join(os.getenv('APPDATA'), "Mozilla\Firefox\Profiles""\\")
+        firefox_path = os.path.join(os.getenv("APPDATA"), "Mozilla\Firefox\Profiles" "\\")
         # firefox_path = Path.joinpath(Path(os.getenv('APPDATA')), Path("Mozilla/Firefox/Profiles/"))
     elif detected_os == "darwin":
         firefox_path == os.path.join(Path.home(), "Library/Application Support/Firefox/Profiles")
@@ -218,8 +239,11 @@ def get_firefox_path():
 
 
 def latest_version():
-    latest_version = get_file("https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/version.txt").text
-    print(latest_version)
+    # https://github.com/jotyGill/privacy-fighter/releases/latest/download/version.txt
+    latest_version = get_file(
+        "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/version.txt"
+    ).text
+    print("Latest Privacy Fighter Version = {}".format(latest_version))
     if __version__ == latest_version:
         return True
     return False
@@ -227,7 +251,9 @@ def latest_version():
 
 def run(profile_name):
     if not latest_version():
-        print("NEWER VERSION OF THE SOFTWARE IS AVAILABLE,\nPLEASE DOWNLOAD THE LATEST VERSION FROM https://gitlab.com/JGill/privacy-fighter")
+        print(
+            "NEWER VERSION OF THE SOFTWARE IS AVAILABLE,\nPLEASE DOWNLOAD IT FROM https://gitlab.com/JGill/privacy-fighter"
+        )
         sys.exit(1)
     if firefox_is_running():
         print("Firefox is currently running, please close firefox first then run Privacy Fighter again")
@@ -238,14 +264,21 @@ def run(profile_name):
     profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
 
     if not profiles:
-        print("ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(
-            profile_name))
+        print(
+            "ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(
+                profile_name
+            )
+        )
         sys.exit(1)
     elif len(profiles) == 1:
         profile = profiles[0]
         print("Firefox Profile to be secured/modified : ", profile, "\n")
     elif len(profiles) > 1:
-        print("ERROR: 'Profile Name' string matches more than one profile folders, please provide a full name instead: ", profiles, "\n")
+        print(
+            "ERROR: 'Profile Name' string matches more than one profile folders, please provide a full name instead: ",
+            profiles,
+            "\n",
+        )
         sys.exit(1)
 
     setup_userjs()
@@ -255,8 +288,8 @@ def run(profile_name):
     firefox_p_path = os.path.join(firefox_path, profile)
     backup_prefsjs(firefox_p_path)
     print("\nModified Preferences (Users.js) and Extensions will now be copied to {}\n".format(profile))
-    recusive_copy(temp_folder, firefox_p_path)         # copies modified user.js, extensions
-    apply_one_time_prefs(profile)                                    # modifies "prefs.js"
+    recusive_copy(temp_folder, firefox_p_path)  # copies modified user.js, extensions
+    apply_one_time_prefs(profile)  # modifies "prefs.js"
 
     # cleanup
     shutil.rmtree(temp_folder)
@@ -269,8 +302,10 @@ def run(profile_name):
 def backup_prefsjs(firefox_p_path):
     prefsjs_path = os.path.join(firefox_p_path, "prefs.js")
     prefsjs_backups_folder = os.path.join(firefox_p_path, "prefs-backups")
-    prefsjs_backup_name = os.path.join(prefsjs_backups_folder, ("prefs-"
-                                                                + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js")))
+    prefsjs_backup_name = os.path.join(
+        prefsjs_backups_folder,
+        ("prefs-" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js")),
+    )
     # create directory to store "prefs.js" backups
     # Changed in version 3.6: Accepts a path-like object.
     os.makedirs(prefsjs_backups_folder, exist_ok=True)
@@ -312,9 +347,9 @@ def firefox_is_running():
     # Iterate over the all the running process
     for proc in psutil.process_iter():
         try:
-            pinfo = proc.as_dict(attrs=['pid', 'name', 'create_time'])
+            pinfo = proc.as_dict(attrs=["pid", "name", "create_time"])
             # Check if process name contains the given name string.
-            if "firefox" in pinfo['name'].lower():
+            if "firefox" in pinfo["name"].lower():
                 # print(pinfo)
                 return True
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
