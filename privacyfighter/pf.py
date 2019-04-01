@@ -36,32 +36,57 @@ os.makedirs(extensions_folder, exist_ok=True)
     progress_expr="current / total * 100",
     program_name="Privacy Fighter",
     requires_shell=False,
+    tabbed_groups=True,
 )
 def main():
     parser = argparse.ArgumentParser(
-        description="Privacy-Fighter: A Browser Setup For Increased Privacy And Security"
+        description="Privacy-Fighter: A Browser Setup To Protect Your Privacy"
     )
     # parser.add_argument("-v", "--version", action="version",
     #                     version="Privacy-Fighter " + __version__ + __basefilepath__)
-    parser.add_argument(
+    install_tab = parser.add_argument_group(
+        "Install",
+        "Make sure you have installed firefox and it is not running at the moment"
+    )
+    install_tab.add_argument(
+        "-a",
+        "--Agree",
+        default=True,
+        help="Make sure you follow the 'Post Installation' instructions and "
+        "enable the installed addons/extensions afterwords",
+        action="store_true",
+    )
+    advance_options = parser.add_argument_group(
+        "Advance Options",
+        "Customize the options"
+    )
+    advance_options.add_argument(
         "-p",
         "--profile",
         dest="profile_name",
         default="TEST",
-        help="Firefox Profile Name: Leave value to 'default' if unsure or using only single firefox profile",
+        help="Firefox Profile to be configured with PF",
         type=str,
     )
-    parser.add_argument(
+    advance_options.add_argument(
         "-u",
         "--user-overrides-url",
         dest="user_overrides_url",
         default="https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/user-overrides.js",
-        help="Firefox Profile Name: Leave value to 'default' if unsure or using only single firefox profile",
+        help="You can use your fork of user-overrides.js",
         type=str,
+    )
+    advance_options.add_argument(
+        "-e",
+        "--install-extensions",
+        dest="install_extensions",
+        default=True,
+        help="Install and configure extensions (Highly Recommended)",
+        action="store_true",
     )
 
     args = parser.parse_args()
-    run(args.profile_name, args.user_overrides_url)
+    run(args.profile_name, args.user_overrides_url, args.install_extensions)
 
 
 def resource_path(relative_path):
@@ -247,18 +272,16 @@ def latest_version():
     # https://github.com/jotyGill/privacy-fighter/releases/latest/download/version.txt
     latest_version = get_file(
         "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/version.txt"
-    ).text
-    print("Latest Privacy Fighter Version = {}".format(latest_version))
+    ).text.strip()
     if __version__ == latest_version:
         return True
+    print("Newer Privacy Fighter version = {} is available.".format(latest_version))
+    print("please install the latest version from https://gitlab.com/JGill/privacy-fighter")
     return False
 
 
-def run(profile_name, user_overrides_url):
+def run(profile_name, user_overrides_url, install_extensions):
     if not latest_version():
-        print(
-            "NEWER VERSION OF THE SOFTWARE IS AVAILABLE,\nPLEASE DOWNLOAD IT FROM https://gitlab.com/JGill/privacy-fighter"
-        )
         sys.exit(1)
     if firefox_is_running():
         print("Firefox is currently running, please close firefox first then run Privacy Fighter again")
@@ -287,7 +310,8 @@ def run(profile_name, user_overrides_url):
         sys.exit(1)
 
     setup_userjs(user_overrides_url)
-    setup_extensions()
+    if install_extensions:
+        setup_extensions()
 
     # firefox profile path on the os
     firefox_p_path = os.path.join(firefox_path, profile)
