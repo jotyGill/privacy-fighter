@@ -1,8 +1,8 @@
 
 
 /* PRIVACY FIGHTHER USER-OVERRIDES.JS START ***/
-
-user_pref("privacyfighter.version", 0.0.11);
+user_pref("_user.js.parrot", "overrides section syntax error");
+user_pref("privacyfighter.config.version", 66.0.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
 user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00ILysCaEq8+bEqV/3nuw==\":1,\"26UbzFJ7qT9/4DhodHKA1Q==\":1,\"mZmevP23jfB3rScn/QCWnw==\":1,\"BRX66S9KVyZQ1z3AIk0A7w==\":1}");
 
 // SECTION 0100: STARTUP
@@ -17,7 +17,7 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 // [SECTION 0300]: QUIET FOX
 
 //// --- comment-out --- 'app.update.auto'
-//  //// --- comment-out --- 'extensions.update.autoUpdateDefault'    TODO
+//// --- comment-out --- 'extensions.update.autoUpdateDefault'    # Keep extensions updated
 
 //// --- comment-out --- 'app.update.service.enabled'
 //// --- comment-out --- 'app.update.silent'
@@ -48,6 +48,9 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 
 //// --- comment-out --- 'network.http.altsvc.enabled'
 //// --- comment-out --- 'network.http.altsvc.oe'
+
+// //// --- comment-out --- 'network.proxy.socks_remote_dns'  // TODO See if problematic
+
 //// --- comment-out --- 'network.file.disable_unc_paths'
 //// --- comment-out --- 'network.gio.supported-protocols'
 
@@ -60,6 +63,7 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 // {'pref': '"browser.urlbar.suggest.searches"', 'value': ''},  // TODO
 //// --- comment-out --- 'network.file.disable_unc_paths'
 //// --- comment-out --- 'browser.formfill.enable'
+// //// --- comment-out --- 'dom.forms.datetime'    // TODO See if problematic
 
 // [SECTION 0900]: PASSWORDS
 //// --- comment-out --- 'security.ask_for_password'
@@ -194,6 +198,8 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 //// --- comment-out --- 'browser.download.forbid_open_with'
 //// --- comment-out --- 'security.csp.experimentalEnabled'
 
+//// --- comment-out --- 'extensions.enabledScopes'
+//// --- comment-out --- 'extensions.autoDisableScopes'
 
 // [SECTION 2700]: PERSISTENT STORAGE
 // allow third party cookies, but session only and "4" exclude known trackers
@@ -215,7 +221,13 @@ user_pref("privacy.clearOnShutdown.openWindows", false);
 // [SECTION 4000]: FPI (FIRST PARTY ISOLATION)
 // disable first party isolation, we use temporary_containers
 //// --- comment-out --- 'privacy.firstparty.isolate'
+//// --- comment-out --- 'privacy.firstparty.isolate.restrict_opener_access'
 
 // [SECTION 4500]: RFP (RESIST FINGERPRINTING)
+// heard this prevents from reviewing addons on AMO
+//// --- comment-out --- 'privacy.resistFingerprinting.block_mozAddonManager'
 user_pref("privacy.window.maxInnerWidth", 1600);   // TODO
 user_pref("privacy.window.maxInnerHeight", 900);   // TODO
+
+
+user_pref("_user.js.parrot", "SUCCESS");
