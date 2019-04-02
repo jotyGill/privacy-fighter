@@ -89,6 +89,54 @@ def main():
     run(args.profile_name, args.user_overrides_url, args.install_extensions)
 
 
+def run(profile_name, user_overrides_url, install_extensions):
+    if not latest_version():
+        sys.exit(1)
+    if firefox_is_running():
+        print("Firefox is currently running, please close firefox first then run Privacy Fighter again")
+        sys.exit(1)
+
+    firefox_path = get_firefox_path()
+
+    profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
+
+    if not profiles:
+        print(
+            "ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(
+                profile_name
+            )
+        )
+        sys.exit(1)
+    elif len(profiles) == 1:
+        profile = profiles[0]
+        print("Firefox Profile to be secured/modified : ", profile, "\n")
+    elif len(profiles) > 1:
+        print(
+            "ERROR: 'Profile Name' string matches more than one profile folders, please provide a full name instead: ",
+            profiles,
+            "\n",
+        )
+        sys.exit(1)
+
+    setup_userjs(user_overrides_url)
+    if install_extensions:
+        setup_extensions()
+
+    # firefox profile path on the os
+    firefox_p_path = os.path.join(firefox_path, profile)
+    backup_prefsjs(firefox_p_path)
+    print("\nModified Preferences (Users.js) and Extensions will now be copied to {}\n".format(profile))
+    recusive_copy(temp_folder, firefox_p_path)  # copies modified user.js, extensions
+    apply_one_time_prefs(profile)  # modifies "prefs.js"
+
+    # cleanup
+    shutil.rmtree(temp_folder)
+
+    print("------------------DONE-------------------\n")
+    # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
+    print("You can now close this and run Firefox :)")
+
+
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
@@ -280,54 +328,6 @@ def latest_version():
     return False
 
 
-def run(profile_name, user_overrides_url, install_extensions):
-    if not latest_version():
-        sys.exit(1)
-    if firefox_is_running():
-        print("Firefox is currently running, please close firefox first then run Privacy Fighter again")
-        sys.exit(1)
-
-    firefox_path = get_firefox_path()
-
-    profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
-
-    if not profiles:
-        print(
-            "ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(
-                profile_name
-            )
-        )
-        sys.exit(1)
-    elif len(profiles) == 1:
-        profile = profiles[0]
-        print("Firefox Profile to be secured/modified : ", profile, "\n")
-    elif len(profiles) > 1:
-        print(
-            "ERROR: 'Profile Name' string matches more than one profile folders, please provide a full name instead: ",
-            profiles,
-            "\n",
-        )
-        sys.exit(1)
-
-    setup_userjs(user_overrides_url)
-    if install_extensions:
-        setup_extensions()
-
-    # firefox profile path on the os
-    firefox_p_path = os.path.join(firefox_path, profile)
-    backup_prefsjs(firefox_p_path)
-    print("\nModified Preferences (Users.js) and Extensions will now be copied to {}\n".format(profile))
-    recusive_copy(temp_folder, firefox_p_path)  # copies modified user.js, extensions
-    apply_one_time_prefs(profile)  # modifies "prefs.js"
-
-    # cleanup
-    shutil.rmtree(temp_folder)
-
-    print("------------------DONE-------------------\n")
-    # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
-    print("You can now close this and run Firefox :)")
-
-
 def backup_prefsjs(firefox_p_path):
     prefsjs_path = os.path.join(firefox_p_path, "prefs.js")
     prefsjs_backups_folder = os.path.join(firefox_p_path, "prefs-backups")
@@ -338,7 +338,7 @@ def backup_prefsjs(firefox_p_path):
     # create directory to store "prefs.js" backups
     # Changed in version 3.6: Accepts a path-like object.
     os.makedirs(prefsjs_backups_folder, exist_ok=True)
-    print("Backing up the current 'prefs.js' to '{}'\n".format(prefsjs_backup_name))
+    print("\nBacking up the current 'prefs.js' to '{}'\n".format(prefsjs_backup_name))
     shutil.move(prefsjs_path, prefsjs_backup_name)
 
 
