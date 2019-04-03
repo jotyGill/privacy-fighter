@@ -35,31 +35,29 @@ This script installs and configures the following tools. A huge thanks to all th
 
     Configuration: To minimise breakage, a custom user-overrides.js is used to relax the non critical preferences
 
-2. [Canvas Blocker](https://addons.mozilla.org/en-US/firefox/addon/canvasblocker/) [[2]((#canvasblocker)] : Aims to prevent websites from using the some Javascript APIs to fingerprint users. resistFingerprinting takes preference to this, CanvasBlocker works as fallback for canvas fingerprinting. It also protects form fingerprinting the following APIs (by faking the values):
-canvas 2d, webGL, audio, history, DOMRect
+2. [Canvas Blocker](https://addons.mozilla.org/en-US/firefox/addon/canvasblocker/): Aims to prevent websites from using the some Javascript APIs to fingerprint users. resistFingerprinting takes preference to this, CanvasBlocker works as fallback for canvas fingerprinting. It also protects form fingerprinting the following APIs (by faking the values):
+canvas 2d, webGL, audio, history, DOMRect [https://github.com/kkapsner/CanvasBlocker]
 
-Configuration: disabled `Misc > Block data URL pages`
+    Configuration: disabled `Misc > Block data URL pages`
 
-3. [Terms of Service; Didn't Read](https://tosdr.org/): Provides rating and extracts key points of the lengthy Terms and Conditions no one reads.
+3. [uBlock Origin](https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/): An efficient "wide-spectrum blocker", it blocks, ads, trackers and malware sites. [https://github.com/gorhill/uBlock]
 
-4. [Cookie AutoDelete](https://github.com/Cookie-AutoDelete/Cookie-AutoDelete/):
-When a tab closes, it automatically deletes any cookies that not being used. This prevents tracking by cookies, which is the primary method of tracking users. [](https://en.wikipedia.org/wiki/HTTP_cookie#Tracking)
+    Configuration: Enabled "Fanboy's Cookie List" and "AdGuard Spyware filter". Expanded "requests blocked" pane.
 
-Configuration: Cookies are set to be deleted automatically after tab close. Enabled Support for Container Tabs
+4. [Cookie AutoDelete](https://addons.mozilla.org/en-US/firefox/addon/cookie-autodelete/):
+When a tab closes, it automatically deletes any cookies that not being used. This prevents tracking by cookies, which is the primary method of tracking users. [](https://en.wikipedia.org/wiki/HTTP_cookie#Tracking) [https://github.com/Cookie-AutoDelete/Cookie-AutoDelete/]
 
-5. [Temporary containers](https://github.com/stoically/temporary-containers): Temporary Containers takes "Firefox Containers" to whole new level by making every new tab a different container. you may have heard of the advise to use multiple browsers[]. This pretty much makes every new tab a different, isolated (cookies, localstorage) browser, which gets deleted after it is closed. Eliminates long term tracking done using, cookies, storage caches, Etags.
+    Configuration: Cookies are set to be deleted automatically after tab close. Enabled Support for Container Tabs
 
-Configuration: Automatic mode enabled (every new tab becomes a new isolated container). Containers colour is set to purple.
-**Middle mouse click opens links in new isolated containers**.
+5. [Temporary containers](https://addons.mozilla.org/en-US/firefox/addon/temporary-containers/): Temporary Containers takes "Firefox Containers" to whole new level by making every new tab a different container. you may have heard of the advise to use multiple browsers[]. This pretty much makes every new tab a different, isolated (cookies, localstorage) browser, which gets deleted after it is closed. Eliminates long term tracking done using, cookies, storage caches, Etags.[https://github.com/stoically/temporary-containers]
+
+    Configuration: Automatic mode enabled (every new tab becomes a new isolated container). Containers colour is set to purple. **Middle mouse click opens links in new isolated containers**.
 
 6. [decentraleyes](https://addons.mozilla.org/en-US/firefox/addon/decentraleyes/): Protects you against tracking through "free", centralized, Content Delivery Networks, by locally storing libraries instead of fetching them from the tracking CDNs.
 
-7. [uBlock Origin](https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/): An efficient "wide-spectrum blocker", it blocks, ads, trackers and malware sites. [https://github.com/gorhill/uBlock]
+7. [clear_urls](https://gitlab.com/KevinRoebert/ClearUrls/): Protects your privacy by removing the tracking fields in URLs.[https://gitlab.com/KevinRoebert/ClearUrls/]
 
-Configuration: Enabled "Fanboy's Cookie List" and "AdGuard Spyware filter". Expanded "requests blocked" pane.
-
-8. [clear_urls](https://gitlab.com/KevinRoebert/ClearUrls/): Protects your privacy by removing the tracking fields in URLs.[https://gitlab.com/KevinRoebert/ClearUrls/]
-
+8. [Terms of Service; Didn't Read](https://addons.mozilla.org/en-US/firefox/addon/terms-of-service-didnt-read/): Provides rating and extracts key points of the lengthy Terms and Conditions no one reads.[https://tosdr.org/]
 
 ### Security Improvements:
 Online ad networks are known to spread malware (malicious software: viruses, etc) [https://en.wikipedia.org/w/index.php?title=Ad_blocking&section=5#Security]. Effective Adblocking alone is a huge
