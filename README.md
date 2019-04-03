@@ -32,25 +32,30 @@ This script installs and configures the following tools. A huge thanks to all th
 0. [Mozilla Firefox](https://www.mozilla.org/en-US/firefox/new/): Developed by the non profit organization Mozilla, driving browser technologies and the only viable competitor of Chrome (by Google). Nothing like this would be possible without Firefox. "Firefox Containers" (Heavily utilised in this setup) is Mozilla's revolutionary approach to isolate online identities by containing cookies and local storage in multiple separate containers, allowing us to use the web with multiple identities or accounts simultaneously.
 
 1. [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js/) is used to modify more than a hundred firefox preferences. "Tracking Protection", these have been shown to significantly improve privacy and security []. Another notable one being "privacy.resistFingerprinting".
+
 Configuration: To minimise breakage, a custom user-overrides.js is used to relax the non critical preferences
 
 2. [Canvas Blocker](https://addons.mozilla.org/en-US/firefox/addon/canvasblocker/) [[2]((#canvasblocker)] : Aims to prevent websites from using the some Javascript APIs to fingerprint users. resistFingerprinting takes preference to this, CanvasBlocker works as fallback for canvas fingerprinting. It also protects form fingerprinting the following APIs (by faking the values):
 canvas 2d, webGL, audio, history, DOMRect
+
 Configuration: disabled `Misc > Block data URL pages`
 
 3. [Terms of Service; Didn't Read](https://tosdr.org/): Provides rating and extracts key points of the lengthy Terms and Conditions no one reads.
 
 4. [Cookie AutoDelete](https://github.com/Cookie-AutoDelete/Cookie-AutoDelete/):
 When a tab closes, it automatically deletes any cookies that not being used. This prevents tracking by cookies, which is the primary method of tracking users. [](https://en.wikipedia.org/wiki/HTTP_cookie#Tracking)
+
 Configuration: Cookies are set to be deleted automatically after tab close. Enabled Support for Container Tabs
 
 5. [Temporary containers](https://github.com/stoically/temporary-containers): Temporary Containers takes "Firefox Containers" to whole new level by making every new tab a different container. you may have heard of the advise to use multiple browsers[]. This pretty much makes every new tab a different, isolated (cookies, localstorage) browser, which gets deleted after it is closed. Eliminates long term tracking done using, cookies, storage caches, Etags.
+
 Configuration: Automatic mode enabled (every new tab becomes a new isolated container). Containers colour is set to purple.
 **Middle mouse click opens links in new isolated containers**.
 
 6. [decentraleyes](https://addons.mozilla.org/en-US/firefox/addon/decentraleyes/): Protects you against tracking through "free", centralized, Content Delivery Networks, by locally storing libraries instead of fetching them from the tracking CDNs.
 
 7. [uBlock Origin](https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/): An efficient "wide-spectrum blocker", it blocks, ads, trackers and malware sites. [https://github.com/gorhill/uBlock]
+
 Configuration: Enabled "Fanboy's Cookie List" and "AdGuard Spyware filter". Expanded "requests blocked" pane.
 
 8. [clear_urls](https://gitlab.com/KevinRoebert/ClearUrls/): Protects your privacy by removing the tracking fields in URLs.[https://gitlab.com/KevinRoebert/ClearUrls/]
@@ -89,13 +94,14 @@ Alternatively
 1. After installation is done, open Firefox then "addons" (Ctr+Shift+A) and enable all of them.
 2. I recommend changing the default search engine from Google to DuckDuckGo or Startpage.
  (Menu > Preferences > Search > Default Search Engine > DuckDuckGo)
-3. Remember Middle Mouse Click (or right click > "Open Link in New TC Tab) opens link in a new isolated container, get in the habit of using it.
+3. Remember Middle Mouse Click opens link in a new isolated container, get in the habit of using it. If you need to open a page in new tab that requires to you stay logged in. Use (right click > "Open in new tmp(number) Tab" instead.
 
 ### Known Inconveniences:
 "I never said it would be easy". ok I said the installation is easy.
 * Firefox opens in minimised window everytime. This is due to "privacy.resistFingerprinting" (RPF) protecting screen size which is used in fingerprinting.
-* At times you would need to fill google reCAPTCHA multiple times to confirm you are not robot. Have you noticed that these days you only have to check the reCAPTCHA box (reCAPTCHA v2) and don't need to fill any reCAPTCHA. Even that is rarely needed because v3 doesn't need any user interaction at all. That is because Google already knows who you are. **Google reCAPTCHA has become more harsh to privacy aware users, at times you will have to fill it multiple times (5-6 times). I assume it is another tactic to make people give up and not use any privacy protection against Google.**
+* At times you would need to fill google reCAPTCHA multiple times to confirm you are not robot. Have you noticed that these days you only have to check the reCAPTCHA box (reCAPTCHA v2) and don't need to fill any reCAPTCHA. Even that is rarely needed because v3 doesn't need any user interaction at all. That is because **Google already knew exactly who you were.** **Google reCAPTCHA has become more harsh to privacy aware users, at times you will have to fill it multiple times (5-6 times). I assume it is another tactic to make people give up and not use any privacy protection against Google.**
 * The reported time zone is set to UTC by RPF. All webapps (e.g your email site) would report UTC time.
+
 These are the prices we have to pay, if we choose to fight for our privacy.
 
 ### Troubleshooting
