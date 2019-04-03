@@ -33,7 +33,7 @@ This script installs and configures the following tools. A huge thanks to all th
 
 1. [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js/) is used to modify more than a hundred firefox preferences. "Tracking Protection", these have been shown to significantly improve privacy and security []. Another notable one being "privacy.resistFingerprinting".
 
-Configuration: To minimise breakage, a custom user-overrides.js is used to relax the non critical preferences
+    Configuration: To minimise breakage, a custom user-overrides.js is used to relax the non critical preferences
 
 2. [Canvas Blocker](https://addons.mozilla.org/en-US/firefox/addon/canvasblocker/) [[2]((#canvasblocker)] : Aims to prevent websites from using the some Javascript APIs to fingerprint users. resistFingerprinting takes preference to this, CanvasBlocker works as fallback for canvas fingerprinting. It also protects form fingerprinting the following APIs (by faking the values):
 canvas 2d, webGL, audio, history, DOMRect
