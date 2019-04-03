@@ -65,16 +65,14 @@ security improvement. Many other security benifits included. HttpsEveryware: , C
 The installation procedure.
 
 1. If you don't have Firefox installed, Fist download and install [Firefox](https://www.mozilla.org/en-US/firefox/new/).
-**Alternatively**
-1. If you have Firefox installed, open it, visit `about:profiles`, create a new profile so your old one remains untouched.
-Give it a name, we will need to use this name later.
+
+**Advance Options** (For advance users)
+1.1 If you have Firefox installed and wish to create another profile, visit `about:profiles`, create a new profile. Provide this name during the installation process.
 
 #### Installation on Windows
 
-2. Close Firefox.
-3. Download and run [privacyfighter.exe]().
-4. If you just installed Firefox leave profile name as "default", if not provide the newly created profile name then click "Start".
-5. Now visit section "Post Installation".
+2. Close Firefox then download and run [privacyfighter.exe]().
+3. Now visit section "Post Installation".
 
 
 #### Installation on GNU/Linux or MacOS
@@ -91,13 +89,13 @@ Alternatively
 1. After installation is done, open Firefox then "addons" (Ctr+Shift+A) and enable all of them.
 2. I recommend changing the default search engine from Google to DuckDuckGo or Startpage.
  (Menu > Preferences > Search > Default Search Engine > DuckDuckGo)
+3. Remember Middle Mouse Click (or right click > "Open Link in New TC Tab) opens link in a new isolated container, get in the habit of using it.
 
 ### Known Inconveniences:
 "I never said it would be easy". ok I said the installation is easy.
-* Firefox opens in minimised window everytime. This is due to "privacy.resistFingerprinting" protecting screen size which is used in fingerprinting.
+* Firefox opens in minimised window everytime. This is due to "privacy.resistFingerprinting" (RPF) protecting screen size which is used in fingerprinting.
 * At times you would need to fill google reCAPTCHA multiple times to confirm you are not robot. Have you noticed that these days you only have to check the reCAPTCHA box (reCAPTCHA v2) and don't need to fill any reCAPTCHA. Even that is rarely needed because v3 doesn't need any user interaction at all. That is because Google already knows who you are. **Google reCAPTCHA has become more harsh to privacy aware users, at times you will have to fill it multiple times (5-6 times). I assume it is another tactic to make people give up and not use any privacy protection against Google.**
-* Sites that use Google or Facebook login service. As Google and Facebook are kept contained (special containers) from other websites.
-* The reported time zone is set to UTC by FPR. All webapps (e.g your email site) would report UTC time.
+* The reported time zone is set to UTC by RPF. All webapps (e.g your email site) would report UTC time.
 These are the prices we have to pay, if we choose to fight for our privacy.
 
 ### Troubleshooting
