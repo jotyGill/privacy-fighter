@@ -70,13 +70,12 @@ The installation procedure.
 1. If you don't have Firefox installed, Fist download and install [Firefox](https://www.mozilla.org/en-US/firefox/new/).
 
 **Advance Options** (For advance users)
-1.1 If you have Firefox installed and wish to create another profile, visit `about:profiles`, create a new profile. Provide this name during the installation process.
+If you have Firefox installed and wish to create another profile, visit `about:profiles`, create a new profile. Provide this name during the installation process.
 
 #### Installation on Windows
 
 2. Close Firefox then download and run [privacyfighter.exe]().
 3. Now visit section "Post Installation".
-
 
 #### Installation on GNU/Linux or MacOS
 
@@ -90,9 +89,10 @@ Alternatively
 
 #### Post Installation
 1. After installation is done, open Firefox then "addons" (Ctr+Shift+A) and enable all of them.
-2. I recommend changing the default search engine from Google to DuckDuckGo or Startpage.
+2. Open a new tab > Clink on **Import Now** to import your bookmarks and history from an existing browser.
+3. I recommend changing the default search engine from Google to DuckDuckGo or Startpage.
  (Menu > Preferences > Search > Default Search Engine > DuckDuckGo)
-3. Remember Middle Mouse Click opens link in a new isolated container, get in the habit of using it. If you need to open a page in new tab that requires to you stay logged in. Use (right click > "Open in new tmp(number) Tab" instead.
+4. Remember Middle Mouse Click opens link in a new isolated container, get in the habit of using it. If you need to open a page in new tab that requires to you stay logged in. Use (right click > "Open in new tmp(number) Tab" instead.
 
 ### Known Inconveniences:
 "I never said it would be easy". ok I said the installation is easy.
@@ -109,5 +109,3 @@ The steps to troubleshooting are
 1. Disable UblockOrigin on that particular site (by clicking on it's icon then the blue power button) then reload the website and try again.
 2. Temporarily disable ClearUrls (in Addons, Ctr+Shif+A) then reload the website and try again.
 3. Please report any breakage bugs by filing an issue.
-
-### References
