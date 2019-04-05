@@ -226,8 +226,8 @@ user_pref("privacy.clearOnShutdown.openWindows", false);
 // [SECTION 4500]: RFP (RESIST FINGERPRINTING)
 // heard this prevents from reviewing addons on AMO
 //// --- comment-out --- 'privacy.resistFingerprinting.block_mozAddonManager'
-user_pref("privacy.window.maxInnerWidth", 1600);   // TODO
-user_pref("privacy.window.maxInnerHeight", 900);   // TODO
+// user_pref("privacy.window.maxInnerWidth", 1600);   // TODO
+// user_pref("privacy.window.maxInnerHeight", 900);   // TODO
 
 
 user_pref("_user.js.parrot", "SUCCESS");
