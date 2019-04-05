@@ -39,32 +39,25 @@ os.makedirs(extensions_folder, exist_ok=True)
     tabbed_groups=True,
 )
 def main():
-    parser = argparse.ArgumentParser(
-        description="Privacy-Fighter: A Browser Setup To Protect Your Privacy"
-    )
+    parser = argparse.ArgumentParser(description="Privacy-Fighter: A Browser Setup To Protect Your Privacy")
     # parser.add_argument("-v", "--version", action="version",
     #                     version="Privacy-Fighter " + __version__ + __basefilepath__)
     install_tab = parser.add_argument_group(
-        "Install",
-        "Make sure you have installed firefox and it is not running at the moment"
+        "Install", "Make sure you have installed firefox and it is not running at the moment"
     )
     install_tab.add_argument(
         "-a",
         "--Agree",
-        default=True,
-        help="Make sure you follow the 'Post Installation' instructions and "
-        "enable the installed addons/extensions afterwords",
+        default=False,
+        help="Make sure you follow the instructions and enable the installed addons/extensions afterwords",
         action="store_true",
     )
-    advance_options = parser.add_argument_group(
-        "Advance Options",
-        "Customize the options"
-    )
+    advance_options = parser.add_argument_group("Advance Options", "Customize the options")
     advance_options.add_argument(
         "-p",
         "--profile",
         dest="profile_name",
-        default="TEST",
+        default="default",
         help="Firefox Profile to be configured with PF",
         type=str,
     )
@@ -240,10 +233,10 @@ def extract_user_overrides():
         for line in user_overrides:
             if line[:24] == "//// --- comment-out ---":
                 pref_comment_pair = []
-                pref_begins = line[line.find("'") + 1:]
+                pref_begins = line[line.find("'") + 1 :]
                 pref = pref_begins[: pref_begins.find("'")]
                 # print(pref)
-                comment = pref_begins[pref_begins.find("'") + 1:]
+                comment = pref_begins[pref_begins.find("'") + 1 :]
                 pref_comment_pair.append(pref)
                 pref_comment_pair.append(comment.strip("\n"))
                 remove_prefs.append(pref_comment_pair)
