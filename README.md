@@ -5,13 +5,13 @@ Easy to setup, fully transparent, online privacy protection browser setup.
 A collection of browser configurations and extensions to help you fight for your online privacy.
 
 The deeper you dig, more you find how we're loosing privacy from corporations [] (must read). You might wonder if it is a fight already lost or if you even have any choice. Well there are choices you can make to stand up for your basic human right.
-There are brilliant, hard working people who spend countless hours to make these privacy protecting tools. This project is just a collection and setup of the best browser tools that exist today. (if you have any suggestions, please an create 'issue')
+There are brilliant, hard working people who spend countless hours to make these privacy protecting tools. This project is just a collection and setup of the best browser tools that exist today. (if you have any suggestions, please create a github 'issue')
 
 ### Project Goals: <a name="goals"></a>
 The goals of this project are following:
 * To create the best privacy protecting browser setup for average internet users, that doesn't break much functionality and doesn't require much user intervention. "The best" is highly subjective, it is a battle between, functionality vs privacy, for better privacy we have to disable/work around many functionalities. The project aims for a sweet spot to minimise breakage of sites while retaining good privacy level.
 * The project aims to protect users from hidden background tracking mechanisms and the "filter bubbles" that most don't even know exist. While using this setup every new tab is a completely new session. If you don't log in on a website you should see the results without any personalization thus escaping the filter bubbles. (Note: It can't protect your identity or privacy when you use a service (e.g Youtube/Facebook) while you are logged in.)
-* **Everyone is uniquely identifiable on the web**, even if you use privacy protecting extensions/configurations. (see section: []). The project aims to create a single configuration set that minimises entropy (uniquely identifiable information). When same setup is used by many, it would make our digital fingerprints less unique. **This is the only way to combat fingerprinting.**
+* [**Everyone is uniquely identifiable on the web**](https://github.com/gautamkrishnar/nothing-private), even if you use privacy protecting extensions/configurations. (see section: []). The project aims to create a single configuration set that minimises entropy (uniquely identifiable information). When same setup is used by many, it would make our digital fingerprints less unique. **This is the only way to effectively combat fingerprinting.**
 * To Create a simple Installation method and require minimal intervention so non technical people (even your grandma) can install and benefit from it.
 * The goal is not to blindly gather extensions (addons) or disable as many browser functionalities (using firefox preferences) as possible. Neither it is to spoof as many browser values as possible, as doing that in some cases (user agent, OS, screen size) increases entropy (uniquely identifiable information). In this project I aim to research about, evaluate, test configuration sets and compatibility among the extensions and configurations that can help protect our privacy while browsing the web. Suggestions, corrections from all are welcome.
 
@@ -20,8 +20,8 @@ The goals of this project are following:
 
 If you are using Chrome (even Chromium) or Edge with default settings, not only they don't provide any privacy protection from third parties on the web.
 **These browsers themselves collect detailed stats about your online behaviour, including every single webpage you have ever visited, every single search query you have ever made.**
-**The predominant browser Chrome tracks every webpage visit and periodically sends user location coordinates to Google. It also collects personal information(e.g. when a user completes online forms) and sends it to Google as part of the data synchronisation process. [c page 5, Google Data Collection Paper]**
-When you are logged into Chrome, all your browsing activity is without question linked to you. Even if you haven't logged in Chrome, Google still knows who you are with an extremely high precision (see section [] for details).
+**The predominant browser Chrome tracks every webpage visit and periodically sends user location coordinates to Google. It also collects personal information(e.g. when a user completes online forms) and sends it to Google as part of the data synchronisation process. [c page 5, Google Data Collection Paper](https://digitalcontentnext.org/wp-content/uploads/2018/08/DCN-Google-Data-Collection-Paper.pdf)**
+When you are logged into Chrome, all your browsing activity is without question linked to you. Even if you haven't logged in Chrome, Google still knows who you are with an extremely high precision.
 
 ### Disclaimer.<a name="disclaimer"></a>
 This project is a collection of configurations to setup firefox' preferences and to setup and install third party extensions/addons. These extensions have been carefully chosen. They are downloaded straight from the "Firefox Add-ons store". Each addon is fully open source and anyone can view the code. Each of the addon's developer has high reputation and multi thousand downloads in the addons store. Because these addons are not developed by me, use them at your own risk.
@@ -31,7 +31,7 @@ This script installs and configures the following tools. A huge thanks to all th
 
 0. [Mozilla Firefox](https://www.mozilla.org/en-US/firefox/new/): Developed by the non profit organization Mozilla, driving browser technologies and the only viable competitor of Chrome (by Google). Nothing like this would be possible without Firefox. "Firefox Containers" (Heavily utilised in this setup) is Mozilla's revolutionary approach to isolate online identities by containing cookies and local storage in multiple separate containers, allowing us to use the web with multiple identities or accounts simultaneously.
 
-1. [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js/) is used to modify more than a hundred firefox preferences. "Tracking Protection", these have been shown to significantly improve privacy and security []. Another notable one being "privacy.resistFingerprinting".
+1. [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js/) is used to modify more than a hundred Firefox preferences in order to improve privacy protection and reduce fingerprintablity. A notable preference being "privacy.resistFingerprinting", from the Tor Uplift project, which is bringing Tor's fingerprint resisting techniques into Firefox.
 
     Configuration: To minimise breakage, a custom user-overrides.js is used to relax the non critical preferences
 
@@ -97,7 +97,7 @@ Alternatively
 ### Known Inconveniences:
 "I never said it would be easy". ok I said the installation is easy.
 * Firefox opens in minimised window everytime. This is due to "privacy.resistFingerprinting" (RPF) protecting screen size which is used in fingerprinting.
-* At times you would need to fill google reCAPTCHA multiple times to confirm you are not robot. Have you noticed that these days you only have to check the reCAPTCHA box (reCAPTCHA v2) and don't need to fill any reCAPTCHA. Even that is rarely needed because v3 doesn't need any user interaction at all. That is because **Google already knew exactly who you were.** **Google reCAPTCHA has become more harsh to privacy aware users, at times you will have to fill it multiple times (5-6 times). I assume it is another tactic to make people give up and not use any privacy protection against Google.**
+* At times you would need to fill google reCAPTCHA multiple times to confirm you are not robot. Have you noticed that these days you only have to check the reCAPTCHA box (reCAPTCHA v2) and don't need to fill any reCAPTCHA. Even that is rarely needed because v3 doesn't need any user interaction at all. That is because Google already knew exactly who you were. **Google reCAPTCHA has become more harsh to privacy aware users, at times you will have to fill it multiple times (5-6 times). I assume it is another tactic to force people to give up and not use any privacy protection against Google.**
 * The reported time zone is set to UTC by RPF. All webapps (e.g your email site) would report UTC time.
 
 These are the prices we have to pay, if we choose to fight for our privacy.
