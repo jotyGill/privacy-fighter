@@ -4,7 +4,7 @@
 Easy to setup, fully transparent, online privacy protection browser setup.
 A collection of browser configurations and extensions to help you fight for your online privacy.
 
-The deeper you dig, more you find how we're loosing privacy from corporations [] (must read). You might wonder if it is a fight already lost or if you even have any choice. Well there are choices you can make to stand up for your basic human right.
+The deeper you dig, more you find that we're [loosing privacy from corporations](https://gitlab.com/JGill/privacy). You might wonder if it is a fight already lost or if you even have any choice. Well there are choices you can make to stand up for your basic human right.
 There are brilliant, hard working people who spend countless hours to make these privacy protecting tools. This project is just a collection and setup of the best browser tools that exist today. (if you have any suggestions, please create a github 'issue')
 
 ### Project Goals: <a name="goals"></a>
@@ -12,8 +12,8 @@ The goals of this project are following:
 * To create the best privacy protecting browser setup for average internet users, that doesn't break much functionality and doesn't require much user intervention. "The best" is highly subjective, it is a battle between, functionality vs privacy, for better privacy we have to disable/work around many functionalities. The project aims for a sweet spot to minimise breakage of sites while retaining good privacy level.
 * The project aims to protect users from hidden background tracking mechanisms and the "filter bubbles" that most don't even know exist. While using this setup every new tab is a completely new session. If you don't log in on a website you should see the results without any personalization thus escaping the filter bubbles. (Note: It can't protect your identity or privacy when you use a service (e.g Youtube/Facebook) while you are logged in.)
 * [**Everyone is uniquely identifiable on the web**](https://github.com/gautamkrishnar/nothing-private), even if you use privacy protecting extensions/configurations. (see section: []). The project aims to create a single configuration set that minimises entropy (uniquely identifiable information). When same setup is used by many, it would make our digital fingerprints less unique. **This is the only way to effectively combat fingerprinting.**
-* To Create a simple Installation method and require minimal intervention so non technical people (even your grandma) can install and benefit from it.
-* The goal is not to blindly gather extensions (addons) or disable as many browser functionalities (using firefox preferences) as possible. Neither it is to spoof as many browser values as possible, as doing that in some cases (user agent, OS, screen size) increases entropy (uniquely identifiable information). In this project I aim to research about, evaluate, test configuration sets and compatibility among the extensions and configurations that can help protect our privacy while browsing the web. Suggestions, corrections from all are welcome.
+* To Create a simple Installation method that takes just a few minutes to setup and requires minimal intervention. So that average internet user can install and benefit from it. (something that took me dozens of hours research, tinkering with configs/tools)
+* The goal is not to blindly gather extensions (addons) or disable as many browser functionalities (using Firefox preferences) as possible. Neither it is to spoof as many browser values as possible, as doing that in some cases (user agent, OS, screen size) increases entropy (uniquely identifiable information). In this project I aim to research about, evaluate, test configuration sets and compatibility among the extensions and configurations that can help protect our privacy while browsing the web. Suggestions, corrections from all are welcome.
 
 ### Why Firefox?
 **Requirement: Latest stable version of Firefox: 66**
@@ -61,7 +61,7 @@ When a tab closes, it automatically deletes any cookies that not being used. Thi
 
 ### Security Improvements:
 Online ad networks are known to spread malware (malicious software: viruses, etc) [https://en.wikipedia.org/w/index.php?title=Ad_blocking&section=5#Security]. Effective Adblocking alone is a huge
-security improvement. Many other security benifits included. HttpsEveryware: , CookieAutoDelete.
+security improvement. There are other security benefits of this setup. HttpsEveryware: for example ensures secure connections to well known websites. Leaving no persistent cache/cookies and making every new tab an isolated container, protects against several attack vectors.
 
 
 ### Installation
@@ -74,7 +74,7 @@ If you have Firefox installed and wish to create another profile, visit `about:p
 
 #### Installation on Windows
 
-2. Close Firefox then download and run [privacyfighter.exe]().
+2. Close Firefox then download and run [Privacy Fighter.exe](https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/releases/Privacy-Fighter.exe).
 3. Now visit section "Post Installation".
 
 #### Installation on GNU/Linux or MacOS
