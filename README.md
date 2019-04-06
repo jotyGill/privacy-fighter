@@ -74,7 +74,7 @@ If you have Firefox installed and wish to create another profile, visit `about:p
 
 #### Installation on Windows
 
-2. Close Firefox then download and run [Privacy Fighter.exe](https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/releases/Privacy-Fighter.exe).
+2. Close Firefox then download and run [Privacy Fighter.exe](https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/releases/Privacy%20Fighter.exe).
 3. Now visit section "Post Installation".
 
 #### Installation on GNU/Linux or MacOS
