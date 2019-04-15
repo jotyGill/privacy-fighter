@@ -7,6 +7,10 @@ exclude privacyfighter/test.py
 prune privacyfighter/dist
 prune privacyfighter/build
 
+prune privacyfighter/profile
+prune privacyfighter/releases
+prune privacyfighter/data
+
 prune privacyfighter/__pycache__
 prune test*
 prune .git
