@@ -15,7 +15,8 @@ from pathlib import Path, PurePath
 
 import requests
 import psutil
-from gooey import Gooey, GooeyParser
+
+# from gooey import Gooey, GooeyParser
 
 __version__ = "0.0.12"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
@@ -31,13 +32,13 @@ extensions_folder = os.path.join(temp_folder, "extensions")
 os.makedirs(extensions_folder, exist_ok=True)
 
 
-@Gooey(
-    progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
-    progress_expr="current / total * 100",
-    program_name="Privacy Fighter",
-    requires_shell=False,
-    tabbed_groups=True,
-)
+# @Gooey(
+#     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
+#     progress_expr="current / total * 100",
+#     program_name="Privacy Fighter",
+#     requires_shell=False,
+#     tabbed_groups=True,
+# )
 def main():
     parser = argparse.ArgumentParser(description="Privacy-Fighter: A Browser Setup To Protect Your Privacy")
     # parser.add_argument("-v", "--version", action="version",
