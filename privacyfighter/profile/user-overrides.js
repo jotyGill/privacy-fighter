@@ -95,7 +95,7 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 
 
 // //// --- comment-out --- 'browser.display.use_document_fonts'  // TODO
-// //// --- comment-out --- 'layout.css.font-loading-api.enabled'  // TODO
+// //// --- comment-out --- 'layout.css.font-loading-api.enabled'  // TODO https://github.com/ghacksuserjs/ghacks-user.js/issues/726
 
 // [SECTION 1600]: HEADERS / REFERERS
 //// --- comment-out --- 'network.http.referer.XOriginPolicy'
