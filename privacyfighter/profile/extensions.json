@@ -1,12 +1,12 @@
 {
   "extensions":
   [
-    {"name": "decentraleyes", "id": "jid1-BoFifL9Vbdl2zQ@jetpack.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/1705979/decentraleyes-2.0.10-an+fx.xpi"},
-    {"name": "cookie_autodelete", "id": "CookieAutoDelete@kennydo.com.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/1209831/cookie_autodelete-3.0.1-an+fx.xpi"},
-    {"name": "https_everywhere", "id": "https-everywhere@eff.org.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/1669416/https_everywhere-2019.1.31-an+fx.xpi"},
-    {"name": "ublock_origin", "id": "uBlock0@raymondhill.net.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/1725626/ublock_origin-1.18.14-an+fx.xpi"},
+    {"name": "decentraleyes", "id": "jid1-BoFifL9Vbdl2zQ@jetpack.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/2982961/decentraleyes-2.0.11-an+fx.xpi"},
+    {"name": "cookie_autodelete", "id": "CookieAutoDelete@kennydo.com.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/1906813/cookie_autodelete-3.0.2-an+fx.xpi"},
+    {"name": "https_everywhere", "id": "https-everywhere@eff.org.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/2846214/https_everywhere-2019.5.13-an+fx.xpi"},
+    {"name": "ublock_origin", "id": "uBlock0@raymondhill.net.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/2403352/ublock_origin-1.19.2-an+fx.xpi"},
     {"name": "canvas_blocker", "id": "CanvasBlocker@kkapsner.de.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/1677846/canvasblocker-0.5.8-an+fx.xpi"},
-    {"name": "clear_urls", "id": "{74145f27-f039-47ce-a470-a662b129930a}.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/1724051/clearurls-1.5.1.6a-an+fx.xpi"},
-    {"name": "temporary_containers", "id": "{c607c8df-14a7-4f28-894f-29e8722976af}.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/1727429/temporary_containers-0.92-fx.xpi"}
+    {"name": "clear_urls", "id": "{74145f27-f039-47ce-a470-a662b129930a}.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/2258060/clearurls-1.6.4-an+fx.xpi"},
+    {"name": "temporary_containers", "id": "{c607c8df-14a7-4f28-894f-29e8722976af}.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/2036623/temporary_containers-0.97-fx.xpi"}
   ]
 }
