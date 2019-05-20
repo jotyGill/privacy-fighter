@@ -1,6 +1,7 @@
 import sys
 
 import setuptools
+
 # import os
 
 # from pillowcover_gui import __version__
@@ -10,10 +11,7 @@ import setuptools
 __version__ = "0.0.12"
 
 if sys.version_info < (3, 5):
-    sys.stderr.write(
-        "ERROR: requires Python 3.5 or above."
-        + "Install using 'pip3' instead of just 'pip' \n"
-    )
+    sys.stderr.write("ERROR: requires Python 3.5 or above." + "Install using 'pip3' instead of just 'pip' \n")
     sys.exit(1)
 
 with open("README.md", encoding="utf-8") as readme_file:
@@ -30,15 +28,12 @@ setuptools.setup(
     author_email="joty@mygnu.org",
     url="https://github.com/jotyGill/",
     keywords=["privacy", "firefox", "browser"],
-    python_requires='>=3.5',
-    install_requires=['requests', 'psutil'],
+    python_requires=">=3.5",
+    install_requires=["requests", "psutil"],
     platforms=["GNU/Linux", "Ubuntu", "Debian", "Kali", "CentOS", "Arch", "Fedora"],
     packages=setuptools.find_packages(),
     entry_points={
-        "console_scripts": [
-            "pf = privacyfighter.pf:main",
-            "privacyfighter = privacyfighter.pf:main",
-        ]
+        "console_scripts": ["pf = privacyfighter.pf:main", "privacyfighter = privacyfighter.pf:main"]
     },
     include_package_data=True,
     long_description=full_description,
