@@ -1,31 +1,30 @@
 #!/usr/bin/env python3
 
 import argparse
-import glob
-import os
-import sys
-import shutil
-import fileinput
-import tempfile
 import datetime
-import zipfile
+import fileinput
+import glob
 import io
-
+import os
+import shutil
+import sys
+import tempfile
+import zipfile
 from pathlib import Path, PurePath
 
-import requests
 import psutil
+import requests
 
 # from gooey import Gooey, GooeyParser
 
-__version__ = "0.0.12"
+__version__ = "0.0.15"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 # temporary folder to download files in
 temp_folder = tempfile.mkdtemp()
 
 # progress bar steps
-total_steps = 12
+total_steps = 8
 
 # Create folders
 extensions_folder = os.path.join(temp_folder, "extensions")
@@ -44,15 +43,25 @@ def main():
     # parser.add_argument("-v", "--version", action="version",
     #                     version="Privacy-Fighter " + __version__ + __basefilepath__)
     install_tab = parser.add_argument_group(
-        "Install", "Make sure you have installed firefox and it is not running at the moment"
+        "Install", "Make sure firefox is not running at the moment and to enable the installed addons/extensions afterwords"
+    )
+    install_tab.add_argument(
+        "-m",
+        "--setup-main",
+        dest="setup_main",
+        default=False,
+        help="Part 1: Setup the main Firefox profile for day-to-day browsing",
+        action="store_true",
     )
     install_tab.add_argument(
         "-a",
-        "--Agree",
+        "--setup-alt",
+        dest="setup_alt",
         default=False,
-        help="Make sure you follow the instructions and enable the installed addons/extensions afterwords",
+        help="Part 2: Setup an 'alternative' Firefox profile. (to get around any issues)",
         action="store_true",
     )
+
     advance_options = parser.add_argument_group("Advance Options", "Customize the options")
     advance_options.add_argument(
         "-p",
@@ -80,10 +89,14 @@ def main():
     )
 
     args = parser.parse_args()
-    run(args.profile_name, args.user_overrides_url, args.install_extensions)
+    run(args.profile_name, args.user_overrides_url, args.install_extensions, args.setup_main, args.setup_alt)
 
 
-def run(profile_name, user_overrides_url, install_extensions):
+def run(profile_name, user_overrides_url, install_extensions, setup_main, setup_alt):
+    if not setup_main and not setup_alt:
+        print("ERROR: At Least One 'setup_main' or 'setup_alt' Option Is Needed")
+        sys.exit(1)
+
     if not latest_version():
         sys.exit(1)
     if firefox_is_running():
@@ -92,6 +105,21 @@ def run(profile_name, user_overrides_url, install_extensions):
 
     firefox_path = get_firefox_path()
 
+    if setup_main:
+        setup_main_profile(firefox_path, profile_name, user_overrides_url, install_extensions)
+    if setup_alt:
+        setup_alt_profile(firefox_path)
+
+    # cleanup
+    shutil.rmtree(temp_folder)
+
+    print("------------------DONE-------------------\n")
+    # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
+    print("You can now close this and run Firefox :)")
+
+
+# The actual setup: if unless specified, the 'default' firefox profile will be setup with privacyfighter configs.
+def setup_main_profile(firefox_path, profile_name, user_overrides_url, install_extensions):
     profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
 
     if not profiles:
@@ -101,9 +129,6 @@ def run(profile_name, user_overrides_url, install_extensions):
             )
         )
         sys.exit(1)
-    elif len(profiles) == 1:
-        profile = profiles[0]
-        print("Firefox Profile to be secured/modified : ", profile, "\n")
     elif len(profiles) > 1:
         print(
             "ERROR: 'Profile Name' string matches more than one profile folders, please provide a full name instead: ",
@@ -111,6 +136,9 @@ def run(profile_name, user_overrides_url, install_extensions):
             "\n",
         )
         sys.exit(1)
+    else:
+        profile = profiles[0]
+        print("Firefox Profile to be secured/modified : ", profile, "\n")
 
     setup_userjs(user_overrides_url)
     if install_extensions:
@@ -119,16 +147,35 @@ def run(profile_name, user_overrides_url, install_extensions):
     # firefox profile path on the os
     firefox_p_path = os.path.join(firefox_path, profile)
     backup_prefsjs(firefox_p_path)
-    print("\nModified Preferences (Users.js) and Extensions will now be copied to {}\n".format(profile))
+    print("\nModified Preferences (user.js) and Extensions will now be copied to {}\n".format(profile))
     recusive_copy(temp_folder, firefox_p_path)  # copies modified user.js, extensions
     apply_one_time_prefs(profile)  # modifies "prefs.js"
 
-    # cleanup
-    shutil.rmtree(temp_folder)
 
-    print("------------------DONE-------------------\n")
-    # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
-    print("You can now close this and run Firefox :)")
+# The 'alternative' firefox profile.
+def setup_alt_profile(firefox_path, profile_name="alternative"):
+
+    profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
+
+    if not profiles:
+        print(
+            "ERROR: No Firefox Profile Found With The Name of '{}'. First Create It (visit 'about:profiles' in Firefox) Then Run This Again\n".format(
+                profile_name
+            )
+        )
+    elif len(profiles) > 1:
+        print(
+            "ERROR: 'Profile Name' string matches more than one profile folders, please provide a full name instead: ",
+            profiles,
+            "\n",
+        )
+        sys.exit(1)
+    else:
+        profile = profiles[0]
+        print("Firefox Profile to be secured/modified : ", profile, "\n")
+
+        alt_userjs_path = os.path.join(firefox_path, profile, "user.js")
+        download_file("https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/alt-user.js", alt_userjs_path)
 
 
 def resource_path(relative_path):
@@ -234,10 +281,10 @@ def extract_user_overrides():
         for line in user_overrides:
             if line[:24] == "//// --- comment-out ---":
                 pref_comment_pair = []
-                pref_begins = line[line.find("'") + 1 :]
+                pref_begins = line[line.find("'") + 1:]
                 pref = pref_begins[: pref_begins.find("'")]
                 # print(pref)
-                comment = pref_begins[pref_begins.find("'") + 1 :]
+                comment = pref_begins[pref_begins.find("'") + 1:]
                 pref_comment_pair.append(pref)
                 pref_comment_pair.append(comment.strip("\n"))
                 remove_prefs.append(pref_comment_pair)
@@ -252,7 +299,7 @@ def extract_user_overrides():
 def apply_one_time_prefs(profile):
     print("\nApplying onetime preferences to 'prefs.js'\n")
 
-    # prefs to be applied directly to 'prefs.js' instead of 'users.js' so end users can change these
+    # prefs to be applied directly to 'prefs.js' instead of 'user.js' so end users can change these
     # contains 'exists' to change if found and turn 'exists' True. the ones not found will be later added
     # keep this in profile loop, so 'exists' True resets for next profile
 
@@ -315,7 +362,7 @@ def latest_version():
     latest_version = get_file(
         "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/version.txt"
     ).text.strip()
-    if __version__ == latest_version:
+    if __version__ >= latest_version:
         return True
     print("Newer Privacy Fighter version = {} is available.".format(latest_version))
     print("please install the latest version from https://gitlab.com/JGill/privacy-fighter")
