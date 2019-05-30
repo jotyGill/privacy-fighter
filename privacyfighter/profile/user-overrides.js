@@ -2,7 +2,7 @@
 
 /* PRIVACY FIGHTHER USER-OVERRIDES.JS START ***/
 user_pref("_user.js.parrot", "overrides section syntax error");
-user_pref("privacyfighter.config.version", 66.0.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
+user_pref("privacyfighter.config.version", 67.0.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
 user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00ILysCaEq8+bEqV/3nuw==\":1,\"26UbzFJ7qT9/4DhodHKA1Q==\":1,\"mZmevP23jfB3rScn/QCWnw==\":1,\"BRX66S9KVyZQ1z3AIk0A7w==\":1}");
 
 // SECTION 0100: STARTUP
