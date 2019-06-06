@@ -16,12 +16,14 @@ The goals of this project are following:
 * The goal is not to blindly gather extensions (addons) or disable as many browser functionalities (using Firefox preferences) as possible. Neither it is to spoof as many browser values as possible, as doing that in some cases (user agent, OS, screen size) increases entropy (uniquely identifiable information). In this project I aim to research about, evaluate, test configuration sets and compatibility among the extensions and configurations that can help protect our privacy while browsing the web. Suggestions, corrections from all are welcome.
 
 ### Why Firefox?
-**Requirement: Latest stable version of Firefox: 66**
+**Requirement: Latest stable version of Firefox: 67**
 
 If you are using Chrome (even Chromium) or Edge with default settings, not only they don't provide any privacy protection from third parties on the web.
 **These browsers themselves collect detailed stats about your online behaviour, including every single webpage you have ever visited, every single search query you have ever made.**
 **The predominant browser Chrome tracks every webpage visit and periodically sends user location coordinates to Google. It also collects personal information(e.g. when a user completes online forms) and sends it to Google as part of the data synchronisation process. [c page 5, Google Data Collection Paper](https://digitalcontentnext.org/wp-content/uploads/2018/08/DCN-Google-Data-Collection-Paper.pdf)**
 When you are logged into Chrome, all your browsing activity is without question linked to you. Even if you haven't logged in Chrome, Google still knows who you are with an extremely high precision.
+
+Firefox on the other hand is developed by the non profit organisation Mozilla. It is the only viable fully open source competitor of Chrome (by Google). Mozilla being a non profit organisation has a fundamentally different business model than Google, which is a company built on profiling users and monetising that information.
 
 ### Disclaimer.<a name="disclaimer"></a>
 This project is a collection of configurations to setup firefox' preferences and to setup and install third party extensions/addons. These extensions have been carefully chosen. They are downloaded straight from the "Firefox Add-ons store". Each addon is fully open source and anyone can view the code. Each of the addon's developer has high reputation and multi thousand downloads in the addons store. Because these addons are not developed by me, use them at your own risk.
@@ -29,7 +31,7 @@ This project is a collection of configurations to setup firefox' preferences and
 ### Installed/Configured Tools and Their Benefits.
 This script installs and configures the following tools. A huge thanks to all the brilliant people behind these tools that have spent so much time and energy into making the world a better place.
 
-0. [Mozilla Firefox](https://www.mozilla.org/en-US/firefox/new/): Developed by the non profit organization Mozilla, driving browser technologies and the only viable competitor of Chrome (by Google). Nothing like this would be possible without Firefox. "Firefox Containers" (Heavily utilised in this setup) is Mozilla's revolutionary approach to isolate online identities by containing cookies and local storage in multiple separate containers, allowing us to use the web with multiple identities or accounts simultaneously.
+0. [Mozilla Firefox](https://www.mozilla.org/en-US/firefox/new/): Nothing like this would be possible without Firefox. "Firefox Containers" (Heavily utilised in this setup) is Mozilla's revolutionary approach to isolate online identities by containing cookies and local storage in multiple separate containers, allowing us to use the web with multiple identities or accounts simultaneously.
 
 1. [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js/) is used to modify more than a hundred Firefox preferences in order to improve privacy protection and reduce fingerprintablity. A notable preference being "privacy.resistFingerprinting", from the Tor Uplift project, which is bringing Tor's fingerprint resisting techniques into Firefox.
 
@@ -72,7 +74,7 @@ The installation procedure.
 **Advance Options** (For advance users only)
 If you have Firefox installed and wish to setup PF in another profile. You can create a new profile. Provide this name during the installation process.
 
-2. Open Firefox, visit `about:profiles`. Click `Create New Profile`, name it `alternative`. This profile will be used as an alternative to the main (much more secure and private) profile.
+2. Open Firefox, visit link `about:profiles`. Click `Create New Profile`, name it `alternative`. This profile will be used as an alternative to the main (much more secure and private) profile.
 
 #### Further Installation Steps on Windows
 
@@ -106,7 +108,7 @@ These are the prices we have to pay, if we choose to fight for our privacy.
 
 ### Troubleshooting
 Breakage on some pages may (hopefully very rarely) happen. You can just open the sites that break in the 'alternative' Firefox profile. That profile is setup to get around any site issues without needing any other browser.
-To open it, visit `about:profiles` in Firefox. Under `Profile: alternative`, click `Launch Profile In New Browser`
+To open it, visit link `about:profiles` in Firefox. Under `Profile: alternative`, click `Launch Profile In New Browser`
 
 Or you can try troubleshooting the issue.
 
