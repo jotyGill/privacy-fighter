@@ -1,11 +1,11 @@
 # Privacy-Fighter
-[UNDER DEVELOPMENT]
+
 
 Easy to setup, fully transparent, online privacy protection browser setup.
 A collection of browser configurations and extensions to help you fight for your online privacy.
 
-The deeper you dig, more you find that we're [loosing privacy from corporations](https://gitlab.com/JGill/privacy). You might wonder if it is a fight already lost or if you even have any choice. Well there are choices you can make to stand up for your basic human right.
-There are brilliant, hard working people who spend countless hours to make these privacy protecting tools. This project is just a collection and setup of the best browser tools that exist today. (if you have any suggestions, please create a github 'issue')
+The deeper you dig, more you find that we're [loosing privacy from corporations](https://gitlab.com/JGill/privacy). You might wonder if it is fight that we have already lost. It is not. With the right tools and dedication, you can do a lot you protect your privacy and stand up for your basic human right.
+There are brilliant, hard working people who spend countless hours to make these privacy protecting tools. This project is a collection and setup of the best privacy protecting browser tools that exist today. (if you have any suggestions, please create a github 'issue')
 
 ### Project Goals: <a name="goals"></a>
 The goals of this project are following:
@@ -69,23 +69,25 @@ The installation procedure.
 
 1. If you don't have Firefox installed, Fist download and install [Firefox](https://www.mozilla.org/en-US/firefox/new/).
 
-**Advance Options** (For advance users)
-If you have Firefox installed and wish to create another profile, visit `about:profiles`, create a new profile. Provide this name during the installation process.
+**Advance Options** (For advance users only)
+If you have Firefox installed and wish to setup PF in another profile. You can create a new profile. Provide this name during the installation process.
 
-#### Installation on Windows
+2. Open Firefox, visit `about:profiles`. Click `Create New Profile`, name it `alternative`. This profile will be used as an alternative to the main (much more secure and private) profile.
 
-2. Close Firefox then download and run [Privacy Fighter.exe](https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/releases/Privacy%20Fighter.exe).
-3. Now visit section "Post Installation".
+#### Further Installation Steps on Windows
 
-#### Installation on GNU/Linux or MacOS
+3. Close Firefox then download and run [Privacy Fighter.exe](https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/releases/Privacy%20Fighter.exe).
+4. Now visit section "Post Installation".
 
-2. If you have python3 with pip, The best option is to install it using pip.
+#### Further Installation Steps on GNU/Linux or MacOS
+
+3. If you have python3 with pip, The best option is to install it using pip.
 ``` bash
 python3 -m pip install --user privacyfighter --upgrade
 ```
-3. Close Firefox then run `privacyfighter` or `~/.local/bin/privacyfighter` in terminal if it is a new Firefox installation.
+4. Close Firefox then run `privacyfighter` or `~/.local/bin/privacyfighter` in terminal if it is a new Firefox installation.
 Alternatively
-3. Run while providing the new profile name `~/.local/bin/privacyfighter -p your-new-profile-name`
+4. Run while providing the new profile name `~/.local/bin/privacyfighter -p your-new-profile-name`
 
 #### Post Installation
 1. After installation is done, open Firefox then "addons" (Ctr+Shift+A) and enable all of them.
@@ -96,14 +98,17 @@ Alternatively
 
 ### Known Inconveniences:
 "I never said it would be easy". ok I said the installation is easy.
-* Firefox opens in minimised window everytime. This is due to "privacy.resistFingerprinting" (RPF) protecting screen size which is used in fingerprinting.
-* You would have to fill google reCAPTCHA multiple times to confirm you are not robot. Have you noticed that these days you only have to check the reCAPTCHA box (reCAPTCHA v2) and don't need to fill any reCAPTCHA. And now v3 doesn't need any user interaction at all and you don't even know it's there. This works because Google already knows exactly who you are (on an average browser setup). **Google reCAPTCHA has become harsh to privacy aware users, you will have to fill it multiple times (3-6 times) and image squares will load very slowly. Google is abusing it's powerful position to deter users from using privacy protections [source](https://news.ycombinator.com/item?id=19623001) [discussion](https://github.com/ghacksuserjs/ghacks-user.js/issues/685).** I guess their approach is working when people start believing the problem is with the protection (privacy.resistFingerprinting) and the solution is to not use it [source](https://www.reddit.com/r/firefox/comments/a0dvrh/stuck_in_google_captcha_hell_try_disabling/).
+* Firefox's internal window is smaller than usual. This is due to "privacy.resistFingerprinting" (RPF) protecting screen size (with letterboxing) in very clever way. It provides protections against screen size fingerprinting.
+* You would have to fill google reCAPTCHA multiple times to confirm you are not robot. Have you noticed that these days you only have to check the reCAPTCHA box (reCAPTCHA v2) and don't need to fill any reCAPTCHA. And now v3 doesn't need any user interaction at all and you don't even know it's there. This works because Google already knows exactly who you are (on an average browser setup). **Google reCAPTCHA has become harsh to privacy aware users, you will have to fill it multiple times (3-8 times) and image squares will load very slowly. Google is abusing it's powerful position to deter users from using privacy protections [source](https://news.ycombinator.com/item?id=19623001) [discussion](https://github.com/ghacksuserjs/ghacks-user.js/issues/685).** I guess their approach is working when people start believing the problem is with the protection (privacy.resistFingerprinting) and the solution is to not use it [source](https://www.reddit.com/r/firefox/comments/a0dvrh/stuck_in_google_captcha_hell_try_disabling/).
 * The reported time zone is set to UTC by RPF. All webapps (e.g your email site) would report UTC time.
 
 These are the prices we have to pay, if we choose to fight for our privacy.
 
 ### Troubleshooting
-Breakage would (hopefully very rarely) happen.
+Breakage on some pages may (hopefully very rarely) happen. You can just open the sites that break in the 'alternative' Firefox profile. That profile is setup to get around any site issues without needing any other browser.
+To open it, visit `about:profiles` in Firefox. Under `Profile: alternative`, click `Launch Profile In New Browser`
+
+Or you can try troubleshooting the issue.
 
 The steps to troubleshooting are
 1. Disable UblockOrigin on that particular site (by clicking on it's icon then the blue power button) then reload the website and try again.
