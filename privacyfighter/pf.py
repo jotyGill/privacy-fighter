@@ -41,8 +41,8 @@ os.makedirs(extensions_folder, exist_ok=True)
 # )
 def main():
     parser = argparse.ArgumentParser(description="Privacy-Fighter: A Browser Setup To Protect Your Privacy")
-    # parser.add_argument("-v", "--version", action="version",
-    #                     version="Privacy-Fighter " + __version__ + __basefilepath__)
+    parser.add_argument("-v", "--version", action="version",
+                        version="Privacy-Fighter " + __version__)
     install_tab = parser.add_argument_group(
         "Install", "Please make sure:\n"
         "1. Firefox is installed but not running at the moment\n"
