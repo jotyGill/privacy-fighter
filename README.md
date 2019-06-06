@@ -4,10 +4,23 @@
 Easy to setup, fully transparent, online privacy protection browser setup.
 A collection of browser configurations and extensions to help you fight for your online privacy.
 
-The deeper you dig, more you find that we're [loosing privacy from corporations](https://gitlab.com/JGill/privacy). You might wonder if it is fight that we have already lost. It is not. With the right tools and dedication, you can do a lot you protect your privacy and stand up for your basic human right.
+The deeper you dig, more you find that we're [loosing privacy from corporations](https://gitlab.com/JGill/privacy). You might even start to believe that there's nothing you can do about it. You can!. With the right information, tools and dedication, you can do a lot to protect your privacy and stand up for your basic human right.
 There are brilliant, hard working people who spend countless hours to make these privacy protecting tools. This project is a collection and setup of the best privacy protecting browser tools that exist today. (if you have any suggestions, please create a github 'issue')
 
-### Project Goals: <a name="goals"></a>
+
+### Table of Contents
+1. [Project Goals](#goals)
+2. [Why Firefox?](#why)
+3. [Disclaimer](#disclaimer)
+4. [Installed/Configured Tools and Their Benefits](#tools)
+5. [Security Improvements](#security)
+6. [Installation](#installation)
+7. [Post Installation](#post-installation)
+8. [Known Inconveniences](#inconveniences)
+9. [Troubleshooting](#troubleshooting)
+
+
+### 1.0 Project Goals <a name="goals"></a>
 The goals of this project are following:
 * To create the best privacy protecting browser setup for average internet users, that doesn't break much functionality and doesn't require much user intervention. "The best" is highly subjective, it is a battle between, functionality vs privacy, for better privacy we have to disable/work around many functionalities. The project aims for a sweet spot to minimise breakage of sites while retaining good privacy level.
 * The project aims to protect users from hidden background tracking mechanisms and the "filter bubbles" that most don't even know exist. While using this setup every new tab is a completely new session. If you don't log in on a website you should see the results without any personalization thus escaping the filter bubbles. (Note: It can't protect your identity or privacy when you use a service (e.g Youtube/Facebook) while you are logged in.)
@@ -15,7 +28,7 @@ The goals of this project are following:
 * To Create a simple Installation method that takes just a few minutes to setup and requires minimal intervention. So that average internet user can install and benefit from it. (something that took me dozens of hours research, tinkering with configs/tools)
 * The goal is not to blindly gather extensions (addons) or disable as many browser functionalities (using Firefox preferences) as possible. Neither it is to spoof as many browser values as possible, as doing that in some cases (user agent, OS, screen size) increases entropy (uniquely identifiable information). In this project I aim to research about, evaluate, test configuration sets and compatibility among the extensions and configurations that can help protect our privacy while browsing the web. Suggestions, corrections from all are welcome.
 
-### Why Firefox?
+### 2.0 Why Firefox? <a name="why"></a>
 **Requirement: Latest stable version of Firefox: 67**
 
 If you are using Chrome (even Chromium) or Edge with default settings, not only they don't provide any privacy protection from third parties on the web.
@@ -25,10 +38,10 @@ When you are logged into Chrome, all your browsing activity is without question 
 
 Firefox on the other hand is developed by the non profit organisation Mozilla. It is the only viable fully open source competitor of Chrome (by Google). Mozilla being a non profit organisation has a fundamentally different business model than Google, which is a company built on profiling users and monetising that information.
 
-### Disclaimer.<a name="disclaimer"></a>
+### 3.0 Disclaimer <a name="disclaimer"></a>
 This project is a collection of configurations to setup firefox' preferences and to setup and install third party extensions/addons. These extensions have been carefully chosen. They are downloaded straight from the "Firefox Add-ons store". Each addon is fully open source and anyone can view the code. Each of the addon's developer has high reputation and multi thousand downloads in the addons store. Because these addons are not developed by me, use them at your own risk.
 
-### Installed/Configured Tools and Their Benefits.
+### 4.0 Installed/Configured Tools and Their Benefits<a name="tools"></a>
 This script installs and configures the following tools. A huge thanks to all the brilliant people behind these tools that have spent so much time and energy into making the world a better place.
 
 0. [Mozilla Firefox](https://www.mozilla.org/en-US/firefox/new/): Nothing like this would be possible without Firefox. "Firefox Containers" (Heavily utilised in this setup) is Mozilla's revolutionary approach to isolate online identities by containing cookies and local storage in multiple separate containers, allowing us to use the web with multiple identities or accounts simultaneously.
@@ -61,12 +74,12 @@ When a tab closes, it automatically deletes any cookies that not being used. Thi
 
 8. [Terms of Service; Didn't Read](https://addons.mozilla.org/en-US/firefox/addon/terms-of-service-didnt-read/): Provides rating and extracts key points of the lengthy Terms and Conditions no one reads.[https://tosdr.org/]
 
-### Security Improvements:
+### 5.0 Security Improvements<a name="security"></a>
 Online ad networks are known to spread malware (malicious software: viruses, etc) [https://en.wikipedia.org/w/index.php?title=Ad_blocking&section=5#Security]. Effective Adblocking alone is a huge
 security improvement. There are other security benefits of this setup. HttpsEveryware: for example ensures secure connections to well known websites. Leaving no persistent cache/cookies and making every new tab an isolated container, protects against several attack vectors.
 
 
-### Installation
+### 6.0 Installation<a name="installation"></a>
 The installation procedure.
 
 1. If you don't have Firefox installed, Fist download and install [Firefox](https://www.mozilla.org/en-US/firefox/new/).
@@ -76,12 +89,12 @@ If you have Firefox installed and wish to setup PF in another profile. You can c
 
 2. Open Firefox, visit link `about:profiles`. Click `Create New Profile`, name it `alternative`. This profile will be used as an alternative to the main (much more secure and private) profile.
 
-#### Further Installation Steps on Windows
+### 6.1 Further Installation Steps on Windows<a name="windows"></a>
 
 3. Close Firefox then download and run [Privacy Fighter.exe](https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/releases/Privacy%20Fighter.exe).
 4. Now visit section "Post Installation".
 
-#### Further Installation Steps on GNU/Linux or MacOS
+### 6.2 Further Installation Steps on GNU/Linux or MacOS<a name="linux"></a>
 
 3. If you have python3 with pip, The best option is to install it using pip.
 ``` bash
@@ -91,14 +104,14 @@ python3 -m pip install --user privacyfighter --upgrade
 Alternatively
 4. Run while providing the new profile name `~/.local/bin/privacyfighter -p your-new-profile-name`
 
-#### Post Installation
+### 7.0 Post Installation<a name="post-installation"></a>
 1. After installation is done, open Firefox then "addons" (Ctr+Shift+A) and enable all of them.
 2. Open a new tab > Clink on **Import Now** to import your bookmarks and history from an existing browser.
 3. I recommend changing the default search engine from Google to DuckDuckGo or Startpage.
  (Menu > Preferences > Search > Default Search Engine > DuckDuckGo)
 4. Remember Middle Mouse Click opens link in a new isolated container, get in the habit of using it. If you need to open a page in new tab that requires to you stay logged in. Use (right click > "Open in new tmp(number) Tab" instead.
 
-### Known Inconveniences:
+### 8.0 Known Inconveniences <a name="inconveniences"></a>
 "I never said it would be easy". ok I said the installation is easy.
 * Firefox's internal window is smaller than usual. This is due to "privacy.resistFingerprinting" (RPF) protecting screen size (with letterboxing) in very clever way. It provides protections against screen size fingerprinting.
 * You would have to fill google reCAPTCHA multiple times to confirm you are not robot. Have you noticed that these days you only have to check the reCAPTCHA box (reCAPTCHA v2) and don't need to fill any reCAPTCHA. And now v3 doesn't need any user interaction at all and you don't even know it's there. This works because Google already knows exactly who you are (on an average browser setup). **Google reCAPTCHA has become harsh to privacy aware users, you will have to fill it multiple times (3-8 times) and image squares will load very slowly. Google is abusing it's powerful position to deter users from using privacy protections [source](https://news.ycombinator.com/item?id=19623001) [discussion](https://github.com/ghacksuserjs/ghacks-user.js/issues/685).** I guess their approach is working when people start believing the problem is with the protection (privacy.resistFingerprinting) and the solution is to not use it [source](https://www.reddit.com/r/firefox/comments/a0dvrh/stuck_in_google_captcha_hell_try_disabling/).
@@ -106,7 +119,7 @@ Alternatively
 
 These are the prices we have to pay, if we choose to fight for our privacy.
 
-### Troubleshooting
+### 9.0 Troubleshooting <a name="troubleshooting"></a>
 Breakage on some pages may (hopefully very rarely) happen. You can just open the sites that break in the 'alternative' Firefox profile. That profile is setup to get around any site issues without needing any other browser.
 To open it, visit link `about:profiles` in Firefox. Under `Profile: alternative`, click `Launch Profile In New Browser`
 
