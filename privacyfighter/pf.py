@@ -17,7 +17,7 @@ import requests
 
 # from gooey import Gooey, GooeyParser
 
-__version__ = "0.0.15"
+__version__ = "0.1.0"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 # temporary folder to download files in
@@ -37,13 +37,17 @@ os.makedirs(extensions_folder, exist_ok=True)
 #     program_name="Privacy Fighter",
 #     requires_shell=False,
 #     tabbed_groups=True,
+#     default_size=(900, 530),
 # )
 def main():
     parser = argparse.ArgumentParser(description="Privacy-Fighter: A Browser Setup To Protect Your Privacy")
     # parser.add_argument("-v", "--version", action="version",
     #                     version="Privacy-Fighter " + __version__ + __basefilepath__)
     install_tab = parser.add_argument_group(
-        "Install", "Make sure firefox is not running at the moment and to enable the installed addons/extensions afterwords"
+        "Install", "Please make sure:\n"
+        "1. Firefox is installed but not running at the moment\n"
+        "2. You have created a Firefox profile named 'alternative'\n"
+        "3. After everything is finishes, remember to enable the installed addons/extensions."
     )
     install_tab.add_argument(
         "-m",
@@ -172,10 +176,11 @@ def setup_alt_profile(firefox_path, profile_name="alternative"):
         sys.exit(1)
     else:
         profile = profiles[0]
-        print("Firefox Profile to be secured/modified : ", profile, "\n")
+        print("Firefox Profile to be configured as an alternative : ", profile, "\n")
 
         alt_userjs_path = os.path.join(firefox_path, profile, "user.js")
-        download_file("https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/alt-user.js", alt_userjs_path)
+        download_file(
+            "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/alternative-user.js", alt_userjs_path)
 
 
 def resource_path(relative_path):

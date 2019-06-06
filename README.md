@@ -100,12 +100,12 @@ If you have Firefox installed and wish to setup PF in another profile. You can c
 ``` bash
 python3 -m pip install --user privacyfighter --upgrade
 ```
-4. Close Firefox then run `privacyfighter` or `~/.local/bin/privacyfighter` in terminal if it is a new Firefox installation.
+4. Close Firefox then run `privacyfighter -m -a` or `~/.local/bin/privacyfighter -m -a`
 Alternatively
-4. Run while providing a specific profile name (by default the `default` firefox profile will be modified)`~/.local/bin/privacyfighter -p your-new-profile-name`
+4. Run while providing a specific profile name (by default the `default` firefox profile will be modified)`~/.local/bin/privacyfighter -m -a -p your-new-profile-name`
 
 ### 7.0 Post Installation<a name="post-installation"></a>
-1. After installation is done, open Firefox then "addons" (Ctr+Shift+A) and enable all of them.
+1. After installation is done, open Firefox then "addons" (Ctr+Shift+A) and enable and allow all of them in private windows.
 2. Open a new tab > Clink on **Import Now** to import your bookmarks and history from an existing browser.
 3. I recommend changing the default search engine from Google to DuckDuckGo or Startpage.
  (Menu > Preferences > Search > Default Search Engine > DuckDuckGo)
