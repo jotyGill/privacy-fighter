@@ -87,7 +87,7 @@ The installation procedure.
 **Advance Options** (For advance users only)
 If you have Firefox installed and wish to setup PF in another profile. You can create a new profile. Provide this name during the installation process.
 
-2. Open Firefox, visit link `about:profiles`. Click `Create New Profile`, name it `alternative`. This profile will be used as an alternative to the main (much more secure and private) profile.
+2. Open Firefox, visit link [`about:profiles`](about:profiles). Click `Create New Profile`, name it `alternative`. This profile will be used as an alternative to the main (much more secure and private) profile.
 
 ### 6.1 Further Installation Steps on Windows<a name="windows"></a>
 
@@ -102,7 +102,7 @@ python3 -m pip install --user privacyfighter --upgrade
 ```
 4. Close Firefox then run `privacyfighter` or `~/.local/bin/privacyfighter` in terminal if it is a new Firefox installation.
 Alternatively
-4. Run while providing the new profile name `~/.local/bin/privacyfighter -p your-new-profile-name`
+4. Run while providing a specific profile name (by default the `default` firefox profile will be modified)`~/.local/bin/privacyfighter -p your-new-profile-name`
 
 ### 7.0 Post Installation<a name="post-installation"></a>
 1. After installation is done, open Firefox then "addons" (Ctr+Shift+A) and enable all of them.
