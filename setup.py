@@ -26,7 +26,7 @@ setuptools.setup(
     author="JGill",
     zip_safe=False,
     author_email="joty@mygnu.org",
-    url="https://github.com/jotyGill/",
+    url="https://gitlab.com/JGill/privacy-fighter",
     keywords=["privacy", "firefox", "browser"],
     python_requires=">=3.5",
     install_requires=["requests", "psutil"],
