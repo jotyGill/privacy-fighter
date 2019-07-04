@@ -126,6 +126,15 @@ def run(profile_name, user_overrides_url, install_extensions, setup_main, setup_
 def setup_main_profile(firefox_path, profile_name, user_overrides_url, install_extensions):
     profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
 
+    # when a profile is reset within Firefox its name changes to something-profilename-1231231
+    if not profiles:
+        profiles = glob.glob("{}*{}-*".format(firefox_path, profile_name))
+
+    # a generic catch for `profilename*`; will catch `profilename1` as well `profilename2`
+    # not an issue because if 2 profile names are caught, error will be displayed later
+    if not profiles:
+        profiles = glob.glob("{}*{}*".format(firefox_path, profile_name))
+
     if not profiles:
         print(
             "ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(
@@ -135,7 +144,7 @@ def setup_main_profile(firefox_path, profile_name, user_overrides_url, install_e
         sys.exit(1)
     elif len(profiles) > 1:
         print(
-            "ERROR: 'Profile Name' string matches more than one profile folders, please provide a full name instead: ",
+            "ERROR: 'Profile Name' string matches more than one profile folders, please provide the full name instead: ",
             profiles,
             "\n",
         )
