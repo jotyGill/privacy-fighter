@@ -17,7 +17,7 @@ import requests
 
 # from gooey import Gooey, GooeyParser
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 # temporary folder to download files in
@@ -98,7 +98,7 @@ def main():
 
 def run(profile_name, user_overrides_url, install_extensions, setup_main, setup_alt):
     if not setup_main and not setup_alt:
-        print("ERROR: At Least One 'setup_main' or 'setup_alt' Option Is Needed")
+        print("ERROR: At Least One of the two, '--setup-main' or '--setup-alt' Option Is Needed")
         sys.exit(1)
 
     if not latest_version():
@@ -385,7 +385,8 @@ def backup_prefsjs(firefox_p_path):
     # Changed in version 3.6: Accepts a path-like object.
     os.makedirs(prefsjs_backups_folder, exist_ok=True)
     print("\nBacking up the current 'prefs.js' to '{}'\n".format(prefsjs_backup_name))
-    shutil.move(prefsjs_path, prefsjs_backup_name)
+    if os.path.exists(prefsjs_path):
+        shutil.move(prefsjs_path, prefsjs_backup_name)
 
 
 def recusive_copy(source_path, destination_path):
