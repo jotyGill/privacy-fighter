@@ -91,7 +91,7 @@ If you have Firefox installed and wish to setup PF in another profile. You can c
 
 ### 6.1 Further Installation Steps on Windows<a name="windows"></a>
 
-3. Close Firefox then download and run [Privacy Fighter.exe](https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/releases/Privacy%20Fighter.exe).
+3. Close Firefox then download and run [Privacy Fighter.exe](https://gitlab.com/JGill/pf-release/raw/master/Privacy%20Fighter.exe).
 4. Now visit section "Post Installation".
 
 ### 6.2 Further Installation Steps on GNU/Linux or MacOS<a name="linux"></a>
