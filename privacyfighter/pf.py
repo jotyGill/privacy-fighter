@@ -17,7 +17,7 @@ import requests
 
 # from gooey import Gooey, GooeyParser
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 # temporary folder to download files in
