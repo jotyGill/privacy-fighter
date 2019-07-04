@@ -4,11 +4,11 @@ import setuptools
 
 # import os
 
-# from pillowcover_gui import __version__
+# from privacyfighter import __version__
 
 # pf_location = os.path.join(os.path.abspath(os.path.dirname(__file__)), "privacyfighter")
 # exec(open(os.path.join(pf_location, "version.py")).read())
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 if sys.version_info < (3, 5):
     sys.stderr.write("ERROR: requires Python 3.5 or above." + "Install using 'pip3' instead of just 'pip' \n")
@@ -57,4 +57,9 @@ setuptools.setup(
         "Topic :: Internet :: WWW/HTTP :: Browsers",
         "Topic :: Security",
     ],
+    project_urls={
+        'Why Privacy Matters': 'https://gitlab.com/JGill/privacy',
+        'github': 'https://github.com/jotyGill/privacy-fighter',
+        'gitlab': 'https://gitlab.com/JGill/privacy-fighter',
+    },
 )
