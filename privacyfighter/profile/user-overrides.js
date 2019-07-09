@@ -19,9 +19,6 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 //// --- comment-out --- 'app.update.auto'
 //// --- comment-out --- 'extensions.update.autoUpdateDefault'    # Keep extensions updated
 
-//// --- comment-out --- 'app.update.service.enabled'
-//// --- comment-out --- 'app.update.silent'
-//// --- comment-out --- 'app.update.staging.enabled'
 //// --- comment-out --- 'browser.search.update'
 
 //// --- comment-out --- 'captivedetect.canonicalURL'
@@ -68,7 +65,7 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 // [SECTION 0900]: PASSWORDS
 //// --- comment-out --- 'security.ask_for_password'
 //// --- comment-out --- 'security.password_lifetime'
-//// --- comment-out --- 'signon.autofillForms' // allow over tls but not signon.autofillForms.http
+
 //// --- comment-out --- 'network.auth.subresource-http-auth-allow' // TODO is it needed?
 //// --- comment-out --- 'signon.formlessCapture.enabled'
 
@@ -90,47 +87,26 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 
 // [SECTION 1400]: FONTS
 //// --- comment-out --- 'gfx.font_rendering.opentype_svg.enabled'
-//// --- comment-out --- 'gfx.downloadable_fonts.woff2.enabled'
 //// --- comment-out --- 'gfx.font_rendering.graphite.enabled'
 
-
-// //// --- comment-out --- 'browser.display.use_document_fonts'  // TODO
-// //// --- comment-out --- 'layout.css.font-loading-api.enabled'  // TODO https://github.com/ghacksuserjs/ghacks-user.js/issues/726
 
 // [SECTION 1600]: HEADERS / REFERERS
 //// --- comment-out --- 'network.http.referer.XOriginPolicy'
 
 // [SECTION 1700]: CONTAINERS
 // [SECTION 1800]: PLUGINS
-//// --- comment-out --- 'plugin.default.state'
-//// --- comment-out --- 'plugin.defaultXpi.state'
 //// --- comment-out --- 'plugin.sessionPermissionNow.intervalInMinutes'
 
 //// --- comment-out --- 'plugin.state.flash'  // dont force disable flash
-//// --- comment-out --- 'plugin.scan.plid.all'  // dont disable flash
-
-
-
-// dont disable all GMP (Gecko Media Plugins)
-//// --- comment-out --- 'media.gmp-provider.enabled'
-//// --- comment-out --- 'media.gmp.trial-create.enabled'
-//// --- comment-out --- 'media.gmp-manager.url'
-//// --- comment-out --- 'media.gmp-manager.url.override'
-//// --- comment-out --- 'media.gmp-manager.updateEnabled'
 
 
 // dont disable widevine CDM (Content Decryption Module)
 //// --- comment-out --- 'media.gmp-widevinecdm.visible'
 //// --- comment-out --- 'media.gmp-widevinecdm.enabled'
-//// --- comment-out --- 'media.gmp-widevinecdm.autoupdate'
 
 
 // dont disable all DRM content (EME: Encryption Media Extension)
 //// --- comment-out --- 'media.eme.enabled'
-
-// dont disable the OpenH264 Video Codec by Cisco to
-//// --- comment-out --- 'media.gmp-gmpopenh264.enabled'
-//// --- comment-out --- 'media.gmp-gmpopenh264.autoupdate'
 
 
 // [SECTION 2000]: MEDIA / CAMERA / MIC
@@ -144,41 +120,25 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 //// --- comment-out --- 'media.getusermedia.screensharing.enabled'
 //// --- comment-out --- 'media.getusermedia.browser.enabled'
 //// --- comment-out --- 'media.getusermedia.audiocapture.enabled'
-//// --- comment-out --- 'media.peerconnection.enabled'
-
-
-//// --- comment-out --- 'canvas.capturestream.enabled'
-//// --- comment-out --- 'media.autoplay.default'
 
 
 // [SECTION 2200]: WINDOW MEDDLING & LEAKS / POPUPS
 // [SECTION 2300]: WEB WORKERS
 // dont disable web workers, webnotifications
 //// --- comment-out --- 'dom.serviceWorkers.enabled'
-//// --- comment-out --- 'dom.webnotifications.enabled'
-//// --- comment-out --- 'dom.webnotifications.serviceworker.enabled'
-
-// dont disable push notifications
-//// --- comment-out --- 'dom.push.enabled'
-//// --- comment-out --- 'dom.push.connection.enabled'
-//// --- comment-out --- 'dom.push.serverURL'
-//// --- comment-out --- 'dom.push.userAgentID'
 
 
 // [SECTION 2400]: DOM (DOCUMENT OBJECT MODEL) & JAVASCRIPT
 //// --- comment-out --- 'dom.event.clipboardevents.enabled'
 
-// reconsider, disable "Confirm you want to leave" dialog on page close
-//// --- comment-out --- 'dom.disable_beforeunload'   // TODO
 //// --- comment-out --- 'dom.allow_cut_copy'
 
+// don't disable "Confirm you want to leave" dialog on page close
+//// --- comment-out --- 'dom.disable_beforeunload'
 
 //// --- comment-out --- 'javascript.options.asmjs'    // dont disable asm.js
 //// --- comment-out --- 'javascript.options.wasm'    // dont disable WebAssembly
 //// --- comment-out --- 'dom.vibrator.enabled'
-//// --- comment-out --- 'dom.IntersectionObserver.enabled'
-
-//// --- comment-out --- 'javascript.options.shared_memory'
 
 
 // [SECTION 2500]: HARDWARE FINGERPRINTING
@@ -187,15 +147,14 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 //// --- comment-out --- 'browser.pagethumbnails.capturing_disabled'
 //// --- comment-out --- 'browser.uitour.enabled'
 //// --- comment-out --- 'browser.uitour.url'
-//// --- comment-out --- 'mathml.disabled'
+//// --- comment-out --- 'devtools.chrome.enabled'
 //// --- comment-out --- 'network.IDN_show_punycode'
-//// --- comment-out --- 'pdfjs.disabled'  // allow inbuilt pdfviewer
+//// --- comment-out --- 'pdfjs.disabled'
 
 
 //// --- comment-out --- 'network.protocol-handler.external.ms-windows-store'
-//// --- comment-out --- 'devtools.chrome.enabled'
+
 //// --- comment-out --- 'browser.download.manager.addToRecentDocs'
-//// --- comment-out --- 'browser.download.forbid_open_with'
 //// --- comment-out --- 'security.csp.experimentalEnabled'
 
 //// --- comment-out --- 'extensions.enabledScopes'
@@ -206,7 +165,7 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 //// --- comment-out --- 'network.cookie.cookieBehavior'  // ovewrritten to 4 in "user-overrides.js"
 user_pref("network.cookie.cookieBehavior", 4);
 
-// don't enforce history and downloads to clear on shutdown
+// don't enforce history and downloads to clear on shutdown but cache, cookies, offline web data will be cleared
 user_pref("privacy.sanitize.sanitizeOnShutdown", true);
 user_pref("privacy.clearOnShutdown.history", false);
 user_pref("privacy.clearOnShutdown.formdata", false);
@@ -215,7 +174,6 @@ user_pref("privacy.clearOnShutdown.openWindows", false);
 
 // // dont set time range to "Everything" as default in "Clear Recent History"
 //// --- comment-out --- 'privacy.sanitize.timeSpan'
-//// --- comment-out --- 'dom.caches.enabled'
 
 
 // [SECTION 4000]: FPI (FIRST PARTY ISOLATION)
