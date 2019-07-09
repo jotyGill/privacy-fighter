@@ -38,10 +38,6 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 
 // [SECTION 0700]: HTTP* / TCP/IP / DNS / PROXY / SOCKS etc
 //// --- comment-out --- 'network.dns.disableIPv6'
-//// --- comment-out --- 'network.http.spdy.enabled'
-//// --- comment-out --- 'network.http.spdy.enabled.deps'
-//// --- comment-out --- 'network.http.spdy.enabled.http2'
-//// --- comment-out --- 'network.http.spdy.websockets'
 
 //// --- comment-out --- 'network.http.altsvc.enabled'
 //// --- comment-out --- 'network.http.altsvc.oe'
