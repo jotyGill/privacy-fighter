@@ -14,10 +14,11 @@ from pathlib import Path, PurePath
 
 import psutil
 import requests
+# from gooey import Gooey     # comment out when producing cli version
 
-# from gooey import Gooey, GooeyParser
+gui_mode = False
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 # temporary folder to download files in
@@ -31,6 +32,7 @@ extensions_folder = os.path.join(temp_folder, "extensions")
 os.makedirs(extensions_folder, exist_ok=True)
 
 
+# comment out the decorator @Gooey when in cli-mode
 # @Gooey(
 #     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
 #     progress_expr="current / total * 100",
@@ -41,8 +43,9 @@ os.makedirs(extensions_folder, exist_ok=True)
 # )
 def main():
     parser = argparse.ArgumentParser(description="Privacy-Fighter: A Browser Setup To Protect Your Privacy")
-    parser.add_argument("-v", "--version", action="version",
-                        version="Privacy-Fighter " + __version__)
+    if not gui_mode:
+        parser.add_argument("-v", "--version", action="version",
+                            version="Privacy-Fighter " + __version__)
     install_tab = parser.add_argument_group(
         "Install", "Please make sure:\n"
         "1. Firefox is installed but not running at the moment\n"
@@ -53,7 +56,7 @@ def main():
         "-m",
         "--setup-main",
         dest="setup_main",
-        default=False,
+        default=gui_mode,   # True if in gui_mode
         help="Part 1: Setup the main Firefox profile for day-to-day browsing",
         action="store_true",
     )
@@ -61,7 +64,7 @@ def main():
         "-a",
         "--setup-alt",
         dest="setup_alt",
-        default=False,
+        default=gui_mode,   # True if in gui_mode
         help="Part 2: Setup an 'alternative' Firefox profile. (to get around any issues)",
         action="store_true",
     )
@@ -379,7 +382,10 @@ def latest_version():
     if __version__ >= latest_version:
         return True
     print("Newer Privacy Fighter version = {} is available.".format(latest_version))
-    print("please install the latest version from https://gitlab.com/JGill/privacy-fighter")
+    if gui_mode:
+        print("please download the latest version from https://gitlab.com/JGill/privacy-fighter")
+    else:
+        print("please install the latest version with 'python3 -m pip install --user -U privacyfighter'")
     return False
 
 
