@@ -7,6 +7,7 @@
     {"name": "ublock_origin", "id": "uBlock0@raymondhill.net.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/3293994/ublock_origin-1.20.2-an+fx.xpi"},
     {"name": "canvas_blocker", "id": "CanvasBlocker@kkapsner.de.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/3303955/canvasblocker-0.5.12-an+fx.xpi"},
     {"name": "clear_urls", "id": "{74145f27-f039-47ce-a470-a662b129930a}.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/3025439/clearurls-1.6.6-an+fx.xpi"},
-    {"name": "temporary_containers", "id": "{c607c8df-14a7-4f28-894f-29e8722976af}.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/3348889/temporary_containers-1.1-fx.xpi"}
+    {"name": "temporary_containers", "id": "{c607c8df-14a7-4f28-894f-29e8722976af}.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/3348889/temporary_containers-1.1-fx.xpi"},
+    {"name": "terms_of_service_didnt_read", "id": "jid0-3GUEt1r69sQNSrca5p8kx9Ezc3U@jetpack.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/1050617/terms_of_service_didnt_read-2.0.0-an+fx.xpi"}
   ]
 }
