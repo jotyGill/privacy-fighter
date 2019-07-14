@@ -16,6 +16,7 @@ import psutil
 import requests
 # from gooey import Gooey     # comment out when producing cli version
 
+# To produce gui installer with pyinstaller. also uncomment @Gooey decorator
 gui_mode = False
 
 __version__ = "0.1.3"
@@ -101,7 +102,11 @@ def main():
 
 def run(profile_name, user_overrides_url, install_extensions, setup_main, setup_alt):
     if not setup_main and not setup_alt:
-        print("ERROR: At Least One of the two, '--setup-main' or '--setup-alt' Option Is Needed")
+        if gui_mode:
+            print("ERROR: At Least One of the two, 'setup_main' or 'setup_alt' Option Is Required")
+        else:
+            print("ERROR: At Least One of the two, '--setup-main' or '--setup-alt' "
+                    "Option Is Required. See 'privacyfighter -h' for help")
         sys.exit(1)
 
     if not latest_version():
