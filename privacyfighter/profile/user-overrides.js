@@ -53,8 +53,8 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 // [SECTION 0800]: LOCATION BAR / SEARCH BAR / SUGGESTIONS / HISTORY / FORMS
 //// --- comment-out --- 'keyword.enabled'         // don't block search from urlbar
 
-// {'pref': '"browser.search.suggest.enabled"', 'value': ''},    // live searches in urlbar TODO
-// {'pref': '"browser.urlbar.suggest.searches"', 'value': ''},  // TODO
+//// --- comment-out --- 'browser.search.suggest.enabled'    // live searches in urlbar
+//// --- comment-out --- 'browser.urlbar.suggest.searches'
 //// --- comment-out --- 'network.file.disable_unc_paths'
 //// --- comment-out --- 'browser.formfill.enable'
 // //// --- comment-out --- 'dom.forms.datetime'    // TODO See if problematic
@@ -64,7 +64,7 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 //// --- comment-out --- 'security.ask_for_password'
 //// --- comment-out --- 'security.password_lifetime'
 
-//// --- comment-out --- 'network.auth.subresource-http-auth-allow' // TODO is it needed?
+//// --- comment-out --- 'network.auth.subresource-http-auth-allow' // some breakage https://bugzilla.mozilla.org/show_bug.cgi?id=1197944
 //// --- comment-out --- 'signon.formlessCapture.enabled'
 
 
