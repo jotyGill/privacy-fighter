@@ -382,13 +382,13 @@ def get_firefox_path():
 def latest_version():
     # https://github.com/jotyGill/privacy-fighter/releases/latest/download/version.txt
     latest_version = get_file(
-        "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/version.txt"
+        "https://github.com/jotyGill/privacy-fighter/releases/latest/download/version.txt"
     ).text.strip()
     if __version__ >= latest_version:
         return True
     print("Newer Privacy Fighter version = {} is available.".format(latest_version))
     if gui_mode:
-        print("please download the latest version from https://gitlab.com/JGill/privacy-fighter")
+        print("please download the latest version from https://github.com/jotyGill/privacy-fighter/releases/latest/")
     else:
         print("please install the latest version with 'python3 -m pip install --user -U privacyfighter'")
     return False
