@@ -30,7 +30,7 @@ The goals of this project are following:
 * The goal is not to blindly gather extensions (addons) or disable as many browser functionalities (using Firefox preferences) as possible. Neither it is to spoof as many browser values as possible, as doing that in some cases (user agent, OS, screen size) increases entropy (uniquely identifiable information). In this project I aim to research about, evaluate, test configuration sets and compatibility among the extensions and configurations that can help protect our privacy while browsing the web. Suggestions, corrections from all are welcome.
 
 ### 2.0 Why Firefox? <a name="why"></a>
-**Requirement: Latest stable version of Firefox: 67**
+**Requirement: Latest stable version of [Firefox](https://www.mozilla.org/en-US/firefox/new/): 68**
 
 If you are using Chrome (even Chromium) or Edge with default settings, not only they don't provide any privacy protection from third parties on the web.
 **These browsers themselves collect detailed stats about your online behaviour, including every single webpage you have ever visited, every single search query you have ever made.**
