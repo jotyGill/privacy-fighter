@@ -104,8 +104,17 @@ If you have Firefox installed and wish to setup PF in another profile. You can c
 ``` bash
 python3 -m pip install --user -U privacyfighter
 ```
+*Alternatively*
+
+3. You can download and run the [privacyfighter-linux-amd64] executable for GNU/Linux systems.
+``` bash
+wget https://github.com/jotyGill/privacy-fighter/releases/latest/download/privacyfighter-linux-amd64
+chmod +x ./privacyfighter-linux-amd64
+```
+
 4. Close Firefox then run `privacyfighter -m -a` or `~/.local/bin/privacyfighter -m -a` . (Note: shortcut `pf` instead of `privacyfighter` also works. eg. `pf -m -a`)
-Alternatively
+*Alternatively*
+
 4. Run while providing a specific profile name (by default the `default` firefox profile will be modified)`~/.local/bin/privacyfighter -m -a -p your-new-profile-name`
 
 ### 7.0 Post Installation<a name="post-installation"></a>
