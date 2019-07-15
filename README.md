@@ -1,5 +1,8 @@
 # Privacy-Fighter
-
+<p align="center">
+<a href="https://pypi.python.org/pypi/privacyfighter"><img alt="Downloads" src="https://img.shields.io/pypi/v/privacyfighter.svg"></a>
+<a href="https://pepy.tech/project/privacyfighter"><img alt="Downloads" src="https://pepy.tech/badge/privacyfighter"></a> </p>
+[![saythanks](https://img.shields.io/badge/say-thanks-ff69b4.svg)](https://saythanks.io/to/jotyGill)
 
 Easy to setup, fully transparent, online privacy protection browser setup.
 A collection of best browser configurations and extensions to help you fight for your online privacy.
