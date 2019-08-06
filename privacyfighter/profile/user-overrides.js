@@ -2,7 +2,7 @@
 
 /* PRIVACY FIGHTHER USER-OVERRIDES.JS START ***/
 user_pref("_user.js.parrot", "overrides section syntax error");
-user_pref("privacyfighter.config.version", 67.0.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
+user_pref("privacyfighter.config.version", 68.0.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
 user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00ILysCaEq8+bEqV/3nuw==\":1,\"26UbzFJ7qT9/4DhodHKA1Q==\":1,\"mZmevP23jfB3rScn/QCWnw==\":1,\"BRX66S9KVyZQ1z3AIk0A7w==\":1}");
 
 
@@ -64,6 +64,9 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 //// --- comment-out --- 'security.ask_for_password'
 //// --- comment-out --- 'security.password_lifetime'
 
+//// --- comment-out --- 'signon.autofillForms'
+//// --- comment-out --- 'signon.formlessCapture.enabled'
+
 //// --- comment-out --- 'network.auth.subresource-http-auth-allow' // some breakage https://bugzilla.mozilla.org/show_bug.cgi?id=1197944
 //// --- comment-out --- 'signon.formlessCapture.enabled'
 
@@ -111,6 +114,14 @@ user_pref("browser.newtabpage.blocked", "{\"4gPpjkxgZzXPVtuEoAL9Ig==\":1,\"K00IL
 //// --- comment-out --- 'media.peerconnection.enabled'
 //// --- comment-out --- 'media.peerconnection.ice.default_address_only'
 //// --- comment-out --- 'media.peerconnection.ice.no_host'
+
+// dont disable webGL
+//// --- comment-out --- 'webgl.disabled'
+//// --- comment-out --- 'webgl.dxgl.enabled'
+//// --- comment-out --- 'webgl.enable-webgl2'
+//// --- comment-out --- 'webgl.min_capability_mode'
+//// --- comment-out --- 'webgl.disable-extensions'
+//// --- comment-out --- 'webgl.disable-fail-if-major-performance-caveat'
 
 // dont disable screensharing
 //// --- comment-out --- 'media.getusermedia.screensharing.enabled'
