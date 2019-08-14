@@ -3,7 +3,7 @@
   [
     {"name": "decentraleyes", "id": "jid1-BoFifL9Vbdl2zQ@jetpack.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/3048828/decentraleyes-2.0.12-an+fx.xpi"},
     {"name": "https_everywhere", "id": "https-everywhere@eff.org.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/3060290/https_everywhere-2019.6.27-an+fx.xpi"},
-    {"name": "ublock_origin", "id": "uBlock0@raymondhill.net.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/3293994/ublock_origin-1.20.2-an+fx.xpi"},
+    {"name": "ublock_origin", "id": "uBlock0@raymondhill.net.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/3361355/ublock_origin-1.21.2-an+fx.xpi"},
     {"name": "canvas_blocker", "id": "CanvasBlocker@kkapsner.de.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/3303955/canvasblocker-0.5.12-an+fx.xpi"},
     {"name": "clear_urls", "id": "{74145f27-f039-47ce-a470-a662b129930a}.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/3372267/clearurls-1.7.1-an+fx.xpi"},
     {"name": "temporary_containers", "id": "{c607c8df-14a7-4f28-894f-29e8722976af}.xpi", "url": "https://addons.mozilla.org/firefox/downloads/file/3366287/temporary_containers-1.2-fx.xpi"},
