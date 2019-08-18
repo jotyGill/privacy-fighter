@@ -53,23 +53,19 @@ This script installs and configures the following tools. A huge thanks to all th
 
     Configuration: To minimise breakage, a custom user-overrides.js is used to relax the non critical preferences
 
-2. [Canvas Blocker](https://addons.mozilla.org/en-US/firefox/addon/canvasblocker/): Aims to prevent websites from using the some Javascript APIs to fingerprint users. resistFingerprinting takes preference to this, CanvasBlocker works as fallback for canvas fingerprinting. It also protects form fingerprinting the following APIs (by faking the values):
+2. [uBlock Origin](https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/): An efficient "wide-spectrum blocker", it blocks, ads, trackers and malware sites. [https://github.com/gorhill/uBlock]
+
+3. [Temporary containers](https://addons.mozilla.org/en-US/firefox/addon/temporary-containers/): Temporary Containers takes "Firefox Containers" to whole new level by making every new tab a different container. you may have heard of the advise to use multiple browsers. This pretty much makes every new tab a different, isolated (cookies, localstorage) browser, which gets deleted after it is closed. Eliminates long term tracking done using, cookies, storage caches, Etags.[https://github.com/stoically/temporary-containers]
+
+    Configuration: Automatic mode enabled (every new tab opens in a new isolated container). Containers colour is set to random.
+
+Get in the habit of opening new tabs and closing old ones. Also to open links in new containers (right click on link > "Open link in new Temporary Container Tab" instead.
+
+4. [HTTPS Everywhere](https://addons.mozilla.org/en-US/firefox/addon/https-everywhere/):
+HTTPS Everywhere is a Firefox extension by [EFF](https://www.eff.org/) to protect your communications by enabling HTTPS encryption automatically on sites that are known to support it.
+
+5. [Canvas Blocker](https://addons.mozilla.org/en-US/firefox/addon/canvasblocker/): Aims to prevent websites from using the some Javascript APIs to fingerprint users. resistFingerprinting takes preference to this, CanvasBlocker works as fallback for canvas fingerprinting. It also protects form fingerprinting the following APIs (by faking the values):
 canvas 2d, webGL, audio, history, DOMRect [https://github.com/kkapsner/CanvasBlocker]
-
-    Configuration: disabled `Misc > Block data URL pages`
-
-3. [uBlock Origin](https://addons.mozilla.org/en-US/firefox/addon/ublock-origin/): An efficient "wide-spectrum blocker", it blocks, ads, trackers and malware sites. [https://github.com/gorhill/uBlock]
-
-    Configuration: Enabled "Fanboy's Cookie List" and "AdGuard Spyware filter". Expanded "requests blocked" pane.
-
-4. [Cookie AutoDelete](https://addons.mozilla.org/en-US/firefox/addon/cookie-autodelete/):
-When a tab closes, it automatically deletes any cookies that not being used. This prevents tracking by cookies, which is the primary method of tracking users. [](https://en.wikipedia.org/wiki/HTTP_cookie#Tracking) [https://github.com/Cookie-AutoDelete/Cookie-AutoDelete/]
-
-    Configuration: Cookies are set to be deleted automatically after tab close. Enabled Support for Container Tabs
-
-5. [Temporary containers](https://addons.mozilla.org/en-US/firefox/addon/temporary-containers/): Temporary Containers takes "Firefox Containers" to whole new level by making every new tab a different container. you may have heard of the advise to use multiple browsers[]. This pretty much makes every new tab a different, isolated (cookies, localstorage) browser, which gets deleted after it is closed. Eliminates long term tracking done using, cookies, storage caches, Etags.[https://github.com/stoically/temporary-containers]
-
-    Configuration: Automatic mode enabled (every new tab becomes a new isolated container). Containers colour is set to purple. **Middle mouse click opens links in new isolated containers (excluding links of the current tab's domain)**. For example, when you middle click on a search result on google.com, the link will open in a new isolated container. But if you middle click on a link which is of the same domain (in this case google.com), it will open in the same container.
 
 6. [decentraleyes](https://addons.mozilla.org/en-US/firefox/addon/decentraleyes/): Protects you against tracking through "free", centralized, Content Delivery Networks, by locally storing libraries instead of fetching them from the tracking CDNs.
 
@@ -122,7 +118,6 @@ chmod +x ./privacyfighter-linux-amd64
 2. Open a new tab > Clink on **Import Now** to import your bookmarks and history from your existing browser (Chrome/Edge).
 3. I recommend changing the default search engine from Google to DuckDuckGo or Startpage.
  (Menu > Preferences > Search > Default Search Engine > DuckDuckGo)
-4. Remember Middle Mouse Click opens links in a new isolated container. get in the habit of using it. If you need to open a page in new tab that requires to you stay logged in. Use (right click > "Open in new tmp(number) Tab" instead.
 
 ### 8.0 Known Inconveniences <a name="inconveniences"></a>
 "I never said it would be easy". Ok I said the installation is easy.
