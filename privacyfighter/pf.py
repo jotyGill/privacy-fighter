@@ -14,10 +14,10 @@ from pathlib import Path, PurePath
 
 import psutil
 import requests
-# from gooey import Gooey     # comment out when producing cli version
+from gooey import Gooey     # comment out when producing cli version
 
 # To produce gui installer with pyinstaller. also uncomment @Gooey decorator
-gui_mode = False
+gui_mode = True
 
 __version__ = "1.0.0"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
@@ -34,14 +34,14 @@ os.makedirs(extensions_folder, exist_ok=True)
 
 
 # comment out the decorator @Gooey when in cli-mode
-# @Gooey(
-#     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
-#     progress_expr="current / total * 100",
-#     program_name="Privacy Fighter",
-#     requires_shell=False,
-#     tabbed_groups=True,
-#     default_size=(900, 530),
-# )
+@Gooey(
+    progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
+    progress_expr="current / total * 100",
+    program_name="Privacy Fighter",
+    requires_shell=False,
+    tabbed_groups=True,
+    default_size=(900, 530),
+)
 def main():
     parser = argparse.ArgumentParser(description="Privacy-Fighter: A Browser Setup To Protect Your Privacy")
     if not gui_mode:
@@ -91,7 +91,7 @@ def main():
         "-u",
         "--user-overrides-url",
         dest="user_overrides_url",
-        default="https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/user-overrides.js",
+        default="https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/user-overrides.js",
         help="You can use your fork of user-overrides.js",
         type=str,
     )
@@ -211,7 +211,7 @@ def setup_alt_profile(firefox_path, profile_name="alternative"):
 
         alt_userjs_path = os.path.join(firefox_path, profile, "user.js")
         download_file(
-            "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/alternative-user.js", alt_userjs_path)
+            "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/alternative-user.js", alt_userjs_path)
 
 
 def resource_path(relative_path):
@@ -351,7 +351,7 @@ def apply_one_time_prefs(profile):
 
     # Download the "one time prefs" from the repo
     r = get_file(
-        "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/one-time-prefs.json"
+        "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/one-time-prefs.json"
     )
     one_time_prefs = r.json()["prefs"]
 
