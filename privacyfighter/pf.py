@@ -14,10 +14,10 @@ from pathlib import Path, PurePath
 
 import psutil
 import requests
-from gooey import Gooey     # comment out when producing cli version
+# from gooey import Gooey     # comment out when producing cli version
 
 # To produce gui installer with pyinstaller. also uncomment @Gooey decorator
-gui_mode = True
+gui_mode = False
 
 __version__ = "1.0.0"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
@@ -34,14 +34,14 @@ os.makedirs(extensions_folder, exist_ok=True)
 
 
 # comment out the decorator @Gooey when in cli-mode
-@Gooey(
-    progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
-    progress_expr="current / total * 100",
-    program_name="Privacy Fighter",
-    requires_shell=False,
-    tabbed_groups=True,
-    default_size=(900, 530),
-)
+# @Gooey(
+#     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
+#     progress_expr="current / total * 100",
+#     program_name="Privacy Fighter",
+#     requires_shell=False,
+#     tabbed_groups=True,
+#     default_size=(900, 530),
+# )
 def main():
     parser = argparse.ArgumentParser(description="Privacy-Fighter: A Browser Setup To Protect Your Privacy")
     if not gui_mode:
