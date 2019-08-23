@@ -19,7 +19,7 @@ import requests
 # To produce gui installer with pyinstaller. also uncomment @Gooey decorator
 gui_mode = False
 
-__version__ = "0.1.3"
+__version__ = "1.0.0"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 # temporary folder to download files in
@@ -72,6 +72,14 @@ def main():
 
     advance_options = parser.add_argument_group("Advance Options", "Customize the options")
     advance_options.add_argument(
+        "-A",
+        "--advance-setup",
+        dest="advance_setup",
+        default=False,
+        help="Configure better protection with ghacksuserjs. Some sites might break.",
+        action="store_true",
+    )
+    advance_options.add_argument(
         "-p",
         "--profile",
         dest="profile_name",
@@ -97,16 +105,17 @@ def main():
     )
 
     args = parser.parse_args()
-    run(args.profile_name, args.user_overrides_url, args.install_extensions, args.setup_main, args.setup_alt)
+    run(args.profile_name, args.user_overrides_url, args.install_extensions,
+        args.setup_main, args.setup_alt, args.advance_setup)
 
 
-def run(profile_name, user_overrides_url, install_extensions, setup_main, setup_alt):
+def run(profile_name, user_overrides_url, install_extensions, setup_main, setup_alt, advance_setup):
     if not setup_main and not setup_alt:
         if gui_mode:
             print("ERROR: At Least One of the two, 'setup_main' or 'setup_alt' Option Is Required")
         else:
             print("ERROR: At Least One of the two, '--setup-main' or '--setup-alt' "
-                    "Option Is Required. See 'privacyfighter -h' for help")
+                  "Option Is Required. See 'privacyfighter -h' for help")
         sys.exit(1)
 
     if not latest_version():
@@ -118,7 +127,7 @@ def run(profile_name, user_overrides_url, install_extensions, setup_main, setup_
     firefox_path = get_firefox_path()
 
     if setup_main:
-        setup_main_profile(firefox_path, profile_name, user_overrides_url, install_extensions)
+        setup_main_profile(firefox_path, profile_name, user_overrides_url, install_extensions, advance_setup)
     if setup_alt:
         setup_alt_profile(firefox_path)
 
@@ -131,7 +140,7 @@ def run(profile_name, user_overrides_url, install_extensions, setup_main, setup_
 
 
 # The actual setup: if unless specified, the 'default' firefox profile will be setup with privacyfighter configs.
-def setup_main_profile(firefox_path, profile_name, user_overrides_url, install_extensions):
+def setup_main_profile(firefox_path, profile_name, user_overrides_url, install_extensions, advance_setup):
     profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
 
     # when a profile is reset within Firefox its name changes to something-profilename-1231231
@@ -161,7 +170,12 @@ def setup_main_profile(firefox_path, profile_name, user_overrides_url, install_e
         profile = profiles[0]
         print("Firefox Profile to be secured/modified : ", profile, "\n")
 
-    setup_userjs(user_overrides_url)
+    # only setup ghacksuserjs, is specified in advance configs, otherwise simpler "my-user.js"
+    if advance_setup:
+        setup_ghacksuserjs(user_overrides_url)
+    else:
+        setup_myuserjs()
+
     if install_extensions:
         setup_extensions()
 
@@ -212,7 +226,7 @@ def resource_path(relative_path):
 def setup_extensions():
     # Download the extensions list with their download links from the repo
     ext_list = get_file(
-        "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/extensions.json"
+        "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/extensions.json"
     )
     extensions = ext_list.json()["extensions"]
 
@@ -228,7 +242,7 @@ def setup_extensions():
 
     # Download the "browser-extensions-data". these are extension's configuration files
     extensions_configs = get_file(
-        "https://gitlab.com/JGill/privacy-fighter/raw/master/privacyfighter/profile/browser-extension-data.zip"
+        "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/browser-extension-data.zip"
     )
     with zipfile.ZipFile(io.BytesIO(extensions_configs.content)) as thezip:
         thezip.extractall(temp_folder)
@@ -262,10 +276,20 @@ def download_file(url, dest):
         sys.exit(1)
 
 
-def setup_userjs(user_overrides_url):
+# Installs the default mininal userjs
+def setup_myuserjs():
+    # Download the simpler my-user.js
+    download_file(
+        "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/my-user.js",
+        os.path.join(temp_folder, "user.js"),
+    )
+
+
+# Installs the ghacks-user.js and applies the user_overrides
+def setup_ghacksuserjs(user_overrides_url):
     # Download the ghacks user.js
     download_file(
-        "https://github.com/ghacksuserjs/ghacks-user.js/raw/master/user.js",
+        "https://raw.githubusercontent.com/ghacksuserjs/ghacks-user.js/master/user.js",
         os.path.join(temp_folder, "user.js"),
     )
     # Download the "user-overrides.js" with the latest ruleset from the repo
