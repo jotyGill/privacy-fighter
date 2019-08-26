@@ -49,7 +49,7 @@ This script installs and configures the following tools. A huge thanks to all th
 
 0. [Mozilla Firefox](https://www.mozilla.org/en-US/firefox/new/): Nothing like this would be possible without Firefox. "Firefox Containers" (Heavily utilised in this setup) is Mozilla's revolutionary approach to isolate online identities by containing cookies and local storage in multiple separate containers, allowing us to use the web with multiple identities or accounts simultaneously.
 
-1. [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js/) is used to modify more than a hundred Firefox preferences in order to improve privacy protection and reduce fingerprintablity. A notable preference being "privacy.resistFingerprinting", from the Tor Uplift project, which is bringing Tor's fingerprint resisting techniques into Firefox.
+1. [ghacks-user.js](https://github.com/ghacksuserjs/ghacks-user.js/) When installed using the "Advance Setup" ghacks-user.js is used to modify more than a hundred Firefox preferences in order to improve privacy protection and reduce fingerprintablity.
 
     Configuration: To minimise breakage, a custom user-overrides.js is used to relax the non critical preferences
 
@@ -83,39 +83,32 @@ The installation procedure.
 
 1. If you don't have Firefox installed, First download and install [Firefox](https://www.mozilla.org/en-US/firefox/new/).
 
-**Advance Options** (For advance users only)
-If you have Firefox installed and wish to setup PF in another profile. You can create a new profile. Provide this name during the installation process.
+If you are an advance user see [Advance Options](#advance), otherwise continue.
 
-2. Open Firefox, visit link [`about:profiles`](about:profiles). Click `Create New Profile`, name it `alternative`. This profile will be used as an alternative to the main (much more secure and private) profile.
+### 6.1 Installation Steps for Windows OS<a name="windows"></a>
 
-### 6.1 Further Installation Steps for Windows OS<a name="windows"></a>
+2. Close Firefox then download and run [Privacy Fighter.exe](https://github.com/jotyGill/privacy-fighter/releases/latest/download/Privacy-Fighter.exe).
+3. Now follow the ["Post Installation"](#post-installation) section.
 
-3. Close Firefox then download and run [Privacy Fighter.exe](https://github.com/jotyGill/privacy-fighter/releases/latest/download/Privacy-Fighter.exe).
-4. Now follow the ["Post Installation"](#post-installation) section.
+### 6.2 Installation Steps for GNU/Linux or MacOS<a name="linux"></a>
 
-### 6.2 Further Installation Steps for GNU/Linux or MacOS<a name="linux"></a>
-
-3. If you have python3 with pip, The best option is to install it using pip.
+2. If you have python3 with pip, The best option is to install it using pip.
 ``` bash
 python3 -m pip install --user -U privacyfighter
 ```
 **Alternatively**
 
-3. You can download and run the [privacyfighter-linux-amd64](https://github.com/jotyGill/privacy-fighter/releases/latest/download/privacyfighter-linux-amd64) executable for GNU/Linux systems.
+2. You can download and run the [privacyfighter-linux-amd64](https://github.com/jotyGill/privacy-fighter/releases/latest/download/privacyfighter-linux-amd64) executable for GNU/Linux systems.
 ``` bash
 wget https://github.com/jotyGill/privacy-fighter/releases/latest/download/privacyfighter-linux-amd64
 chmod +x ./privacyfighter-linux-amd64
 ```
 
-4. Close Firefox then run `privacyfighter -m -a` or `~/.local/bin/privacyfighter -m -a` . (Note: shortcut `pf` instead of `privacyfighter` also works. eg. `pf -m -a`)
-
-**Alternatively**
-
-4. Run while providing a specific profile name (by default the `default` firefox profile will be modified)`~/.local/bin/privacyfighter -m -a -p your-new-profile-name`
+3. Close Firefox then run `privacyfighter -m -a` or `~/.local/bin/privacyfighter -m -a` . (Note: shortcut `pf` instead of `privacyfighter` also works. eg. `pf -m -a`)
 
 ### 7.0 Post Installation<a name="post-installation"></a>
-1. After installation is done, open Firefox then "addons" (Ctr+Shift+A) and enable all of them and allow them in private windows.
-2. Open a new tab > Clink on **Import Now** to import your bookmarks and history from your existing browser (Chrome/Edge).
+1. After installation is done, open Firefox then "addons" (press Ctr+Shift+A) and enable all of them and allow them in private windows.
+2. Open **Bookmarks Manager (press Ctr+Shift+O)** > **"Import and Backup"** > **Import Data from Another Browser**, follow wizard to import your bookmarks and history from your existing browser (Chrome/Edge/Safari).
 3. I recommend changing the default search engine from Google to DuckDuckGo or Startpage.
  (Menu > Preferences > Search > Default Search Engine > DuckDuckGo)
 
@@ -127,8 +120,18 @@ chmod +x ./privacyfighter-linux-amd64
 
 These are the prices we have to pay, if we choose to fight for our privacy.
 
-### 9.0 Troubleshooting <a name="troubleshooting"></a>
-Breakage on some pages may (hopefully very rarely) happen. You can just open the sites that break in the 'alternative' Firefox profile. That profile is setup to get around any site issues without needing any other browser.
+### 9.0 Advance Options <a name="advance"></a>
+"--advance-setup": This mode installs ghacks-user.js to harden the profile and applies my user_overrides.js on it.
+This mode provides better privacy protections but rarely some pages could break. To overcome those issues it is recommended to setup the 'alternative' profile and open those particular sites in it.
+
+"--setup-alt": Setup the 'alternative' profile, which is a basic profile that deletes locally stored data (cookies,caches) on exit.
+To use this option first you have to create a new profile and name it 'alternative'.
+Open Firefox, visit link [`about:profiles`](about:profiles). Click `Create New Profile`, name it `alternative`.
+
+"--profile": If you wish to setup PF in a different profile (other than 'default'). You can create a new profile and provide it's name. eg `~/.local/bin/privacyfighter -m -a -p your-new-profile-name`
+
+### 10.0 Troubleshooting <a name="troubleshooting"></a>
+Breakage on some pages might (hopefully very rarely) happen. You can just open the sites that break in the 'alternative' Firefox profile. That profile is setup to get around any site issues without needing any other browser.
 To open it, visit link `about:profiles` in Firefox. Under `Profile: alternative`, click `Launch Profile In New Browser`
 
 Or you can try troubleshooting the issue.
