@@ -19,7 +19,7 @@ import requests
 # To produce gui installer with pyinstaller. also uncomment @Gooey decorator
 gui_mode = False
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 # temporary folder to download files in
@@ -50,33 +50,40 @@ def main():
     install_tab = parser.add_argument_group(
         "Install", "Please make sure:\n"
         "1. Firefox is installed but not running at the moment\n"
-        "2. You have created a Firefox profile named 'alternative'\n"
-        "3. After everything is finishes, remember to enable the installed addons/extensions."
+        "2. After this setup finishes, Remember to follow post installation instructions"
+    )
+    install_tab.add_argument(
+        "--show-post-installation-instructions",
+        dest="post_installation_instructions",
+        default="https://github.com/jotyGill/privacy-fighter/#70-post-installation",
+        help="You can copy this link and open it after installation",
+        type=str,
     )
     install_tab.add_argument(
         "-m",
         "--setup-main",
         dest="setup_main",
         default=gui_mode,   # True if in gui_mode
-        help="Part 1: Setup the main Firefox profile for day-to-day browsing",
-        action="store_true",
-    )
-    install_tab.add_argument(
-        "-a",
-        "--setup-alt",
-        dest="setup_alt",
-        default=gui_mode,   # True if in gui_mode
-        help="Part 2: Setup an 'alternative' Firefox profile. (to get around any issues)",
+        help="Setup the main Firefox profile for day-to-day browsing",
         action="store_true",
     )
 
-    advance_options = parser.add_argument_group("Advance Options", "Customize the options")
+    advance_options = parser.add_argument_group("Advance Options", "Advance Options for the geekz")
     advance_options.add_argument(
         "-A",
         "--advance-setup",
         dest="advance_setup",
         default=False,
-        help="Configure better protection with ghacksuserjs. Some sites might break.",
+        help="Configure better protection with ghacksuserjs,\n"
+        "It is recommneded to install 'alternative' profile with it",
+        action="store_true",
+    )
+    advance_options.add_argument(
+        "-a",
+        "--setup-alt",
+        dest="setup_alt",
+        default=False,
+        help="Setup the 'alternative' Firefox profile. (to get around any issues)",
         action="store_true",
     )
     advance_options.add_argument(
@@ -96,25 +103,24 @@ def main():
         type=str,
     )
     advance_options.add_argument(
-        "-e",
-        "--install-extensions",
-        dest="install_extensions",
-        default=True,
-        help="Install and configure extensions (Highly Recommended)",
+        "--skip-extensions",
+        dest="skip_extensions",
+        default=False,
+        help="Skip the installation/setup of extensions (NOT Recommended)",
         action="store_true",
     )
 
     args = parser.parse_args()
-    run(args.profile_name, args.user_overrides_url, args.install_extensions,
+    run(args.profile_name, args.user_overrides_url, args.skip_extensions,
         args.setup_main, args.setup_alt, args.advance_setup)
 
 
-def run(profile_name, user_overrides_url, install_extensions, setup_main, setup_alt, advance_setup):
+def run(profile_name, user_overrides_url, skip_extensions, setup_main, setup_alt, advance_setup):
     if not setup_main and not setup_alt:
         if gui_mode:
             print("ERROR: At Least One of the two, 'setup_main' or 'setup_alt' Option Is Required")
         else:
-            print("ERROR: At Least One of the two, '--setup-main' or '--setup-alt' "
+            print("ERROR: At Least One of the two, '--setup-main' or '--setup-alt' \n"
                   "Option Is Required. See 'privacyfighter -h' for help")
         sys.exit(1)
 
@@ -127,7 +133,7 @@ def run(profile_name, user_overrides_url, install_extensions, setup_main, setup_
     firefox_path = get_firefox_path()
 
     if setup_main:
-        setup_main_profile(firefox_path, profile_name, user_overrides_url, install_extensions, advance_setup)
+        setup_main_profile(firefox_path, profile_name, user_overrides_url, skip_extensions, advance_setup)
     if setup_alt:
         setup_alt_profile(firefox_path)
 
@@ -136,12 +142,19 @@ def run(profile_name, user_overrides_url, install_extensions, setup_main, setup_
 
     print("------------------DONE-------------------\n")
     # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
-    print("You can now close this and run Firefox :)")
+    print("You can now close this and run Firefox :)\n\n"
+          "Remember to follow the post installation instructions (visit this link)\n"
+          "https://github.com/jotyGill/privacy-fighter/#70-post-installation")
 
 
 # The actual setup: if unless specified, the 'default' firefox profile will be setup with privacyfighter configs.
-def setup_main_profile(firefox_path, profile_name, user_overrides_url, install_extensions, advance_setup):
-    profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
+def setup_main_profile(firefox_path, profile_name, user_overrides_url, skip_extensions, advance_setup):
+    # Firefox sometimes creates profile "default-release", or after reset "default-release-1231212"
+    # When profile_name == "default" install PF in all profiles with "default" in their names
+    if profile_name == "default":
+        profiles = glob.glob("{}*{}*".format(firefox_path, profile_name))
+    else:
+        profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
 
     # when a profile is reset within Firefox its name changes to something-profilename-1231231
     if not profiles:
@@ -159,7 +172,7 @@ def setup_main_profile(firefox_path, profile_name, user_overrides_url, install_e
             )
         )
         sys.exit(1)
-    elif len(profiles) > 1:
+    elif len(profiles) > 1 and profile_name != "default":
         print(
             "ERROR: 'Profile Name' string matches more than one profile folders, please provide the full name instead: ",
             profiles,
@@ -167,8 +180,7 @@ def setup_main_profile(firefox_path, profile_name, user_overrides_url, install_e
         )
         sys.exit(1)
     else:
-        profile = profiles[0]
-        print("Firefox Profile to be secured/modified : ", profile, "\n")
+        print("Firefox Profile to be secured/modified : ", profiles, "\n")
 
     # only setup ghacksuserjs, is specified in advance configs, otherwise simpler "my-user.js"
     if advance_setup:
@@ -176,15 +188,15 @@ def setup_main_profile(firefox_path, profile_name, user_overrides_url, install_e
     else:
         setup_myuserjs()
 
-    if install_extensions:
+    if not skip_extensions:
         setup_extensions()
-
-    # firefox profile path on the os
-    firefox_p_path = os.path.join(firefox_path, profile)
-    backup_prefsjs(firefox_p_path)
-    print("\nModified Preferences (user.js) and Extensions will now be copied to {}\n".format(profile))
-    recusive_copy(temp_folder, firefox_p_path)  # copies modified user.js, extensions
-    apply_one_time_prefs(profile)  # modifies "prefs.js"
+    for profile in profiles:
+        # firefox profile path on the os
+        firefox_p_path = os.path.join(firefox_path, profile)
+        backup_prefsjs(firefox_p_path)
+        print("\nModified Preferences (user.js) and Extensions will now be copied to {}".format(profile))
+        recusive_copy(temp_folder, firefox_p_path)  # copies modified user.js, extensions
+        apply_one_time_prefs(profile)  # modifies "prefs.js"
 
 
 # The 'alternative' firefox profile.
@@ -194,13 +206,12 @@ def setup_alt_profile(firefox_path, profile_name="alternative"):
 
     if not profiles:
         print(
-            "ERROR: No Firefox Profile Found With The Name of '{}'. First Create It (visit 'about:profiles' in Firefox) Then Run This Again\n".format(
-                profile_name
-            )
-        )
+            "\nERROR: No Firefox Profile Found With The Name of '{}'.\n".format(profile_name),
+            "First Create It (visit 'about:profiles' in Firefox) Then Run This Again\n")
     elif len(profiles) > 1:
         print(
-            "ERROR: 'Profile Name' string matches more than one profile folders, please provide a full name instead: ",
+            "\nERROR: 'Profile Name' string matches more than one profile folders, \n",
+            "There should be only one 'alternative' profile: ",
             profiles,
             "\n",
         )
@@ -343,7 +354,7 @@ def extract_user_overrides():
 
 # apply some prefs directly to "pref.js", users can change these later.
 def apply_one_time_prefs(profile):
-    print("\nApplying onetime preferences to 'prefs.js'\n")
+    print("\nApplying onetime preferences to 'prefs.js'")
 
     # prefs to be applied directly to 'prefs.js' instead of 'user.js' so end users can change these
     # contains 'exists' to change if found and turn 'exists' True. the ones not found will be later added
@@ -428,7 +439,7 @@ def backup_prefsjs(firefox_p_path):
     # create directory to store "prefs.js" backups
     # Changed in version 3.6: Accepts a path-like object.
     os.makedirs(prefsjs_backups_folder, exist_ok=True)
-    print("\nBacking up the current 'prefs.js' to '{}'\n".format(prefsjs_backup_name))
+    print("\nBacking up the current 'prefs.js' to '{}'".format(prefsjs_backup_name))
     if os.path.exists(prefsjs_path):
         shutil.move(prefsjs_path, prefsjs_backup_name)
 
@@ -457,7 +468,7 @@ def recusive_copy(source_path, destination_path):
 
             dst_file_path = os.path.join(destination_path, src_file)
             # print("file : ", src_file_path, dst_file_path)
-            print("Copying: ", src_file)
+            # print("Copying: ", src_file)
             # create parent directory
             os.makedirs(os.path.dirname(dst_file_path), exist_ok=True)
             shutil.copy(src_file_path, dst_file_path)
