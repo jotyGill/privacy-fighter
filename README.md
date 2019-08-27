@@ -3,9 +3,9 @@
 <a href="https://pypi.python.org/pypi/privacyfighter"><img alt="PyPi" src="https://img.shields.io/pypi/v/privacyfighter.svg"></a>
 <a href="https://saythanks.io/to/jotyGill"><img alt="Say Thanks" src="https://img.shields.io/badge/say-thanks-ff69b4.svg"></a></p>
 
-Easy to setup, fully transparent, online privacy protection browser setup.
-A collection of best browser configurations and extensions to help you fight for your online privacy.
-To install it, see the [Installation](#installation) section.
+Easy to install, privacy protection browser setup.
+A collection of best browser extensions and configurations to help you fight for your privacy.
+**To install it, see the [Installation](#installation) section.**
 
 The deeper you dig, more you find that we're [loosing privacy from corporations](https://github.com/jotyGill/privacy). You might even start to believe that there's nothing you can do about it. You can!. With the right information, tools and dedication, you can do a lot to protect your privacy and stand up for your basic human right.
 There are brilliant, hard working people who spend countless hours to make these privacy protecting tools. This project is a collection and setup of the best privacy protecting browser tools that exist today. (if you have any suggestions, please create a github 'issue')
@@ -20,7 +20,8 @@ There are brilliant, hard working people who spend countless hours to make these
 6. [Installation](#installation)
 7. [Post Installation](#post-installation)
 8. [Known Inconveniences](#inconveniences)
-9. [Troubleshooting](#troubleshooting)
+9. [Advance Options](#advance)
+10. [Troubleshooting](#troubleshooting)
 
 
 ### 1.0 Project Goals <a name="goals"></a>
