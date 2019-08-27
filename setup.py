@@ -26,15 +26,13 @@ setuptools.setup(
     author="JGill",
     zip_safe=False,
     author_email="joty@mygnu.org",
-    url="https://gitlab.com/JGill/privacy-fighter",
+    url="https://github.com/jotyGill/privacy-fighter",
     keywords=["privacy", "firefox", "browser"],
     python_requires=">=3.5",
     install_requires=["requests", "psutil"],
     platforms=["GNU/Linux", "Ubuntu", "Debian", "Kali", "CentOS", "Arch", "Fedora"],
     packages=setuptools.find_packages(),
-    entry_points={
-        "console_scripts": ["pf = privacyfighter.pf:main", "privacyfighter = privacyfighter.pf:main"]
-    },
+    entry_points={"console_scripts": ["pf = privacyfighter.pf:main", "privacyfighter = privacyfighter.pf:main"]},
     include_package_data=True,
     long_description=full_description,
     long_description_content_type="text/markdown",
@@ -58,8 +56,8 @@ setuptools.setup(
         "Topic :: Security",
     ],
     project_urls={
-        'Why Privacy Matters': 'https://gitlab.com/JGill/privacy',
-        'github': 'https://github.com/jotyGill/privacy-fighter',
-        'gitlab': 'https://gitlab.com/JGill/privacy-fighter',
+        "Why Privacy Matters": "https://github.com/jotyGill/privacy",
+        "github": "https://github.com/jotyGill/privacy-fighter",
+        "gitlab": "https://gitlab.com/JGill/privacy-fighter",
     },
 )
