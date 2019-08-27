@@ -14,6 +14,7 @@ from pathlib import Path, PurePath
 
 import psutil
 import requests
+
 # from gooey import Gooey     # comment out when producing cli version
 
 # To produce gui installer with pyinstaller. also uncomment @Gooey decorator
@@ -45,12 +46,12 @@ os.makedirs(extensions_folder, exist_ok=True)
 def main():
     parser = argparse.ArgumentParser(description="Privacy-Fighter: A Browser Setup To Protect Your Privacy")
     if not gui_mode:
-        parser.add_argument("-v", "--version", action="version",
-                            version="Privacy-Fighter " + __version__)
+        parser.add_argument("-v", "--version", action="version", version="Privacy-Fighter " + __version__)
     install_tab = parser.add_argument_group(
-        "Install", "Please make sure:\n"
+        "Install",
+        "Please make sure:\n"
         "1. Firefox is installed but not running at the moment\n"
-        "2. After this setup finishes, Remember to follow post installation instructions"
+        "2. After this setup finishes, Remember to follow post installation instructions",
     )
     install_tab.add_argument(
         "--show-post-installation-instructions",
@@ -63,7 +64,7 @@ def main():
         "-m",
         "--setup-main",
         dest="setup_main",
-        default=gui_mode,   # True if in gui_mode
+        default=gui_mode,  # True if in gui_mode
         help="Setup the main Firefox profile for day-to-day browsing",
         action="store_true",
     )
@@ -111,8 +112,14 @@ def main():
     )
 
     args = parser.parse_args()
-    run(args.profile_name, args.user_overrides_url, args.skip_extensions,
-        args.setup_main, args.setup_alt, args.advance_setup)
+    run(
+        args.profile_name,
+        args.user_overrides_url,
+        args.skip_extensions,
+        args.setup_main,
+        args.setup_alt,
+        args.advance_setup,
+    )
 
 
 def run(profile_name, user_overrides_url, skip_extensions, setup_main, setup_alt, advance_setup):
@@ -120,8 +127,10 @@ def run(profile_name, user_overrides_url, skip_extensions, setup_main, setup_alt
         if gui_mode:
             print("ERROR: At Least One of the two, 'setup_main' or 'setup_alt' Option Is Required")
         else:
-            print("ERROR: At Least One of the two, '--setup-main' or '--setup-alt' \n"
-                  "Option Is Required. See 'privacyfighter -h' for help")
+            print(
+                "ERROR: At Least One of the two, '--setup-main' or '--setup-alt' \n"
+                "Option Is Required. See 'privacyfighter -h' for help"
+            )
         sys.exit(1)
 
     if not latest_version():
@@ -142,9 +151,11 @@ def run(profile_name, user_overrides_url, skip_extensions, setup_main, setup_alt
 
     print("------------------DONE-------------------\n")
     # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
-    print("You can now close this and run Firefox :)\n\n"
-          "Remember to follow the post installation instructions (visit this link)\n"
-          "https://github.com/jotyGill/privacy-fighter/#70-post-installation")
+    print(
+        "You can now close this and run Firefox :)\n\n"
+        "Remember to follow the post installation instructions (visit this link)\n"
+        "https://github.com/jotyGill/privacy-fighter/#70-post-installation"
+    )
 
 
 # The actual setup: if unless specified, the 'default' firefox profile will be setup with privacyfighter configs.
@@ -166,11 +177,7 @@ def setup_main_profile(firefox_path, profile_name, user_overrides_url, skip_exte
         profiles = glob.glob("{}*{}*".format(firefox_path, profile_name))
 
     if not profiles:
-        print(
-            "ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(
-                profile_name
-            )
-        )
+        print("ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(profile_name))
         sys.exit(1)
     elif len(profiles) > 1 and profile_name != "default":
         print(
@@ -207,7 +214,8 @@ def setup_alt_profile(firefox_path, profile_name="alternative"):
     if not profiles:
         print(
             "\nERROR: No Firefox Profile Found With The Name of '{}'.\n".format(profile_name),
-            "First Create It (visit 'about:profiles' in Firefox) Then Run This Again\n")
+            "First Create It (visit 'about:profiles' in Firefox) Then Run This Again\n",
+        )
     elif len(profiles) > 1:
         print(
             "\nERROR: 'Profile Name' string matches more than one profile folders, \n",
@@ -222,7 +230,9 @@ def setup_alt_profile(firefox_path, profile_name="alternative"):
 
         alt_userjs_path = os.path.join(firefox_path, profile, "user.js")
         download_file(
-            "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/alternative-user.js", alt_userjs_path)
+            "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/alternative-user.js",
+            alt_userjs_path,
+        )
 
 
 def resource_path(relative_path):
@@ -265,9 +275,7 @@ def get_file(url):
         r = requests.get(url, allow_redirects=True)
     except requests.RequestException:
         print(
-            "Error while trying to download {} . Make sure internet connection is working then try again.".format(
-                url
-            )
+            "Error while trying to download {} . Make sure internet connection is working then try again.".format(url)
         )
         sys.exit(1)
     return r
@@ -280,9 +288,7 @@ def download_file(url, dest):
         open(dest, "wb").write(r.content)
     except requests.RequestException:
         print(
-            "Error while trying to download {} . Make sure internet connection is working then try again.".format(
-                url
-            )
+            "Error while trying to download {} . Make sure internet connection is working then try again.".format(url)
         )
         sys.exit(1)
 
@@ -338,10 +344,10 @@ def extract_user_overrides():
         for line in user_overrides:
             if line[:24] == "//// --- comment-out ---":
                 pref_comment_pair = []
-                pref_begins = line[line.find("'") + 1:]
+                pref_begins = line[line.find("'") + 1 :]
                 pref = pref_begins[: pref_begins.find("'")]
                 # print(pref)
-                comment = pref_begins[pref_begins.find("'") + 1:]
+                comment = pref_begins[pref_begins.find("'") + 1 :]
                 pref_comment_pair.append(pref)
                 pref_comment_pair.append(comment.strip("\n"))
                 remove_prefs.append(pref_comment_pair)
@@ -433,8 +439,7 @@ def backup_prefsjs(firefox_p_path):
     prefsjs_path = os.path.join(firefox_p_path, "prefs.js")
     prefsjs_backups_folder = os.path.join(firefox_p_path, "prefs-backups")
     prefsjs_backup_name = os.path.join(
-        prefsjs_backups_folder,
-        ("prefs-" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js")),
+        prefsjs_backups_folder, ("prefs-" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js"))
     )
     # create directory to store "prefs.js" backups
     # Changed in version 3.6: Accepts a path-like object.
