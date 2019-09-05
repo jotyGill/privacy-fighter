@@ -2,7 +2,7 @@
  *
  *
  *   ***/
-user_pref("privacyfighter.config.version", 68.0.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
+user_pref("privacyfighter.config.version", 69.0.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
 
 
 /* 0210: use Mozilla geolocation service instead of Google when geolocation is enabled

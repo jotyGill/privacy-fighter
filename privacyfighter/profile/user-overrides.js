@@ -2,7 +2,7 @@
 
 /* PRIVACY FIGHTHER USER-OVERRIDES.JS START ***/
 user_pref("_user.js.parrot", "overrides section syntax error");
-user_pref("privacyfighter.config.version", 68.0.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
+user_pref("privacyfighter.config.version", 69.0.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
 
 
 // SECTION 0100: STARTUP
