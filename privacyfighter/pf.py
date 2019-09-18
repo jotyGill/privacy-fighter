@@ -20,7 +20,7 @@ import requests
 # To produce gui installer with pyinstaller. also uncomment @Gooey decorator
 gui_mode = False
 
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 # temporary folder to download files in
