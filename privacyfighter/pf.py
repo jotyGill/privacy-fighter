@@ -196,7 +196,7 @@ def setup_main_profile(firefox_path, profile_name, user_overrides_url, skip_exte
         setup_myuserjs()
 
     if not skip_extensions:
-        setup_extensions()
+        setup_extensions(advance_setup)
     for profile in profiles:
         # firefox profile path on the os
         firefox_p_path = os.path.join(firefox_path, profile)
@@ -244,7 +244,7 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-def setup_extensions():
+def setup_extensions(advance_setup):
     # Download the extensions list with their download links from the repo
     ext_list = get_file(
         "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/extensions.json"
@@ -252,8 +252,10 @@ def setup_extensions():
     extensions = ext_list.json()["extensions"]
 
     for index, ext in enumerate(extensions):
+        # only install some extensions in 'advance_setup' mode
+        if not advance_setup and ext["advance_setup"] == "True":
+            continue
         print("Downloading {}".format(ext["name"]))
-
         # Download and save extension.xpi files
         extension_xpi = get_file(ext["url"])
         open(os.path.join(extensions_folder, ext["id"]), "wb").write(extension_xpi.content)
