@@ -3,7 +3,7 @@
 import argparse
 import datetime
 import fileinput
-import glob
+import fnmatch
 import io
 import os
 import shutil
@@ -15,12 +15,12 @@ from pathlib import Path, PurePath
 import psutil
 import requests
 
-# from gooey import Gooey     # comment out when producing cli version
+# from gooey import Gooey  # comment out when producing cli version
 
 # To produce gui installer with pyinstaller. also uncomment @Gooey decorator
 gui_mode = False
 
-__version__ = "1.2.0"
+__version__ = "1.3.0.dev1"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 # temporary folder to download files in
@@ -160,33 +160,30 @@ def run(profile_name, user_overrides_url, skip_extensions, setup_main, setup_alt
 
 # The actual setup: if unless specified, the 'default' firefox profile will be setup with privacyfighter configs.
 def setup_main_profile(firefox_path, profile_name, user_overrides_url, skip_extensions, advance_setup):
+    # list of profile_dir names under "firefox_path"
+    profile_dirs = [d for d in os.listdir(firefox_path) if os.path.isdir(os.path.join(firefox_path, d))]
+
     # Firefox sometimes creates profile "default-release", or after reset "default-release-1231212"
     # When profile_name == "default" install PF in all profiles with "default" in their names
     if profile_name == "default":
-        profiles = glob.glob("{}*{}*".format(firefox_path, profile_name))
+        matches = fnmatch.filter(profile_dirs, "*{}*".format(profile_name))
     else:
-        profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
+        matches = fnmatch.filter(profile_dirs, "*{}".format(profile_name))
+        matches.extend(fnmatch.filter(profile_dirs, "*{}-*".format(profile_name)))
 
-    # when a profile is reset within Firefox its name changes to something-profilename-1231231
-    if not profiles:
-        profiles = glob.glob("{}*{}-*".format(firefox_path, profile_name))
-
-    # a generic catch for `profilename*`; will catch `profilename1` as well `profilename2`
-    # not an issue because if 2 profile names are caught, error will be displayed later
-    if not profiles:
-        profiles = glob.glob("{}*{}*".format(firefox_path, profile_name))
-
-    if not profiles:
+    if not matches:
         print("ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(profile_name))
         sys.exit(1)
-    elif len(profiles) > 1 and profile_name != "default":
+    elif len(matches) > 1 and profile_name != "default":
         print(
-            "ERROR: 'Profile Name' string matches more than one profile folders, please provide the full name instead: ",
-            profiles,
+            "ERROR: 'Profile Name' string matches more than one profile folders, ",
+            "please provide the full name with -p : ",
+            matches,
             "\n",
         )
         sys.exit(1)
     else:
+        profiles = [os.path.join(firefox_path, d) for d in matches]
         print("Firefox Profile to be secured/modified : ", profiles, "\n")
 
     # only setup ghacksuserjs, is specified in advance configs, otherwise simpler "my-user.js"
@@ -208,31 +205,28 @@ def setup_main_profile(firefox_path, profile_name, user_overrides_url, skip_exte
 
 # The 'alternative' firefox profile.
 def setup_alt_profile(firefox_path, profile_name="alternative"):
+    # list of profile_dir names under "firefox_path"
+    profile_dirs = [d for d in os.listdir(firefox_path) if os.path.isdir(os.path.join(firefox_path, d))]
 
-    profiles = glob.glob("{}*{}".format(firefox_path, profile_name))
+    # find *alternative and *alternative-*
+    matches = fnmatch.filter(profile_dirs, "*{}".format(profile_name))
+    matches.extend(fnmatch.filter(profile_dirs, "*{}-*".format(profile_name)))
+
+    profiles = [os.path.join(firefox_path, d) for d in matches]
 
     if not profiles:
         print(
             "\nERROR: No Firefox Profile Found With The Name of '{}'.\n".format(profile_name),
             "First Create It (visit 'about:profiles' in Firefox) Then Run This Again\n",
         )
-    elif len(profiles) > 1:
-        print(
-            "\nERROR: 'Profile Name' string matches more than one profile folders, \n",
-            "There should be only one 'alternative' profile: ",
-            profiles,
-            "\n",
-        )
-        sys.exit(1)
     else:
-        profile = profiles[0]
-        print("Firefox Profile to be configured as an alternative : ", profile, "\n")
-
-        alt_userjs_path = os.path.join(firefox_path, profile, "user.js")
-        download_file(
-            "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/alternative-user.js",
-            alt_userjs_path,
-        )
+        for profile in profiles:
+            print("Firefox Profile to be configured as an alternative : ", profile, "\n")
+            alt_userjs_path = os.path.join(firefox_path, profile, "user.js")
+            download_file(
+                "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/alternative-user.js",
+                alt_userjs_path,
+            )
 
 
 def resource_path(relative_path):
@@ -409,16 +403,12 @@ def get_firefox_path():
         firefox_path = os.path.join(os.getenv("APPDATA"), "Mozilla\Firefox\Profiles" "\\")
         # firefox_path = Path.joinpath(Path(os.getenv('APPDATA')), Path("Mozilla/Firefox/Profiles/"))
     elif detected_os == "darwin":
-        firefox_path == os.path.join(Path.home(), "Library/Application Support/Firefox/Profiles")
+        firefox_path = os.path.join(Path.home(), "Library/Application Support/Firefox/Profiles")
 
     if not os.path.exists(firefox_path):
         print("Please download and install firefox first https://www.mozilla.org/en-US/firefox/new/")
         sys.exit(1)
 
-    # print("List of All Firefox Profiles : ", os.listdir(firefox_path))
-
-    # onlydirs = [d for d in os.listdir(firefox_path) if os.path.isdir(os.path.join(firefox_path, d))]
-    # print(onlydirs)
     return firefox_path
 
 
