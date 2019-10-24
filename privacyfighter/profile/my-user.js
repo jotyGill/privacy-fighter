@@ -2,17 +2,17 @@
  *
  *
  *   ***/
-user_pref("privacyfighter.config.version", 69.0.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
+user_pref("privacyfighter.config.version", 70.0.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
 
 
 /* 0210: use Mozilla geolocation service instead of Google when geolocation is enabled
  * Optionally enable logging to the console (defaults to false) ***/
 user_pref("geo.wifi.uri", "https://location.services.mozilla.com/v1/geolocate?key=%MOZILLA_API_KEY%");
 
-
 /* 0320: disable about:addons' Recommendations pane (uses Google Analytics) ***/
 user_pref("extensions.getAddons.showPane", false); // [HIDDEN PREF]
 user_pref("extensions.webservice.discoverURL", "");
+
 /* 0321: disable recommendations in about:addons' Extensions and Themes panes [FF68+] ***/
 user_pref("extensions.getAddons.discovery.api_url", "");
 user_pref("extensions.htmlaboutaddons.discover.enabled", false);
@@ -23,18 +23,6 @@ user_pref("extensions.htmlaboutaddons.recommendations.enabled", false);
  * [SETTING] Privacy & Security>Firefox Data Collection & Use>...>Allow Firefox to make personalized extension rec.
  * [1] https://support.mozilla.org/kb/personalized-extension-recommendations ***/
 user_pref("browser.discovery.enabled", false);
-
-
-/* 1001: disable disk cache
- * [SETUP-PERF] If you think disk cache may help (heavy tab user, high-res video),
- * or you use a hardened Temporary Containers, then feel free to override this
- * [NOTE] We also clear cache on exiting Firefox (see 2803) ***/
-user_pref("browser.cache.disk.enable", false);
-
-
-/* 1002: disable disk cache for SSL pages
- * [1] http://kb.mozillazine.org/Browser.cache.disk_cache_ssl ***/
-user_pref("browser.cache.disk_cache_ssl", false);
 
 /* 1021: disable storing extra session data [SETUP-CHROME]
  * extra session data contains contents of forms, scrollbar positions, cookies and POST data
@@ -63,9 +51,6 @@ user_pref("privacy.userContext.enabled", true);
  * [2] http://kb.mozillazine.org/Network.cookie.thirdparty.sessionOnly ***/
 user_pref("network.cookie.thirdparty.sessionOnly", true);
 user_pref("network.cookie.thirdparty.nonsecureSessionOnly", true); // [FF58+]v
-
-/* 2730: disable offline cache ***/
-user_pref("browser.cache.offline.enable", false);
 
 /* 2731: enforce websites to ask to store data for offline use
  * [1] https://support.mozilla.org/questions/1098540
