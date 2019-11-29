@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
+import configparser
 import datetime
 import fileinput
 import fnmatch
@@ -195,12 +196,20 @@ def run(profile_name, user_overrides_url, skip_extensions, setup_main, setup_alt
 
     firefox_path = get_firefox_path()
 
+    firefox_ini_path = os.path.join(firefox_path, "profiles.ini")
+    firefox_ini_config = parse_firefox_ini_config(firefox_ini_path)
+
     if setup_main:
         setup_main_profile(
             firefox_path, profile_name, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
         )
     if setup_alt:
+        if not alternative_profile_exists(firefox_ini_config):
+            create_alt_profile(firefox_path, firefox_ini_path, firefox_ini_config)
         setup_alt_profile(firefox_path)
+
+    # set firefox config to ask which profile to choose everytime you run firefox
+    dont_autoselect_profiles(firefox_ini_path, firefox_ini_config)
 
     # cleanup
     shutil.rmtree(temp_folder)
@@ -264,6 +273,37 @@ def setup_main_profile(
         if set_ui:
             # Customize Firefox UI to better fit all addons
             apply_one_time_prefs(profile, repo_location + "/profile/set-ui.json")
+
+
+def parse_firefox_ini_config(firefox_ini_path):
+    config = configparser.ConfigParser()
+    config.optionxform = str  # preserve string case
+
+    config.read(firefox_ini_path)
+    return config
+
+
+def alternative_profile_exists(firefox_ini_config):
+    for section in firefox_ini_config.sections():
+        try:
+            if firefox_ini_config.get(section, "Name") == "alternative":
+                return True
+        except configparser.NoOptionError:
+            pass
+    return False
+
+
+def create_alt_profile(firefox_path, firefox_ini_path, firefox_ini_config):
+    all_sections = firefox_ini_config.sections()
+    # print(config.sections())
+
+    alt_profile_path = os.path.join(firefox_path, "alternative")
+    os.makedirs(alt_profile_path, exist_ok=True)
+
+    total_profiles = len([p for p in all_sections if "Profile" in p])
+    new_profile = "Profile{!s}".format(total_profiles)
+    firefox_ini_config[new_profile] = {"Name": "alternative", "IsRelative": "1", "Path": "alternative"}
+    firefox_ini_config.write(open(firefox_ini_path, "w"), space_around_delimiters=False)
 
 
 # The 'alternative' firefox profile.
@@ -533,6 +573,20 @@ def firefox_is_running():
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
     return False
+
+
+# set firefox config to ask which profile to choose everytime you run firefox
+def dont_autoselect_profiles(firefox_ini_path, firefox_ini_config):
+
+    try:
+        firefox_ini_config.get("General", "StartWithLastProfile")
+        firefox_ini_config["General"]["StartWithLastProfile"] = "0"
+    except configparser.NoSectionError:
+        firefox_ini_config["General"] = {"StartWithLastProfile": "0"}
+    except configparser.NoOptionError:
+        firefox_ini_config["General"]["StartWithLastProfile"] = "0"
+
+    firefox_ini_config.write(open(firefox_ini_path, "w"), space_around_delimiters=False)
 
 
 if __name__ == "__main__":
