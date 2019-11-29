@@ -20,8 +20,10 @@ import requests
 # To produce gui installer with pyinstaller. also uncomment @Gooey decorator
 gui_mode = False
 
-__version__ = "1.3.0.dev1"
+__version__ = "1.3.0"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
+
+repo_location = "https://raw.githubusercontent.com/jotyGill/privacy-fighter/develop/privacyfighter"
 
 # temporary folder to download files in
 temp_folder = tempfile.mkdtemp()
@@ -38,10 +40,29 @@ os.makedirs(extensions_folder, exist_ok=True)
 # @Gooey(
 #     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
 #     progress_expr="current / total * 100",
+#     hide_progress_msg=True,
 #     program_name="Privacy Fighter",
 #     requires_shell=False,
 #     tabbed_groups=True,
 #     default_size=(900, 530),
+#     menu=[
+#         {
+#             "name": "About",
+#             "items": [
+#                 {
+#                     "type": "AboutDialog",
+#                     "menuTitle": "About",
+#                     "name": "Privacy Fighter",
+#                     "description": "A Browser Setup To Protect Your Privacy",
+#                     "version": __version__,
+#                     "website": "https://github.com/jotyGill/privacy-fighter",
+#                     "developer": "https://github.com/jotyGill",
+#                     "license": "GNU General Public License v3 or later (GPLv3+)",
+#                 },
+#                 {"type": "Link", "menuTitle": "Project Link", "url": "https://github.com/jotyGill/privacy-fighter"},
+#             ],
+#         }
+#     ],
 # )
 def main():
     parser = argparse.ArgumentParser(description="Privacy-Fighter: A Browser Setup To Protect Your Privacy")
@@ -53,21 +74,14 @@ def main():
         "1. Firefox is installed but not running at the moment\n"
         "2. After this setup finishes, Remember to follow post installation instructions",
     )
-    install_tab.add_argument(
-        "--show-post-installation-instructions",
-        dest="post_installation_instructions",
-        default="https://github.com/jotyGill/privacy-fighter/#70-post-installation",
-        help="You can copy this link and open it after installation",
-        type=str,
-    )
-    install_tab.add_argument(
-        "-m",
-        "--setup-main",
-        dest="setup_main",
-        default=gui_mode,  # True if in gui_mode
-        help="Setup the main Firefox profile for day-to-day browsing",
-        action="store_true",
-    )
+    if gui_mode:
+        install_tab.add_argument(
+            "--show-post-installation-instructions",
+            dest="post_installation_instructions",
+            default="https://github.com/jotyGill/privacy-fighter/#70-post-installation",
+            help="You can copy this link and open it after installation",
+            type=str,
+        )
 
     advance_options = parser.add_argument_group("Advance Options", "Advance Options for the geekz")
     advance_options.add_argument(
@@ -75,8 +89,16 @@ def main():
         "--advance-setup",
         dest="advance_setup",
         default=False,
-        help="Configure better protection with ghacksuserjs,\n"
-        "It is recommneded to install 'alternative' profile with it",
+        help="Configure better protection with ghacksuserjs for the main profile.\n"
+        "When using this, it is recommneded to setup 'alternative' profile as well",
+        action="store_true",
+    )
+    advance_options.add_argument(
+        "-m",
+        "--setup-main",
+        dest="setup_main",
+        default=gui_mode,  # True if in gui_mode
+        help="Setup the main Firefox profile for day-to-day browsing",
         action="store_true",
     )
     advance_options.add_argument(
@@ -99,8 +121,8 @@ def main():
         "-u",
         "--user-overrides-url",
         dest="user_overrides_url",
-        default="https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/user-overrides.js",
-        help="You can use your fork of user-overrides.js",
+        default=repo_location + "/profile/advance/user-overrides.js",
+        help="You can use your own user-overrides.js",
         type=str,
     )
     advance_options.add_argument(
@@ -111,6 +133,36 @@ def main():
         action="store_true",
     )
 
+    if gui_mode:
+        install_tab.add_argument(
+            "--set-homepage",
+            dest="set_homepage",
+            default=True,
+            help="Set homepage to privacy respecting search engine (DuckDuckGo)",
+            action="store_false",
+        )
+        install_tab.add_argument(
+            "--set-ui",
+            dest="set_ui",
+            default=True,
+            help="Customize Firefox UI elements to better fit Addons (Recommended)",
+            action="store_false",
+        )
+    else:
+        install_tab.add_argument(
+            "--no-homepage",
+            dest="set_homepage",
+            default=False,
+            help="Don't change the homepage to duckduckgo",
+            action="store_true",
+        )
+        install_tab.add_argument(
+            "--no-set-ui", dest="set_ui", default=False, help="Don't change Firefox UI elements", action="store_true",
+        )
+
+    set_homepage = not parser.parse_args().set_homepage
+    set_ui = not parser.parse_args().set_ui
+
     args = parser.parse_args()
     run(
         args.profile_name,
@@ -119,10 +171,12 @@ def main():
         args.setup_main,
         args.setup_alt,
         args.advance_setup,
+        set_homepage,
+        set_ui,
     )
 
 
-def run(profile_name, user_overrides_url, skip_extensions, setup_main, setup_alt, advance_setup):
+def run(profile_name, user_overrides_url, skip_extensions, setup_main, setup_alt, advance_setup, set_homepage, set_ui):
     if not setup_main and not setup_alt:
         if gui_mode:
             print("ERROR: At Least One of the two, 'setup_main' or 'setup_alt' Option Is Required")
@@ -142,14 +196,16 @@ def run(profile_name, user_overrides_url, skip_extensions, setup_main, setup_alt
     firefox_path = get_firefox_path()
 
     if setup_main:
-        setup_main_profile(firefox_path, profile_name, user_overrides_url, skip_extensions, advance_setup)
+        setup_main_profile(
+            firefox_path, profile_name, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
+        )
     if setup_alt:
         setup_alt_profile(firefox_path)
 
     # cleanup
     shutil.rmtree(temp_folder)
 
-    print("------------------DONE-------------------\n")
+    print("\n------------------DONE-------------------\n")
     # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
     print(
         "You can now close this and run Firefox :)\n\n"
@@ -159,7 +215,9 @@ def run(profile_name, user_overrides_url, skip_extensions, setup_main, setup_alt
 
 
 # The actual setup: if unless specified, the 'default' firefox profile will be setup with privacyfighter configs.
-def setup_main_profile(firefox_path, profile_name, user_overrides_url, skip_extensions, advance_setup):
+def setup_main_profile(
+    firefox_path, profile_name, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
+):
     # list of profile_dir names under "firefox_path"
     profile_dirs = [d for d in os.listdir(firefox_path) if os.path.isdir(os.path.join(firefox_path, d))]
 
@@ -186,11 +244,11 @@ def setup_main_profile(firefox_path, profile_name, user_overrides_url, skip_exte
         profiles = [os.path.join(firefox_path, d) for d in matches]
         print("Firefox Profile to be secured/modified : ", profiles, "\n")
 
-    # only setup ghacksuserjs, is specified in advance configs, otherwise simpler "my-user.js"
+    # only setup ghacks-user.js, in advance mode, otherwise setup the "basic-user.js"
     if advance_setup:
-        setup_ghacksuserjs(user_overrides_url)
+        setup_ghacks_userjs(user_overrides_url)
     else:
-        setup_myuserjs()
+        setup_basic_userjs()
 
     if not skip_extensions:
         setup_extensions(advance_setup)
@@ -200,7 +258,12 @@ def setup_main_profile(firefox_path, profile_name, user_overrides_url, skip_exte
         backup_prefsjs(firefox_p_path)
         print("\nModified Preferences (user.js) and Extensions will now be copied to {}".format(profile))
         recusive_copy(temp_folder, firefox_p_path)  # copies modified user.js, extensions
-        apply_one_time_prefs(profile)  # modifies "prefs.js"
+        if set_homepage:
+            # set homepage to duckduckgo.com
+            apply_one_time_prefs(profile, repo_location + "/profile/set-homepage.json")
+        if set_ui:
+            # Customize Firefox UI to better fit all addons
+            apply_one_time_prefs(profile, repo_location + "/profile/set-ui.json")
 
 
 # The 'alternative' firefox profile.
@@ -224,8 +287,7 @@ def setup_alt_profile(firefox_path, profile_name="alternative"):
             print("Firefox Profile to be configured as an alternative : ", profile, "\n")
             alt_userjs_path = os.path.join(firefox_path, profile, "user.js")
             download_file(
-                "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/alternative-user.js",
-                alt_userjs_path,
+                repo_location + "/profile/alternative/alternative-user.js", alt_userjs_path,
             )
 
 
@@ -240,9 +302,7 @@ def resource_path(relative_path):
 
 def setup_extensions(advance_setup):
     # Download the extensions list with their download links from the repo
-    ext_list = get_file(
-        "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/extensions.json"
-    )
+    ext_list = get_file(repo_location + "/profile/extensions.json")
     extensions = ext_list.json()["extensions"]
 
     for index, ext in enumerate(extensions):
@@ -258,9 +318,7 @@ def setup_extensions(advance_setup):
         sys.stdout.flush()
 
     # Download the "browser-extensions-data". these are extension's configuration files
-    extensions_configs = get_file(
-        "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/browser-extension-data.zip"
-    )
+    extensions_configs = get_file(repo_location + "/profile/browser-extension-data.zip")
     with zipfile.ZipFile(io.BytesIO(extensions_configs.content)) as thezip:
         thezip.extractall(temp_folder)
 
@@ -289,17 +347,14 @@ def download_file(url, dest):
         sys.exit(1)
 
 
-# Installs the default mininal userjs
-def setup_myuserjs():
-    # Download the simpler my-user.js
-    download_file(
-        "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/my-user.js",
-        os.path.join(temp_folder, "user.js"),
-    )
+# Installs the default basic userjs
+def setup_basic_userjs():
+    # Download the simpler basic-user.js
+    download_file(repo_location + "/profile/basic/basic-user.js", os.path.join(temp_folder, "user.js"))
 
 
 # Installs the ghacks-user.js and applies the user_overrides
-def setup_ghacksuserjs(user_overrides_url):
+def setup_ghacks_userjs(user_overrides_url):
     # Download the ghacks user.js
     download_file(
         "https://raw.githubusercontent.com/ghacksuserjs/ghacks-user.js/master/user.js",
@@ -355,17 +410,13 @@ def extract_user_overrides():
 
 
 # apply some prefs directly to "pref.js", users can change these later.
-def apply_one_time_prefs(profile):
-    print("\nApplying onetime preferences to 'prefs.js'")
-
+def apply_one_time_prefs(profile, prefjs):
     # prefs to be applied directly to 'prefs.js' instead of 'user.js' so end users can change these
     # contains 'exists' to change if found and turn 'exists' True. the ones not found will be later added
     # keep this in profile loop, so 'exists' True resets for next profile
 
-    # Download the "one time prefs" from the repo
-    r = get_file(
-        "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter/profile/one-time-prefs.json"
-    )
+    # Download the config file containing preferences from the location
+    r = get_file(prefjs)
     one_time_prefs = r.json()["prefs"]
 
     prefsjs_file = os.path.join(profile, "prefs.js")
@@ -413,7 +464,6 @@ def get_firefox_path():
 
 
 def latest_version():
-    # https://github.com/jotyGill/privacy-fighter/releases/latest/download/version.txt
     latest_version = get_file(
         "https://github.com/jotyGill/privacy-fighter/releases/latest/download/version.txt"
     ).text.strip()
