@@ -90,24 +90,7 @@ def main():
         "--advance-setup",
         dest="advance_setup",
         default=False,
-        help="Configure better protection with ghacksuserjs for the main profile.\n"
-        "When using this, it is recommneded to setup 'alternative' profile as well",
-        action="store_true",
-    )
-    advance_options.add_argument(
-        "-m",
-        "--setup-main",
-        dest="setup_main",
-        default=gui_mode,  # True if in gui_mode
-        help="Setup the main Firefox profile for day-to-day browsing",
-        action="store_true",
-    )
-    advance_options.add_argument(
-        "-a",
-        "--setup-alt",
-        dest="setup_alt",
-        default=False,
-        help="Setup the 'alternative' Firefox profile. (to get around any issues)",
+        help="Configure better protection with ghacks-user.js for the main profile.",
         action="store_true",
     )
     advance_options.add_argument(
@@ -166,28 +149,11 @@ def main():
 
     args = parser.parse_args()
     run(
-        args.profile_name,
-        args.user_overrides_url,
-        args.skip_extensions,
-        args.setup_main,
-        args.setup_alt,
-        args.advance_setup,
-        set_homepage,
-        set_ui,
+        args.profile_name, args.user_overrides_url, args.skip_extensions, args.advance_setup, set_homepage, set_ui,
     )
 
 
-def run(profile_name, user_overrides_url, skip_extensions, setup_main, setup_alt, advance_setup, set_homepage, set_ui):
-    if not setup_main and not setup_alt:
-        if gui_mode:
-            print("ERROR: At Least One of the two, 'setup_main' or 'setup_alt' Option Is Required")
-        else:
-            print(
-                "ERROR: At Least One of the two, '--setup-main' or '--setup-alt' \n"
-                "Option Is Required. See 'privacyfighter -h' for help"
-            )
-        sys.exit(1)
-
+def run(profile_name, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui):
     if not latest_version():
         sys.exit(1)
     if firefox_is_running():
@@ -199,14 +165,12 @@ def run(profile_name, user_overrides_url, skip_extensions, setup_main, setup_alt
     firefox_ini_path = os.path.join(firefox_path, "profiles.ini")
     firefox_ini_config = parse_firefox_ini_config(firefox_ini_path)
 
-    if setup_main:
-        setup_main_profile(
-            firefox_path, profile_name, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
-        )
-    if setup_alt:
-        if not alternative_profile_exists(firefox_ini_config):
-            create_alt_profile(firefox_path, firefox_ini_path, firefox_ini_config)
-        setup_alt_profile(firefox_path)
+    setup_main_profile(
+        firefox_path, profile_name, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
+    )
+    if not alternative_profile_exists(firefox_ini_config):
+        create_alt_profile(firefox_path, firefox_ini_path, firefox_ini_config)
+    setup_alt_profile(firefox_path)
 
     # set firefox config to ask which profile to choose everytime you run firefox
     dont_autoselect_profiles(firefox_ini_path, firefox_ini_config)
