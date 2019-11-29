@@ -15,11 +15,10 @@ from pathlib import Path, PurePath
 
 import psutil
 import requests
-
-# from gooey import Gooey  # comment out when producing cli version
+from gooey import Gooey  # comment out when producing cli version
 
 # To produce gui installer with pyinstaller. also uncomment @Gooey decorator
-gui_mode = False
+gui_mode = True
 
 __version__ = "1.3.0"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
@@ -38,33 +37,33 @@ os.makedirs(extensions_folder, exist_ok=True)
 
 
 # comment out the decorator @Gooey when in cli-mode
-# @Gooey(
-#     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
-#     progress_expr="current / total * 100",
-#     hide_progress_msg=True,
-#     program_name="Privacy Fighter",
-#     requires_shell=False,
-#     tabbed_groups=True,
-#     default_size=(900, 530),
-#     menu=[
-#         {
-#             "name": "About",
-#             "items": [
-#                 {
-#                     "type": "AboutDialog",
-#                     "menuTitle": "About",
-#                     "name": "Privacy Fighter",
-#                     "description": "A Browser Setup To Protect Your Privacy",
-#                     "version": __version__,
-#                     "website": "https://github.com/jotyGill/privacy-fighter",
-#                     "developer": "https://github.com/jotyGill",
-#                     "license": "GNU General Public License v3 or later (GPLv3+)",
-#                 },
-#                 {"type": "Link", "menuTitle": "Project Link", "url": "https://github.com/jotyGill/privacy-fighter"},
-#             ],
-#         }
-#     ],
-# )
+@Gooey(
+    progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
+    progress_expr="current / total * 100",
+    hide_progress_msg=True,
+    program_name="Privacy Fighter",
+    requires_shell=False,
+    tabbed_groups=True,
+    default_size=(900, 530),
+    menu=[
+        {
+            "name": "About",
+            "items": [
+                {
+                    "type": "AboutDialog",
+                    "menuTitle": "About",
+                    "name": "Privacy Fighter",
+                    "description": "A Browser Setup To Protect Your Privacy",
+                    "version": __version__,
+                    "website": "https://github.com/jotyGill/privacy-fighter",
+                    "developer": "https://github.com/jotyGill",
+                    "license": "GNU General Public License v3 or later (GPLv3+)",
+                },
+                {"type": "Link", "menuTitle": "Project Link", "url": "https://github.com/jotyGill/privacy-fighter"},
+            ],
+        }
+    ],
+)
 def main():
     parser = argparse.ArgumentParser(description="Privacy-Fighter: A Browser Setup To Protect Your Privacy")
     if not gui_mode:
@@ -160,16 +159,19 @@ def run(profile_name, user_overrides_url, skip_extensions, advance_setup, set_ho
         print("Firefox is currently running, please close firefox first then run Privacy Fighter again")
         sys.exit(1)
 
-    firefox_path = get_firefox_path()
+    detected_os = sys.platform
 
-    firefox_ini_path = os.path.join(firefox_path, "profiles.ini")
+    # path to firefox profiles
+    firefox_path = get_firefox_profiles_path(detected_os)
+
+    firefox_ini_path = get_firefox_ini_path(detected_os)
     firefox_ini_config = parse_firefox_ini_config(firefox_ini_path)
 
     setup_main_profile(
         firefox_path, profile_name, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
     )
     if not alternative_profile_exists(firefox_ini_config):
-        create_alt_profile(firefox_path, firefox_ini_path, firefox_ini_config)
+        create_alt_profile(firefox_path, firefox_ini_path, firefox_ini_config, detected_os)
     setup_alt_profile(firefox_path)
 
     # set firefox config to ask which profile to choose everytime you run firefox
@@ -257,7 +259,7 @@ def alternative_profile_exists(firefox_ini_config):
     return False
 
 
-def create_alt_profile(firefox_path, firefox_ini_path, firefox_ini_config):
+def create_alt_profile(firefox_path, firefox_ini_path, firefox_ini_config, detected_os):
     all_sections = firefox_ini_config.sections()
     # print(config.sections())
 
@@ -266,7 +268,12 @@ def create_alt_profile(firefox_path, firefox_ini_path, firefox_ini_config):
 
     total_profiles = len([p for p in all_sections if "Profile" in p])
     new_profile = "Profile{!s}".format(total_profiles)
-    firefox_ini_config[new_profile] = {"Name": "alternative", "IsRelative": "1", "Path": "alternative"}
+    if detected_os == "linux":
+        firefox_ini_config[new_profile] = {"Name": "alternative", "IsRelative": "1", "Path": "alternative"}
+    elif detected_os == "win32":
+        firefox_ini_config[new_profile] = {"Name": "alternative", "IsRelative": "1", "Path": "Profiles/alternative"}
+    elif detected_os == "darwin":
+        firefox_ini_config[new_profile] = {"Name": "alternative", "IsRelative": "1", "Path": "Profiles/alternative"}
     firefox_ini_config.write(open(firefox_ini_path, "w"), space_around_delimiters=False)
 
 
@@ -449,9 +456,7 @@ def apply_one_time_prefs(profile, prefjs):
                 prefsjs.write(line)
 
 
-def get_firefox_path():
-    detected_os = sys.platform
-
+def get_firefox_profiles_path(detected_os):
     if detected_os == "linux":
         firefox_path = os.path.join(Path.home(), ".mozilla/firefox/")
     elif detected_os == "win32":
@@ -465,6 +470,17 @@ def get_firefox_path():
         sys.exit(1)
 
     return firefox_path
+
+
+def get_firefox_ini_path(detected_os):
+    if detected_os == "linux":
+        firefox_ini_path = os.path.join(Path.home(), ".mozilla/firefox/profiles.ini")
+    elif detected_os == "win32":
+        firefox_ini_path = os.path.join(os.getenv("APPDATA"), "Mozilla\Firefox\profiles.ini")
+    elif detected_os == "darwin":
+        firefox_ini_path = os.path.join(Path.home(), "Library/Application Support/Firefox/profiles.ini")
+
+    return firefox_ini_path
 
 
 def latest_version():
