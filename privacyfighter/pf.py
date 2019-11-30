@@ -20,7 +20,7 @@ from gooey import Gooey  # comment out when producing cli version
 # To produce gui installer with pyinstaller. also uncomment @Gooey decorator
 gui_mode = True
 
-__version__ = "1.3.0"
+__version__ = "2.0.0"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 repo_location = "https://raw.githubusercontent.com/jotyGill/privacy-fighter/develop/privacyfighter"
@@ -29,7 +29,7 @@ repo_location = "https://raw.githubusercontent.com/jotyGill/privacy-fighter/deve
 temp_folder = tempfile.mkdtemp()
 
 # progress bar steps
-total_steps = 8
+total_steps = 9
 
 # Create folders
 extensions_folder = os.path.join(temp_folder, "extensions")
@@ -69,7 +69,7 @@ def main():
     if not gui_mode:
         parser.add_argument("-v", "--version", action="version", version="Privacy-Fighter " + __version__)
     install_tab = parser.add_argument_group(
-        "Install",
+        "Installation Info",
         "Please make sure:\n"
         "1. Firefox is installed but not running at the moment\n"
         "2. After this setup finishes, Remember to follow post installation instructions",
@@ -124,11 +124,11 @@ def main():
             help="Set homepage to privacy respecting search engine (DuckDuckGo)",
             action="store_false",
         )
-        install_tab.add_argument(
+        advance_options.add_argument(
             "--set-ui",
             dest="set_ui",
             default=True,
-            help="Customize Firefox UI elements to better fit Addons (Recommended)",
+            help="Customise Firefox UI elements to better fit Addons (Recommended)",
             action="store_false",
         )
     else:
@@ -139,8 +139,8 @@ def main():
             help="Don't change the homepage to duckduckgo",
             action="store_true",
         )
-        install_tab.add_argument(
-            "--no-set-ui", dest="set_ui", default=False, help="Don't change Firefox UI elements", action="store_true",
+        advance_options.add_argument(
+            "--no-ui", dest="set_ui", default=False, help="Don't customise firefox UI elements", action="store_true",
         )
 
     set_homepage = not parser.parse_args().set_homepage
