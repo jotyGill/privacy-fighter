@@ -11,14 +11,16 @@ import shutil
 import sys
 import tempfile
 import zipfile
-from pathlib import Path, PurePath
+from pathlib import Path
 
 import psutil
 import requests
-from gooey import Gooey  # comment out when producing cli version
 
-# To produce gui installer with pyinstaller. also uncomment @Gooey decorator
-gui_mode = True
+# GUI-SETUP, is a tag used to find lines to change, to produce the gui-version
+
+# from gooey import Gooey  # GUI-SETUP, comment out when producing cli version
+
+gui_mode = False  # GUI-SETUP, change to 'True' in gui-version
 
 __version__ = "2.0.0"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
@@ -36,34 +38,34 @@ extensions_folder = os.path.join(temp_folder, "extensions")
 os.makedirs(extensions_folder, exist_ok=True)
 
 
-# comment out the decorator @Gooey when in cli-mode
-@Gooey(
-    progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
-    progress_expr="current / total * 100",
-    hide_progress_msg=True,
-    program_name="Privacy Fighter",
-    requires_shell=False,
-    tabbed_groups=True,
-    default_size=(900, 530),
-    menu=[
-        {
-            "name": "About",
-            "items": [
-                {
-                    "type": "AboutDialog",
-                    "menuTitle": "About",
-                    "name": "Privacy Fighter",
-                    "description": "A Browser Setup To Protect Your Privacy",
-                    "version": __version__,
-                    "website": "https://github.com/jotyGill/privacy-fighter",
-                    "developer": "https://github.com/jotyGill",
-                    "license": "GNU General Public License v3 or later (GPLv3+)",
-                },
-                {"type": "Link", "menuTitle": "Project Link", "url": "https://github.com/jotyGill/privacy-fighter"},
-            ],
-        }
-    ],
-)
+# GUI-SETUP, comment out the decorator @Gooey when in cli-mode
+# @Gooey(
+#     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
+#     progress_expr="current / total * 100",
+#     hide_progress_msg=True,
+#     program_name="Privacy Fighter",
+#     requires_shell=False,
+#     tabbed_groups=True,
+#     default_size=(900, 530),
+#     menu=[
+#         {
+#             "name": "About",
+#             "items": [
+#                 {
+#                     "type": "AboutDialog",
+#                     "menuTitle": "About",
+#                     "name": "Privacy Fighter",
+#                     "description": "A Browser Setup To Protect Your Privacy",
+#                     "version": __version__,
+#                     "website": "https://github.com/jotyGill/privacy-fighter",
+#                     "developer": "https://github.com/jotyGill",
+#                     "license": "GNU General Public License v3 or later (GPLv3+)",
+#                 },
+#                 {"type": "Link", "menuTitle": "Project Link", "url": "https://github.com/jotyGill/privacy-fighter"},
+#             ],
+#         }
+#     ],
+# )
 def main():
     parser = argparse.ArgumentParser(description="Privacy-Fighter: A Browser Setup To Protect Your Privacy")
     if not gui_mode:
@@ -85,27 +87,28 @@ def main():
 
     advance_options = parser.add_argument_group("Advance Options", "Advance Options for the geekz")
     advance_options.add_argument(
-        "-A",
-        "--advance-setup",
-        dest="advance_setup",
-        default=False,
-        help="Configure better protection with ghacks-user.js for the main profile.",
-        action="store_true",
-    )
-    advance_options.add_argument(
         "-p",
         "--profile",
         dest="profile_name",
-        default="default",
-        help="Firefox Profile to be configured with PF",
+        default="privacy-fighter",
+        help="Firefox Profile to be configured with PF, default 'privacy-fighter'",
         type=str,
+    )
+    advance_options.add_argument(
+        "-A",
+        "-a",
+        "--advance-setup",
+        dest="advance_setup",
+        default=False,
+        help="Configure better protection with ghacks-user.js instead",
+        action="store_true",
     )
     advance_options.add_argument(
         "-u",
         "--user-overrides-url",
         dest="user_overrides_url",
         default=repo_location + "/profile/advance/user-overrides.js",
-        help="You can use your own user-overrides.js",
+        help="user-overrides.js to be applied over ghacks-user.js",
         type=str,
     )
     advance_options.add_argument(
@@ -167,12 +170,11 @@ def run(profile_name, user_overrides_url, skip_extensions, advance_setup, set_ho
     firefox_ini_path = get_firefox_ini_path(detected_os)
     firefox_ini_config = parse_firefox_ini_config(firefox_ini_path)
 
-    setup_main_profile(
-        firefox_path, profile_name, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
+    if not pf_profile_exists(profile_name, firefox_ini_config):
+        create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_config, detected_os)
+    setup_pf_profile(
+        profile_name, firefox_path, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
     )
-    if not alternative_profile_exists(firefox_ini_config):
-        create_alt_profile(firefox_path, firefox_ini_path, firefox_ini_config, detected_os)
-    setup_alt_profile(firefox_path)
 
     # set firefox config to ask which profile to choose everytime you run firefox
     dont_autoselect_profiles(firefox_ini_path, firefox_ini_config)
@@ -189,30 +191,22 @@ def run(profile_name, user_overrides_url, skip_extensions, advance_setup, set_ho
     )
 
 
-# The actual setup: if unless specified, the 'default' firefox profile will be setup with privacyfighter configs.
-def setup_main_profile(
-    firefox_path, profile_name, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
+# The actual setup: unless specified, a firefox profile with the name 'privacy-fighter' will be created and configured.
+def setup_pf_profile(
+    profile_name, firefox_path, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
 ):
     # list of profile_dir names under "firefox_path"
     profile_dirs = [d for d in os.listdir(firefox_path) if os.path.isdir(os.path.join(firefox_path, d))]
 
     # Firefox sometimes creates profile "default-release", or after reset "default-release-1231212"
-    # When profile_name == "default" install PF in all profiles with "default" in their names
-    if profile_name == "default":
-        matches = fnmatch.filter(profile_dirs, "*{}*".format(profile_name))
-    else:
-        matches = fnmatch.filter(profile_dirs, "*{}".format(profile_name))
-        matches.extend(fnmatch.filter(profile_dirs, "*{}-*".format(profile_name)))
+    matches = fnmatch.filter(profile_dirs, "{}".format(profile_name))
+    matches.extend(fnmatch.filter(profile_dirs, "{}-*".format(profile_name)))
 
     if not matches:
-        print("ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'default'".format(profile_name))
-        sys.exit(1)
-    elif len(matches) > 1 and profile_name != "default":
         print(
-            "ERROR: 'Profile Name' string matches more than one profile folders, ",
-            "please provide the full name with -p : ",
-            matches,
-            "\n",
+            "ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'privacy-fighter'".format(
+                profile_name
+            )
         )
         sys.exit(1)
     else:
@@ -249,57 +243,40 @@ def parse_firefox_ini_config(firefox_ini_path):
     return config
 
 
-def alternative_profile_exists(firefox_ini_config):
+def pf_profile_exists(profile_name, firefox_ini_config):
     for section in firefox_ini_config.sections():
         try:
-            if firefox_ini_config.get(section, "Name") == "alternative":
+            if firefox_ini_config.get(section, "Name") == profile_name:
                 return True
         except configparser.NoOptionError:
             pass
     return False
 
 
-def create_alt_profile(firefox_path, firefox_ini_path, firefox_ini_config, detected_os):
+def create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_config, detected_os):
     all_sections = firefox_ini_config.sections()
     # print(config.sections())
 
-    alt_profile_path = os.path.join(firefox_path, "alternative")
-    os.makedirs(alt_profile_path, exist_ok=True)
+    pf_profile_path = os.path.join(firefox_path, profile_name)
+    os.makedirs(pf_profile_path, exist_ok=True)
 
     total_profiles = len([p for p in all_sections if "Profile" in p])
     new_profile = "Profile{!s}".format(total_profiles)
     if detected_os == "linux":
-        firefox_ini_config[new_profile] = {"Name": "alternative", "IsRelative": "1", "Path": "alternative"}
+        firefox_ini_config[new_profile] = {"Name": "privacy-fighter", "IsRelative": "1", "Path": "privacy-fighter"}
     elif detected_os == "win32":
-        firefox_ini_config[new_profile] = {"Name": "alternative", "IsRelative": "1", "Path": "Profiles/alternative"}
+        firefox_ini_config[new_profile] = {
+            "Name": "privacy-fighter",
+            "IsRelative": "1",
+            "Path": "Profiles/privacy-fighter",
+        }
     elif detected_os == "darwin":
-        firefox_ini_config[new_profile] = {"Name": "alternative", "IsRelative": "1", "Path": "Profiles/alternative"}
+        firefox_ini_config[new_profile] = {
+            "Name": "privacy-fighter",
+            "IsRelative": "1",
+            "Path": "Profiles/privacy-fighter",
+        }
     firefox_ini_config.write(open(firefox_ini_path, "w"), space_around_delimiters=False)
-
-
-# The 'alternative' firefox profile.
-def setup_alt_profile(firefox_path, profile_name="alternative"):
-    # list of profile_dir names under "firefox_path"
-    profile_dirs = [d for d in os.listdir(firefox_path) if os.path.isdir(os.path.join(firefox_path, d))]
-
-    # find *alternative and *alternative-*
-    matches = fnmatch.filter(profile_dirs, "*{}".format(profile_name))
-    matches.extend(fnmatch.filter(profile_dirs, "*{}-*".format(profile_name)))
-
-    profiles = [os.path.join(firefox_path, d) for d in matches]
-
-    if not profiles:
-        print(
-            "\nERROR: No Firefox Profile Found With The Name of '{}'.\n".format(profile_name),
-            "First Create It (visit 'about:profiles' in Firefox) Then Run This Again\n",
-        )
-    else:
-        for profile in profiles:
-            print("Firefox Profile to be configured as an alternative : ", profile, "\n")
-            alt_userjs_path = os.path.join(firefox_path, profile, "user.js")
-            download_file(
-                repo_location + "/profile/alternative/alternative-user.js", alt_userjs_path,
-            )
 
 
 def resource_path(relative_path):
@@ -491,9 +468,12 @@ def latest_version():
         return True
     print("Newer Privacy Fighter version = {} is available.".format(latest_version))
     if gui_mode:
-        print("please download the latest version from https://github.com/jotyGill/privacy-fighter/releases/latest/")
+        print("Please download the latest version from https://github.com/jotyGill/privacy-fighter/releases/latest/")
     else:
-        print("please install the latest version with 'python3 -m pip install --user -U privacyfighter'")
+        print(
+            "Please download the latest version from "
+            "https://github.com/jotyGill/privacy-fighter/releases/latest/ or upgrade via pip"
+        )
     return False
 
 
@@ -506,8 +486,8 @@ def backup_prefsjs(firefox_p_path):
     # create directory to store "prefs.js" backups
     # Changed in version 3.6: Accepts a path-like object.
     os.makedirs(prefsjs_backups_folder, exist_ok=True)
-    print("\nBacking up the current 'prefs.js' to '{}'".format(prefsjs_backup_name))
     if os.path.exists(prefsjs_path):
+        print("\nBacking up the current 'prefs.js' to '{}'".format(prefsjs_backup_name))
         shutil.move(prefsjs_path, prefsjs_backup_name)
 
 
