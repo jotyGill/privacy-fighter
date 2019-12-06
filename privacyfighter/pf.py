@@ -162,6 +162,10 @@ def run(profile_name, user_overrides_url, skip_extensions, advance_setup, set_ho
         print("Firefox is currently running, please close firefox first then run Privacy Fighter again")
         sys.exit(1)
 
+    # if advance_setup is used and no profile name is given, name it "privacy-fighter-advance"
+    if advance_setup and profile_name == "privacy-fighter":
+        profile_name = "privacy-fighter-advance"
+
     detected_os = sys.platform
 
     # path to firefox profiles
@@ -260,21 +264,26 @@ def create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_
     pf_profile_path = os.path.join(firefox_path, profile_name)
     os.makedirs(pf_profile_path, exist_ok=True)
 
-    total_profiles = len([p for p in all_sections if "Profile" in p])
-    new_profile = "Profile{!s}".format(total_profiles)
+    # find the number of profiles setup in profiles.ini
+    existing_no_of_profiles = len([p for p in all_sections if "Profile" in p])
+
+    # choose new_profile's index to be same as len(existing profiles)
+    # as existing profiles start from index 0 to len, excluding len
+    new_profile = "Profile{!s}".format(existing_no_of_profiles)
+
     if detected_os == "linux":
-        firefox_ini_config[new_profile] = {"Name": "privacy-fighter", "IsRelative": "1", "Path": "privacy-fighter"}
+        firefox_ini_config[new_profile] = {"Name": profile_name, "IsRelative": "1", "Path": profile_name}
     elif detected_os == "win32":
         firefox_ini_config[new_profile] = {
-            "Name": "privacy-fighter",
+            "Name": profile_name,
             "IsRelative": "1",
-            "Path": "Profiles/privacy-fighter",
+            "Path": "Profiles/{}".format(profile_name),
         }
     elif detected_os == "darwin":
         firefox_ini_config[new_profile] = {
-            "Name": "privacy-fighter",
+            "Name": profile_name,
             "IsRelative": "1",
-            "Path": "Profiles/privacy-fighter",
+            "Path": "Profiles/{}".format(profile_name),
         }
     firefox_ini_config.write(open(firefox_ini_path, "w"), space_around_delimiters=False)
 
