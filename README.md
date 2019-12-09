@@ -4,7 +4,7 @@
 <a href="https://saythanks.io/to/jotyGill"><img alt="Say Thanks" src="https://img.shields.io/badge/say-thanks-ff69b4.svg"></a></p>
 
 Easy to install, privacy protection browser setup.
-A collection of best browser extensions and configurations to help you fight for your privacy.
+A collection of best browser extensions and some configurations to help you fight for your privacy.
 **To install it, see the [Installation](#installation) section.**
 
 The deeper you dig, more you find that we're [loosing privacy from corporations](https://github.com/jotyGill/privacy). You might even start to believe that there's nothing you can do about it. You can!. With the right information, tools and dedication, you can do a lot to protect your privacy and stand up for your basic human right.
@@ -36,7 +36,7 @@ The goals of this project are following:
 **Requirement: Latest stable version of [Firefox](https://www.mozilla.org/en-US/firefox/new/): Currently 69**
 
 If you are using Chrome (even Chromium) or Edge with default settings, not only they don't provide any privacy protection from third parties on the web.
-**These browsers themselves collect detailed stats about your online behaviour, including every single webpage you have ever visited, every single search query you have ever made.**
+**These browsers themselves collect detailed stats about your online behaviour.**
 **The predominant browser Chrome tracks every webpage visit and periodically sends user location coordinates to Google. It also collects personal information(e.g. when a user completes online forms) and sends it to Google as part of the data synchronisation process. [c page 5, Google Data Collection Paper](https://digitalcontentnext.org/wp-content/uploads/2018/08/DCN-Google-Data-Collection-Paper.pdf)**
 When you are logged into Chrome, all your browsing activity is without question linked to you. Even if you haven't logged in Chrome, Google still knows who you are with an extremely high precision.
 
@@ -89,7 +89,7 @@ If you are an advance user see [Advance Options](#advance), otherwise continue.
 ### 6.1 Installation Steps for Windows OS<a name="windows"></a>
 
 2. Close Firefox then download and run [Privacy Fighter.exe](https://github.com/jotyGill/privacy-fighter/releases/latest/download/Privacy-Fighter.exe).
-3. Now follow the ["Post Installation"](#post-installation) section.
+3. **Then follow the ["Post Installation"](#post-installation) section.**
 
 ### 6.2 Installation Steps for GNU/Linux or MacOS<a name="linux"></a>
 
@@ -105,7 +105,7 @@ wget https://github.com/jotyGill/privacy-fighter/releases/latest/download/privac
 chmod +x ./privacyfighter-linux-amd64
 ```
 
-3. Close Firefox then run `privacyfighter -m -a` or `~/.local/bin/privacyfighter -m -a` . (Note: shortcut `pf` instead of `privacyfighter` also works. eg. `pf -m -a`)
+3. Close Firefox then run `privacyfighter -m -a` or `~/.local/bin/privacyfighter -m -a`
 
 ### 7.0 Post Installation<a name="post-installation"></a>
 1. After installation is done, open Firefox then "addons" (press Ctr+Shift+A) and enable all of them and allow them in private windows.
