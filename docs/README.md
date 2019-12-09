@@ -80,37 +80,38 @@ security improvement. There are other security benefits of this setup. HttpsEver
 
 
 ### 6.0 Installation<a name="installation"></a>
-The installation procedure.
-
-1. If you don't have Firefox installed, First download and install [Firefox](https://www.mozilla.org/en-US/firefox/new/).
-
-If you are an advance user see [Advance Options](#advance), otherwise continue.
+If you are an advance user check out the [Advance Options](#advance), otherwise continue.
 
 ### 6.1 Installation Steps for Windows OS<a name="windows"></a>
 
-2. Close Firefox then download and run [Privacy Fighter.exe](https://github.com/jotyGill/privacy-fighter/releases/latest/download/Privacy-Fighter.exe).
-3. **Then follow the ["Post Installation"](#post-installation) section.**
+1. If you don't have Firefox installed, First download and install [Firefox](https://www.mozilla.org/en-US/firefox/new/).
+2. Download [Privacy-Fighter.exe](https://github.com/jotyGill/privacy-fighter/releases/latest/download/Privacy-Fighter.exe).
+3. Close Firefox and run the downloaded file Privacy-Fighter.exe
+4. **After the installation finishes, follow the ["Post Installation"](#post-installation) section.**
 
-### 6.2 Installation Steps for GNU/Linux or MacOS<a name="linux"></a>
+### 6.2 Installation Steps for GNU/Linux and MacOS<a name="linux"></a>
 
-2. If you have python3 with pip, The best option is to install it using pip.
-``` bash
-python3 -m pip install --user -U privacyfighter
-```
-**Alternatively**
-
-2. You can download and run the [privacyfighter-linux-amd64](https://github.com/jotyGill/privacy-fighter/releases/latest/download/privacyfighter-linux-amd64) executable for GNU/Linux systems.
+1. If you don't have Firefox installed, First download and install [Firefox](https://www.mozilla.org/en-US/firefox/new/).
+2. Close Firefox.
+3. ON GNU/LINUX: Download and run the [privacyfighter-linux-amd64](https://github.com/jotyGill/privacy-fighter/releases/latest/download/privacyfighter-linux-amd64).
 ``` bash
 wget https://github.com/jotyGill/privacy-fighter/releases/latest/download/privacyfighter-linux-amd64
 chmod +x ./privacyfighter-linux-amd64
+./privacyfighter-linux-amd64
 ```
+3. ON MACOS: Download and run the [privacyfighter-macos-amd64](https://github.com/jotyGill/privacy-fighter/releases/latest/download/privacyfighter-macos-amd64).
+``` bash
+wget https://github.com/jotyGill/privacy-fighter/releases/latest/download/privacyfighter-macos-amd64
+chmod +x ./privacyfighter-macos-amd64
+./privacyfighter-macos-amd64
+```
+4. **After the installation finishes, follow the ["Post Installation"](#post-installation) section.**
 
-3. Close Firefox then run `privacyfighter -m -a` or `~/.local/bin/privacyfighter -m -a`
 
 ### 7.0 Post Installation<a name="post-installation"></a>
 1. After installation is done, open Firefox then "addons" (press Ctr+Shift+A) and enable all of them and allow them in private windows.
 2. Open **Bookmarks Manager (press Ctr+Shift+O)** > **"Import and Backup"** > **Import Data from Another Browser**, follow wizard to import your bookmarks and history from your existing browser (Chrome/Edge/Safari).
-3. I recommend changing the default search engine from Google to DuckDuckGo or Startpage.
+3. You can change the default search engine from Google to DuckDuckGo.
  (Menu > Preferences > Search > Default Search Engine > DuckDuckGo)
 
 ### 8.0 Known Inconveniences <a name="inconveniences"></a>
