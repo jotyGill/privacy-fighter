@@ -1,8 +1,0 @@
-{
-  "prefs":
-	[
-	   {"pref": "\"browser.uiCustomization.state\"", "value": "\"{\\\"placements\\\":{\\\"widget-overflow-fixed-list\\\":[],\\\"nav-bar\\\":[\\\"back-button\\\",\\\"forward-button\\\",\\\"stop-reload-button\\\",\\\"home-button\\\",\\\"urlbar-container\\\",\\\"downloads-button\\\",\\\"library-button\\\",\\\"sidebar-button\\\",\\\"fxa-toolbar-menu-button\\\",\\\"canvasblocker_kkapsner_de-browser-action\\\",\\\"https-everywhere_eff_org-browser-action\\\",\\\"jid1-bofifl9vbdl2zq_jetpack-browser-action\\\",\\\"ublock0_raymondhill_net-browser-action\\\",\\\"_74145f27-f039-47ce-a470-a662b129930a_-browser-action\\\",\\\"_83e08b00-32de-44e7-97bb-1bab84d1350f_-browser-action\\\"],\\\"toolbar-menubar\\\":[\\\"menubar-items\\\"],\\\"TabsToolbar\\\":[\\\"tabbrowser-tabs\\\",\\\"new-tab-button\\\",\\\"alltabs-button\\\",\\\"_c607c8df-14a7-4f28-894f-29e8722976af_-browser-action\\\"],\\\"PersonalToolbar\\\":[\\\"personal-bookmarks\\\"]},\\\"seen\\\":[\\\"developer-button\\\",\\\"_c607c8df-14a7-4f28-894f-29e8722976af_-browser-action\\\",\\\"canvasblocker_kkapsner_de-browser-action\\\",\\\"https-everywhere_eff_org-browser-action\\\",\\\"jid1-bofifl9vbdl2zq_jetpack-browser-action\\\",\\\"ublock0_raymondhill_net-browser-action\\\",\\\"_74145f27-f039-47ce-a470-a662b129930a_-browser-action\\\",\\\"_83e08b00-32de-44e7-97bb-1bab84d1350f_-browser-action\\\"],\\\"dirtyAreaCache\\\":[\\\"nav-bar\\\",\\\"TabsToolbar\\\"],\\\"currentVersion\\\":16,\\\"newElementCount\\\":5}\"", "exists": false},
-	   {"pref": "\"browser.startup.homepage\"", "value": "\"https://duckduckgo.com/?kak=-1&kax=-1\"", "exists": false},
-	   {"pref": "\"browser.startup.page\"", "value": "\"https://duckduckgo.com/?kak=-1&kax=-1\"", "exists": false}
-	]
-}
