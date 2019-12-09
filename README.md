@@ -11,6 +11,16 @@ The deeper you dig, more you find that we're [loosing privacy from corporations]
 There are brilliant, hard working people who spend countless hours to make these privacy protecting tools. This project is a collection and setup of the best privacy protecting browser tools that exist today. (if you have any suggestions, please create a github 'issue')
 
 
+### 6.0 Installation<a name="installation"></a>
+If you are an advance user check out the [Advance Options](#advance), otherwise continue.
+
+### 6.1 Installation Steps for Windows OS<a name="windows"></a>
+
+1. If you don't have Firefox installed, First download and install [Firefox](https://www.mozilla.org/en-US/firefox/new/).
+2. Download [Privacy-Fighter.exe](https://github.com/jotyGill/privacy-fighter/releases/latest/download/Privacy-Fighter.exe).
+3. Close Firefox and run the downloaded file Privacy-Fighter.exe
+4. **After the installation finishes, follow the ["Post Installation"](#post-installation) section.**
+
 ### 6.2 Installation Steps for GNU/Linux and MacOS<a name="linux"></a>
 
 1. If you don't have Firefox installed, First download and install [Firefox](https://www.mozilla.org/en-US/firefox/new/).
@@ -35,7 +45,3 @@ chmod +x ./privacyfighter-macos-amd64
 2. Open **Bookmarks Manager (press Ctr+Shift+O)** > **"Import and Backup"** > **Import Data from Another Browser**, follow wizard to import your bookmarks and history from your existing browser (Chrome/Edge/Safari).
 3. You can change the default search engine from Google to DuckDuckGo.
  (Menu > Preferences > Search > Default Search Engine > DuckDuckGo)
-
-
-### 3.0 Disclaimer <a name="disclaimer"></a>
-This project is a collection of configurations to setup Firefox preferences and to setup and install third party extensions/addons. These extensions have been carefully chosen. They are downloaded straight from the "Firefox Add-ons store". Each addon is fully open source and anyone can view the code. Each of the addon's developer has high reputation and multi thousand downloads in the addons store. Because these addons are not developed by me, use them at your own risk.
