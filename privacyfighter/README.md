@@ -35,3 +35,7 @@ chmod +x ./privacyfighter-macos-amd64
 2. Open **Bookmarks Manager (press Ctr+Shift+O)** > **"Import and Backup"** > **Import Data from Another Browser**, follow wizard to import your bookmarks and history from your existing browser (Chrome/Edge/Safari).
 3. You can change the default search engine from Google to DuckDuckGo.
  (Menu > Preferences > Search > Default Search Engine > DuckDuckGo)
+
+
+### 3.0 Disclaimer <a name="disclaimer"></a>
+This project is a collection of configurations to setup Firefox preferences and to setup and install third party extensions/addons. These extensions have been carefully chosen. They are downloaded straight from the "Firefox Add-ons store". Each addon is fully open source and anyone can view the code. Each of the addon's developer has high reputation and multi thousand downloads in the addons store. Because these addons are not developed by me, use them at your own risk.
