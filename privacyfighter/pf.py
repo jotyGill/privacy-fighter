@@ -4,7 +4,6 @@ import argparse
 import configparser
 import datetime
 import fileinput
-import fnmatch
 import io
 import os
 import shutil
@@ -17,7 +16,6 @@ import psutil
 import requests
 
 # GUI-SETUP, is a tag used to find lines to change, to produce the gui-version
-
 # from gooey import Gooey  # GUI-SETUP, comment out when producing cli version
 
 gui_mode = False  # GUI-SETUP, change to 'True' in gui-version
@@ -118,6 +116,14 @@ def main():
         help="Skip the installation/setup of extensions (NOT Recommended)",
         action="store_true",
     )
+    advance_options.add_argument(
+        "-i",
+        "--import",
+        dest="import_profile",
+        default="default",
+        help="Import history, bookmarks, saved passwords from old firefox profile",
+        type=str,
+    )
 
     if gui_mode:
         install_tab.add_argument(
@@ -151,15 +157,21 @@ def main():
 
     args = parser.parse_args()
     run(
-        args.profile_name, args.user_overrides_url, args.skip_extensions, args.advance_setup, set_homepage, set_ui,
+        args.profile_name,
+        args.user_overrides_url,
+        args.skip_extensions,
+        args.import_profile,
+        args.advance_setup,
+        set_homepage,
+        set_ui,
     )
 
 
-def run(profile_name, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui):
-    if not latest_version():
-        sys.exit(1)
+def run(profile_name, user_overrides_url, skip_extensions, import_profile, advance_setup, set_homepage, set_ui):
     if firefox_is_running():
         print("Firefox is currently running, please close firefox first then run Privacy Fighter again")
+        sys.exit(1)
+    if not latest_version():
         sys.exit(1)
 
     # if advance_setup is used and no profile name is given, name it "privacy-fighter-advance"
@@ -176,6 +188,7 @@ def run(profile_name, user_overrides_url, skip_extensions, advance_setup, set_ho
 
     if not pf_profile_exists(profile_name, firefox_ini_config):
         create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_config, detected_os)
+        import_profile_data(import_profile, profile_name, firefox_path, firefox_ini_config)
     setup_pf_profile(
         profile_name, firefox_path, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
     )
@@ -199,23 +212,7 @@ def run(profile_name, user_overrides_url, skip_extensions, advance_setup, set_ho
 def setup_pf_profile(
     profile_name, firefox_path, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
 ):
-    # list of profile_dir names under "firefox_path"
-    profile_dirs = [d for d in os.listdir(firefox_path) if os.path.isdir(os.path.join(firefox_path, d))]
-
-    # Firefox sometimes creates profile "default-release", or after reset "default-release-1231212"
-    matches = fnmatch.filter(profile_dirs, "{}".format(profile_name))
-    matches.extend(fnmatch.filter(profile_dirs, "{}-*".format(profile_name)))
-
-    if not matches:
-        print(
-            "ERROR: No Firefox Profile Found With The Name of '{}'. If Unsure Keep it 'privacy-fighter'".format(
-                profile_name
-            )
-        )
-        sys.exit(1)
-    else:
-        profiles = [os.path.join(firefox_path, d) for d in matches]
-        print("Firefox Profile to be secured/modified : ", profiles, "\n")
+    print("Setting up Firefox Profile '", profile_name, "'\n")
 
     # only setup ghacks-user.js, in advance mode, otherwise setup the "basic-user.js"
     if advance_setup:
@@ -225,18 +222,18 @@ def setup_pf_profile(
 
     if not skip_extensions:
         setup_extensions(advance_setup)
-    for profile in profiles:
-        # firefox profile path on the os
-        firefox_p_path = os.path.join(firefox_path, profile)
-        backup_prefsjs(firefox_p_path)
-        print("\nModified Preferences (user.js) and Extensions will now be copied to {}".format(profile))
-        recusive_copy(temp_folder, firefox_p_path)  # copies modified user.js, extensions
-        if set_homepage:
-            # set homepage to duckduckgo.com
-            apply_one_time_prefs(profile, repo_location + "/profile/set-homepage.json")
-        if set_ui:
-            # Customize Firefox UI to better fit all addons
-            apply_one_time_prefs(profile, repo_location + "/profile/set-ui.json")
+
+    # privacy-fighter profile path on the os
+    pf_profile_path = os.path.join(firefox_path, profile_name)
+    backup_prefsjs(pf_profile_path)
+    print("\nModified Preferences (user.js) and Extensions will now be copied to {}".format(pf_profile_path))
+    recusive_copy(temp_folder, pf_profile_path)  # copies modified user.js, extensions
+    if set_homepage:
+        # set homepage to duckduckgo.com
+        apply_one_time_prefs(pf_profile_path, repo_location + "/profile/set-homepage.json")
+    if set_ui:
+        # Customize Firefox UI to better fit all addons
+        apply_one_time_prefs(pf_profile_path, repo_location + "/profile/set-ui.json")
 
 
 def parse_firefox_ini_config(firefox_ini_path):
@@ -288,6 +285,44 @@ def create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_
     firefox_ini_config.write(open(firefox_ini_path, "w"), space_around_delimiters=False)
 
 
+def import_profile_data(import_profile, profile_name, firefox_path, firefox_ini_config):
+    all_sections = firefox_ini_config.sections()
+    # print(all_sections)
+
+    import_profile_release = import_profile + "-release"
+    import_profile_path = ""
+
+    # Files to copy that store bookmarks, passwords db, site prefs etc.
+    data_files = [
+        "places.sqlite",
+        "favicons.sqlite",
+        "key4.db",
+        "logins.json",
+        "permissions.sqlite",
+        "formhistory.sqlite",
+    ]
+
+    for section in all_sections:
+        try:
+            if import_profile_release in firefox_ini_config.get(section, "Name"):
+                import_profile_path = os.path.join(firefox_path, firefox_ini_config.get(section, "Path"))
+        except configparser.NoOptionError:
+            pass
+    # If "default-release" doesn't exist, find "default"
+    if not import_profile_path:
+        for section in all_sections:
+            try:
+                if firefox_ini_config.get(section, "Name") == import_profile:
+                    # print(section)
+                    import_profile_path = os.path.join(firefox_path, firefox_ini_config.get(section, "Path"))
+                    # print(import_profile_path)
+            except configparser.NoOptionError:
+                pass
+
+    for file in data_files:
+        shutil.copy2(os.path.join(import_profile_path, file), os.path.join(firefox_path, profile_name))
+
+
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
@@ -310,8 +345,8 @@ def setup_extensions(advance_setup):
         # Download and save extension.xpi files
         extension_xpi = get_file(ext["url"])
         open(os.path.join(extensions_folder, ext["id"]), "wb").write(extension_xpi.content)
-
-        print("progress: {}/{}".format(index + 1, total_steps))
+        if gui_mode:
+            print("progress: {}/{}".format(index + 1, total_steps))
         sys.stdout.flush()
 
     # Download the "browser-extensions-data". these are extension's configuration files
@@ -486,9 +521,9 @@ def latest_version():
     return False
 
 
-def backup_prefsjs(firefox_p_path):
-    prefsjs_path = os.path.join(firefox_p_path, "prefs.js")
-    prefsjs_backups_folder = os.path.join(firefox_p_path, "prefs-backups")
+def backup_prefsjs(pf_profile_path):
+    prefsjs_path = os.path.join(pf_profile_path, "prefs.js")
+    prefsjs_backups_folder = os.path.join(pf_profile_path, "prefs-backups")
     prefsjs_backup_name = os.path.join(
         prefsjs_backups_folder, ("prefs-" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js"))
     )
@@ -527,7 +562,7 @@ def recusive_copy(source_path, destination_path):
             # print("Copying: ", src_file)
             # create parent directory
             os.makedirs(os.path.dirname(dst_file_path), exist_ok=True)
-            shutil.copy(src_file_path, dst_file_path)
+            shutil.copy2(src_file_path, dst_file_path)
 
 
 def firefox_is_running():
