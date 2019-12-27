@@ -37,7 +37,7 @@ os.makedirs(extensions_folder, exist_ok=True)
 
 
 # GUI-SETUP, comment out the decorator @Gooey when in cli-mode
-@Gooey(
+# @Gooey(
 #     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
 #     progress_expr="current / total * 100",
 #     hide_progress_msg=True,
