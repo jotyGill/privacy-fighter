@@ -1,14 +1,14 @@
 {
   "extensions":
   [
-    {"name": "decentraleyes", "id": "jid1-BoFifL9Vbdl2zQ@jetpack.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3423038/decentraleyes-2.0.13-an+fx.xpi"},
-    {"name": "https_everywhere", "id": "https-everywhere@eff.org.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3060290/https_everywhere-2019.6.27-an+fx.xpi"},
-    {"name": "ublock_origin", "id": "uBlock0@raymondhill.net.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3412681/ublock_origin-1.22.4-an+fx.xpi"},
-    {"name": "canvas_blocker", "id": "CanvasBlocker@kkapsner.de.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3410720/canvasblocker-0.5.14-an+fx.xpi"},
-    {"name": "clear_urls", "id": "{74145f27-f039-47ce-a470-a662b129930a}.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3429897/clearurls-1.9.0-an+fx.xpi"},
-    {"name": "temporary_containers", "id": "{c607c8df-14a7-4f28-894f-29e8722976af}.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3366287/temporary_containers-1.2-fx.xpi"},
-    {"name": "terms_of_service_didnt_read", "id": "jid0-3GUEt1r69sQNSrca5p8kx9Ezc3U@jetpack.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/1050617/terms_of_service_didnt_read-2.0.0-an+fx.xpi"},
-    {"name": "enforce_browser_fonts", "id": "{83e08b00-32de-44e7-97bb-1bab84d1350f}.xpi", "advance_setup": "True", "url": "https://addons.mozilla.org/firefox/downloads/file/3364323/enforce_browser_fonts-0.3-fx.xpi"},
-    {"name": "privacybadger", "id": "jid1-MnnxcxisBPnSXQ@jetpack.xpi", "advance_setup": "True", "url": "https://addons.mozilla.org/firefox/downloads/file/3420722/privacy_badger-2019.10.8-an+fx.xpi"}
+    {"name": "Decentraleyes", "id": "jid1-BoFifL9Vbdl2zQ@jetpack.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3423038/decentraleyes-2.0.13-an+fx.xpi"},
+    {"name": "HTTPS Everywhere", "id": "https-everywhere@eff.org.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3442258/https_everywhere-2019.11.7-an+fx.xpi"},
+    {"name": "uBlock Origin", "id": "uBlock0@raymondhill.net.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3452970/ublock_origin-1.24.2-an+fx.xpi"},
+    {"name": "CanvasBlocker", "id": "CanvasBlocker@kkapsner.de.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3410720/canvasblocker-0.5.14-an+fx.xpi"},
+    {"name": "ClearURLs", "id": "{74145f27-f039-47ce-a470-a662b129930a}.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3453790/clearurls-1.9.4-an+fx.xpi"},
+    {"name": "Temporary Containers", "id": "{c607c8df-14a7-4f28-894f-29e8722976af}.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3366287/temporary_containers-1.2-fx.xpi"},
+    {"name": "Terms of Service; Didn’t Read", "id": "jid0-3GUEt1r69sQNSrca5p8kx9Ezc3U@jetpack.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/1050617/terms_of_service_didnt_read-2.0.0-an+fx.xpi"},
+    {"name": "Enforce Browser Fonts", "id": "{83e08b00-32de-44e7-97bb-1bab84d1350f}.xpi", "advance_setup": "True", "url": "https://addons.mozilla.org/firefox/downloads/file/3364323/enforce_browser_fonts-0.3-fx.xpi"},
+    {"name": "Privacy Badger", "id": "jid1-MnnxcxisBPnSXQ@jetpack.xpi", "advance_setup": "True", "url": "https://addons.mozilla.org/firefox/downloads/file/3448925/privacy_badger-2019.11.18-an+fx.xpi"}
   ]
 }

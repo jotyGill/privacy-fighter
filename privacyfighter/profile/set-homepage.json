@@ -1,0 +1,7 @@
+{
+  "prefs":
+	[
+	   {"pref": "\"browser.startup.homepage\"", "value": "\"https://duckduckgo.com/?kak=-1&kax=-1\"", "exists": false},
+	   {"pref": "\"browser.startup.page\"", "value": "\"https://duckduckgo.com/?kak=-1&kax=-1\"", "exists": false}
+	]
+}
