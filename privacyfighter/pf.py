@@ -37,7 +37,7 @@ os.makedirs(extensions_folder, exist_ok=True)
 
 
 # GUI-SETUP, comment out the decorator @Gooey when in cli-mode
-# @Gooey(
+@Gooey(
 #     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
 #     progress_expr="current / total * 100",
 #     hide_progress_msg=True,
@@ -305,7 +305,11 @@ def import_profile_data(import_profile, profile_name, firefox_path, firefox_ini_
     for section in all_sections:
         try:
             if import_profile_release in firefox_ini_config.get(section, "Name"):
-                import_profile_path = os.path.join(firefox_path, firefox_ini_config.get(section, "Path"))
+                profile_path_in_ini = firefox_ini_config.get(section, "Path")
+                if "Profiles/" in profile_path_in_ini:
+                    profile_path_in_ini = profile_path_in_ini[9:]
+                import_profile_path = os.path.join(firefox_path, profile_path_in_ini)
+
         except configparser.NoOptionError:
             pass
     # If "default-release" doesn't exist, find "default"
@@ -314,7 +318,10 @@ def import_profile_data(import_profile, profile_name, firefox_path, firefox_ini_
             try:
                 if firefox_ini_config.get(section, "Name") == import_profile:
                     # print(section)
-                    import_profile_path = os.path.join(firefox_path, firefox_ini_config.get(section, "Path"))
+                    profile_path_in_ini = firefox_ini_config.get(section, "Path")
+                    if "Profiles/" in profile_path_in_ini:
+                        profile_path_in_ini = profile_path_in_ini[9:]
+                    import_profile_path = os.path.join(firefox_path, profile_path_in_ini)
                     # print(import_profile_path)
             except configparser.NoOptionError:
                 pass
