@@ -23,7 +23,7 @@ gui_mode = False  # GUI-SETUP, change to 'True' in gui-version
 __version__ = "2.0.0"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
-repo_location = "https://raw.githubusercontent.com/jotyGill/privacy-fighter/develop/privacyfighter"
+repo_location = "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter"
 
 # temporary folder to download files in
 temp_folder = tempfile.mkdtemp()
