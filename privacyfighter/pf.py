@@ -479,12 +479,12 @@ def apply_one_time_prefs(profile, prefjs):
 
 def get_firefox_profiles_path(detected_os):
     if detected_os == "linux":
-        firefox_path = os.path.join(Path.home(), ".mozilla/firefox/")
+        firefox_path = os.path.join(str(Path.home()), ".mozilla/firefox/")
     elif detected_os == "win32":
         firefox_path = os.path.join(os.getenv("APPDATA"), "Mozilla\Firefox\Profiles" "\\")
         # firefox_path = Path.joinpath(Path(os.getenv('APPDATA')), Path("Mozilla/Firefox/Profiles/"))
     elif detected_os == "darwin":
-        firefox_path = os.path.join(Path.home(), "Library/Application Support/Firefox/Profiles")
+        firefox_path = os.path.join(str(Path.home()), "Library/Application Support/Firefox/Profiles")
 
     if not os.path.exists(firefox_path):
         print("Please download and install firefox first https://www.mozilla.org/en-US/firefox/new/")
@@ -495,11 +495,11 @@ def get_firefox_profiles_path(detected_os):
 
 def get_firefox_ini_path(detected_os):
     if detected_os == "linux":
-        firefox_ini_path = os.path.join(Path.home(), ".mozilla/firefox/profiles.ini")
+        firefox_ini_path = os.path.join(str(Path.home()), ".mozilla/firefox/profiles.ini")
     elif detected_os == "win32":
         firefox_ini_path = os.path.join(os.getenv("APPDATA"), "Mozilla\Firefox\profiles.ini")
     elif detected_os == "darwin":
-        firefox_ini_path = os.path.join(Path.home(), "Library/Application Support/Firefox/profiles.ini")
+        firefox_ini_path = os.path.join(str(Path.home()), "Library/Application Support/Firefox/profiles.ini")
 
     return firefox_ini_path
 
@@ -557,7 +557,7 @@ def recusive_copy(source_path, destination_path):
             # now src_file would be e.g extensions/ext.xpi
             src_file = Path(*src_list)
 
-            dst_file_path = os.path.join(destination_path, src_file)
+            dst_file_path = os.path.join(destination_path, str(src_file))
             # print("file : ", src_file_path, dst_file_path)
             # print("Copying: ", src_file)
             # create parent directory
