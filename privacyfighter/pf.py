@@ -14,13 +14,12 @@ from pathlib import Path
 
 import psutil
 import requests
-
 # GUI-SETUP, is a tag used to find lines to change, to produce the gui-version
 # from gooey import Gooey  # GUI-SETUP, comment out when producing cli version
 
 gui_mode = False  # GUI-SETUP, change to 'True' in gui-version
 
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 
 repo_location = "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter"
@@ -327,7 +326,11 @@ def import_profile_data(import_profile, profile_name, firefox_path, firefox_ini_
                 pass
 
     for file in data_files:
-        shutil.copy2(os.path.join(import_profile_path, file), os.path.join(firefox_path, profile_name))
+        try:
+            shutil.copy2(os.path.join(import_profile_path, file), os.path.join(firefox_path, profile_name))
+        except FileNotFoundError:
+            # logins.json is missing, user never saved any password in FF
+            pass
 
 
 def resource_path(relative_path):
