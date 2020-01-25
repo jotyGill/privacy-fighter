@@ -15,9 +15,9 @@ from pathlib import Path
 import psutil
 import requests
 # GUI-SETUP, is a tag used to find lines to change, to produce the gui-version
-from gooey import Gooey  # GUI-SETUP, comment out when producing cli version
+# from gooey import Gooey  # GUI-SETUP, comment out when producing cli version
 
-gui_mode = True  # GUI-SETUP, change to 'True' in gui-version
+gui_mode = False  # GUI-SETUP, change to 'True' in gui-version
 
 __version__ = "2.0.1"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
@@ -36,33 +36,33 @@ os.makedirs(extensions_folder, exist_ok=True)
 
 
 # GUI-SETUP, comment out the decorator @Gooey when in cli-mode
-@Gooey(
-    progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
-    progress_expr="current / total * 100",
-    hide_progress_msg=True,
-    program_name="Privacy Fighter",
-    requires_shell=False,
-    tabbed_groups=True,
-    default_size=(900, 530),
-    menu=[
-        {
-            "name": "About",
-            "items": [
-                {
-                    "type": "AboutDialog",
-                    "menuTitle": "About",
-                    "name": "Privacy Fighter",
-                    "description": "A Browser Setup To Protect Your Privacy",
-                    "version": __version__,
-                    "website": "https://github.com/jotyGill/privacy-fighter",
-                    "developer": "https://github.com/jotyGill",
-                    "license": "GNU General Public License v3 or later (GPLv3+)",
-                },
-                {"type": "Link", "menuTitle": "Project Link", "url": "https://github.com/jotyGill/privacy-fighter"},
-            ],
-        }
-    ],
-)
+# @Gooey(
+#     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
+#     progress_expr="current / total * 100",
+#     hide_progress_msg=True,
+#     program_name="Privacy Fighter",
+#     requires_shell=False,
+#     tabbed_groups=True,
+#     default_size=(900, 530),
+#     menu=[
+#         {
+#             "name": "About",
+#             "items": [
+#                 {
+#                     "type": "AboutDialog",
+#                     "menuTitle": "About",
+#                     "name": "Privacy Fighter",
+#                     "description": "A Browser Setup To Protect Your Privacy",
+#                     "version": __version__,
+#                     "website": "https://github.com/jotyGill/privacy-fighter",
+#                     "developer": "https://github.com/jotyGill",
+#                     "license": "GNU General Public License v3 or later (GPLv3+)",
+#                 },
+#                 {"type": "Link", "menuTitle": "Project Link", "url": "https://github.com/jotyGill/privacy-fighter"},
+#             ],
+#         }
+#     ],
+# )
 def main():
     parser = argparse.ArgumentParser(description="Privacy-Fighter: A Browser Setup To Protect Your Privacy")
     if not gui_mode:
