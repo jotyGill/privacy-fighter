@@ -5,27 +5,44 @@ import configparser
 import datetime
 import fileinput
 import io
+import json
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 from pathlib import Path
 
 import psutil
 import requests
-# GUI-SETUP, is a tag used to find lines to change, to produce the gui-version
-# from gooey import Gooey  # GUI-SETUP, comment out when producing cli version
 
-gui_mode = False  # GUI-SETUP, change to 'True' in gui-version
 
 __version__ = "2.0.1"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
+detected_os = sys.platform
 
-repo_location = "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter"
+# GUI-SETUP, is a tag used to find lines to change, to produce the gui-version
+# For GUI version, manually uncomment the @Gooey decorator
+gui_mode = False  # GUI-SETUP, change to 'True' for gui-version
+
+if detected_os == "win32":
+    # Turn on gui mode for windows
+    # Remember to manually uncomment the @Gooey decorator
+    gui_mode = True
+    import winreg
+
+if gui_mode:
+    from gooey import Gooey
+
+repo_location = "https://raw.githubusercontent.com/jotyGill/privacy-fighter/develop/privacyfighter"
 
 # temporary folder to download files in
 temp_folder = tempfile.mkdtemp()
+
+# temporary folder to download extensions data files
+temp_ext_data_folder = tempfile.mkdtemp()
 
 # progress bar steps
 total_steps = 9
@@ -35,7 +52,7 @@ extensions_folder = os.path.join(temp_folder, "extensions")
 os.makedirs(extensions_folder, exist_ok=True)
 
 
-# GUI-SETUP, comment out the decorator @Gooey when in cli-mode
+# # GUI-SETUP, comment out the decorator @Gooey when in cli-mode
 # @Gooey(
 #     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
 #     progress_expr="current / total * 100",
@@ -177,7 +194,6 @@ def run(profile_name, user_overrides_url, skip_extensions, import_profile, advan
     if advance_setup and profile_name == "privacy-fighter":
         profile_name = "privacy-fighter-advance"
 
-    detected_os = sys.platform
 
     # path to firefox profiles
     firefox_path = get_firefox_profiles_path(detected_os)
@@ -198,6 +214,7 @@ def run(profile_name, user_overrides_url, skip_extensions, import_profile, advan
     # cleanup
     shutil.rmtree(temp_folder)
 
+    shutil.rmtree(temp_ext_data_folder)
     print("\n------------------DONE-------------------\n")
     # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
     print(
@@ -226,7 +243,7 @@ def setup_pf_profile(
     pf_profile_path = os.path.join(firefox_path, profile_name)
     backup_prefsjs(pf_profile_path)
     print("\nModified Preferences (user.js) and Extensions will now be copied to {}".format(pf_profile_path))
-    recusive_copy(temp_folder, pf_profile_path)  # copies modified user.js, extensions
+    recursive_copy(temp_folder, pf_profile_path)  # copies modified user.js, extensions
     if set_homepage:
         # set homepage to duckduckgo.com
         apply_one_time_prefs(pf_profile_path, repo_location + "/profile/set-homepage.json")
@@ -362,7 +379,7 @@ def setup_extensions(advance_setup):
     # Download the "browser-extensions-data". these are extension's configuration files
     extensions_configs = get_file(repo_location + "/profile/browser-extension-data.zip")
     with zipfile.ZipFile(io.BytesIO(extensions_configs.content)) as thezip:
-        thezip.extractall(temp_folder)
+        thezip.extractall(temp_ext_data_folder)
 
 
 # Download files using request.get(), throw error on exceptions
@@ -545,7 +562,7 @@ def backup_prefsjs(pf_profile_path):
         shutil.move(prefsjs_path, prefsjs_backup_name)
 
 
-def recusive_copy(source_path, destination_path):
+def recursive_copy(source_path, destination_path):
     for dirpath, dirnames, filenames in os.walk(source_path):
         for dirname in dirnames:
             pass
@@ -601,6 +618,81 @@ def dont_autoselect_profiles(firefox_ini_path, firefox_ini_config):
         firefox_ini_config["General"]["StartWithLastProfile"] = "0"
 
     firefox_ini_config.write(open(firefox_ini_path, "w"), space_around_delimiters=False)
+
+
+def get_ext_uuid(profile_name, firefox_path, extension_id):
+    prefsjs = os.path.join(firefox_path, profile_name, "prefs.js")
+    for i in range(3):
+        try:
+            with open(prefsjs, "r") as outfile:
+                text = outfile.readlines()
+                for line in text:
+                    if "extensions.webextensions.uuids" in line:
+                        # print(line)
+                        uuids_text = line
+
+                uuids_str = json.loads(
+                    uuids_text[uuids_text.find("{") - 1: uuids_text.rfind("}") + 2]
+                )
+
+                uuids_dic = json.loads(uuids_str)
+
+                print(uuids_dic.get(extension_id))
+                # print(uuids_dic)
+                return uuids_dic.get(extension_id)
+        except:
+            time.sleep(1)
+
+
+def copy_ext_data(profile_name, firefox_path, temp_ext_data_folder):
+    extension_ids = os.listdir(
+        os.path.join(temp_ext_data_folder, "browser-extension-data")
+    )
+
+    for extension_id in extension_ids:
+        extension_uuid = get_ext_uuid(profile_name, firefox_path, extension_id)
+        ext_data_src_location = os.path.join(
+            temp_ext_data_folder, "browser-extension-data", extension_id
+        )
+        ext_folder_name = "moz-extension+++{}^userContextId=4294967295".format(
+            extension_uuid
+        )
+        ext_data_dst_location = os.path.join(
+            firefox_path, profile_name, "storage", "default", ext_folder_name
+        )
+        # os.mkdirs(ext_data_dst_location, exist_ok=True)
+
+        recursive_copy(ext_data_src_location, ext_data_dst_location)
+
+
+def start_firefox(
+    detected_os,
+    profile_name,
+    post_installation_link="https://github.com/jotyGill/privacy-fighter/#20-post-installation",
+):
+    if detected_os == "linux":
+        subprocess.Popen(["firefox", "-p", profile_name, post_installation_link])
+    elif detected_os == "win32":
+        try:
+            subprocess.Popen(
+                [
+                    "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
+                    "-p",
+                    profile_name,
+                    post_installation_link,
+                ]
+            )
+        except FileNotFoundError:
+            subprocess.Popen(
+                [
+                    "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                    "-p",
+                    profile_name,
+                    post_installation_link,
+                ]
+            )
+    elif detected_os == "darwin":
+        subprocess.Popen(["firefox", "-p", profile_name, post_installation_link])
 
 
 if __name__ == "__main__":
