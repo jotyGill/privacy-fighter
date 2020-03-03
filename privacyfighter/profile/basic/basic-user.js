@@ -43,6 +43,13 @@ user_pref("privacy.userContext.ui.enabled", true);
  * [SETTING] General>Tabs>Enable Container Tabs ***/
 user_pref("privacy.userContext.enabled", true);
 
+/* 2600: MISCELLANEOUS
+ * 
+ * Temporarily Allow extensions from user profiles to be auto enabled
+ * This will get overwritten after installation for better security
+ * For windows value will be set to default 15. For linux 11 **/
+user_pref("extensions.autoDisableScopes", 10);
+
 /* 2702: set third-party cookies (i.e ALL) (if enabled, see 2701) to session-only
    and (FF58+) set third-party non-secure (i.e HTTP) cookies to session-only
    [NOTE] .sessionOnly overrides .nonsecureSessionOnly except when .sessionOnly=false and
