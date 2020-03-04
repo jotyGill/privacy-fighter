@@ -214,14 +214,15 @@ def run(profile_name, user_overrides_url, skip_extensions, import_profile, advan
     # cleanup
     shutil.rmtree(temp_folder)
 
+    start_firefox(detected_os, profile_name)
+    time.sleep(3)
+
+    # reset autoDisableScopes values to os defaults for better security
+    reset_autoDisableScopes(firefox_path, profile_name)
+
     shutil.rmtree(temp_ext_data_folder)
     print("\n------------------DONE-------------------\n")
     # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
-    print(
-        "You can now close this and run Firefox :)\n\n"
-        "Remember to follow the post installation instructions (visit this link)\n"
-        "https://github.com/jotyGill/privacy-fighter/#70-post-installation"
-    )
 
 
 # The actual setup: unless specified, a firefox profile with the name 'privacy-fighter' will be created and configured.
@@ -244,12 +245,14 @@ def setup_pf_profile(
     backup_prefsjs(pf_profile_path)
     print("\nModified Preferences (user.js) and Extensions will now be copied to {}".format(pf_profile_path))
     recursive_copy(temp_folder, pf_profile_path)  # copies modified user.js, extensions
+
+    # apply some onetime prefs directly to 'prefs.js' instead of 'user.js' so end users can change these
     if set_homepage:
-        # set homepage to duckduckgo.com
-        apply_one_time_prefs(pf_profile_path, repo_location + "/profile/set-homepage.json")
+        # set homepage to duckduckgo.com in "prefs.js"
+        override_prefs(repo_location + "/profile/set-homepage.json", os.path.join(pf_profile_path, "prefs.js"))
     if set_ui:
         # Customize Firefox UI to better fit all addons
-        apply_one_time_prefs(pf_profile_path, repo_location + "/profile/set-ui.json")
+        override_prefs(repo_location + "/profile/set-ui.json", os.path.join(pf_profile_path, "prefs.js"))
 
 
 def parse_firefox_ini_config(firefox_ini_path):
@@ -468,26 +471,22 @@ def extract_user_overrides():
     return remove_prefs
 
 
-# apply some prefs directly to "pref.js", users can change these later.
-def apply_one_time_prefs(profile, prefjs):
-    # prefs to be applied directly to 'prefs.js' instead of 'user.js' so end users can change these
-    # contains 'exists' to change if found and turn 'exists' True. the ones not found will be later added
-    # keep this in profile loop, so 'exists' True resets for next profile
+# download and apply prefs from a json file to a local file ("user.js"/"prefs.js")
+def override_prefs(src_js, dst_js):
+    # contains 'exists' to change if found and turn 'exists' True. the ones not found then get appended
 
     # Download the config file containing preferences from the location
-    r = get_file(prefjs)
-    one_time_prefs = r.json()["prefs"]
-
-    prefsjs_file = os.path.join(profile, "prefs.js")
+    r = get_file(src_js)
+    new_prefs = r.json()["prefs"]
 
     # touch prefs.js because the old one was moved to prefs-backups
-    if not os.path.exists(prefsjs_file):
-        Path(prefsjs_file).touch()
+    if not os.path.exists(dst_js):
+        Path(dst_js).touch()
 
     # If pref exists, overwrite it
-    with fileinput.input(prefsjs_file, inplace=True) as prefs_file:
+    with fileinput.input(dst_js, inplace=True) as prefs_file:
         for line in prefs_file:
-            for i in one_time_prefs:
+            for i in new_prefs:
                 if i["pref"] in line:
                     line = "user_pref({}, {});\n".format(i["pref"], i["value"])
                     # it is found, turn 'exists' to True
@@ -496,12 +495,29 @@ def apply_one_time_prefs(profile, prefjs):
             sys.stdout.write(line)
 
     # now append the rest of preferences
-    with open(prefsjs_file, "a") as prefsjs:
-        for i in one_time_prefs:
+    with open(dst_js, "a") as prefsjs:
+        for i in new_prefs:
             if not i["exists"]:
                 line = "user_pref({}, {});\n".format(i["pref"], i["value"])
                 # print(i)      # pref being added
                 prefsjs.write(line)
+
+
+# reset value of autoDisableScopes back to OS defaults
+def reset_autoDisableScopes(firefox_path, profile_name):
+    if detected_os == "win32":
+        autoDisableScopes = {"pref": "\"extensions.autoDisableScopes\"", "value": "15"}
+    else:
+        autoDisableScopes = {"pref": "\"extensions.autoDisableScopes\"", "value": "3"}
+
+    dst_js = os.path.join(firefox_path, profile_name, "prefs.js")
+
+    # overwrite autoDisableScopes
+    with fileinput.input(dst_js, inplace=True) as prefs_file:
+        for line in prefs_file:
+            if autoDisableScopes["pref"] in line:
+                line = "user_pref({}, {});\n".format(autoDisableScopes["pref"], autoDisableScopes["value"])
+            sys.stdout.write(line)
 
 
 def get_firefox_profiles_path(detected_os):
