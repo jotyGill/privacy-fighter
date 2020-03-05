@@ -40,9 +40,6 @@ repo_location = "https://raw.githubusercontent.com/jotyGill/privacy-fighter/deve
 # temporary folder to download files in
 temp_folder = tempfile.mkdtemp()
 
-# temporary folder to download extensions data files
-temp_ext_data_folder = tempfile.mkdtemp()
-
 # progress bar steps
 total_steps = 9
 
@@ -194,13 +191,13 @@ def run(profile_name, user_overrides_url, skip_extensions, import_profile, advan
         profile_name = "privacy-fighter-advance"
 
     # path to firefox profiles
-    firefox_path = get_firefox_profiles_path(detected_os)
+    firefox_path = get_firefox_profiles_path()
 
-    firefox_ini_path = get_firefox_ini_path(detected_os)
+    firefox_ini_path = get_firefox_ini_path()
     firefox_ini_config = parse_firefox_ini_config(firefox_ini_path)
 
     if not pf_profile_exists(profile_name, firefox_ini_config):
-        create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_config, detected_os)
+        create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_config)
         import_profile_data(import_profile, profile_name, firefox_path, firefox_ini_config)
     setup_pf_profile(
         profile_name, firefox_path, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
@@ -212,13 +209,12 @@ def run(profile_name, user_overrides_url, skip_extensions, import_profile, advan
     # cleanup
     shutil.rmtree(temp_folder)
 
-    start_firefox(detected_os, profile_name)
+    start_firefox(profile_name)
     time.sleep(3)
 
     # reset autoDisableScopes values to os defaults for better security
     reset_autoDisableScopes(firefox_path, profile_name)
 
-    shutil.rmtree(temp_ext_data_folder)
     print("\n------------------DONE-------------------\n")
     # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
 
@@ -271,7 +267,7 @@ def pf_profile_exists(profile_name, firefox_ini_config):
     return False
 
 
-def create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_config, detected_os):
+def create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_config):
     all_sections = firefox_ini_config.sections()
     # print(config.sections())
 
@@ -544,7 +540,7 @@ def reset_autoDisableScopes(firefox_path, profile_name):
             sys.stdout.write(line)
 
 
-def get_firefox_profiles_path(detected_os):
+def get_firefox_profiles_path():
     if detected_os == "linux":
         firefox_path = os.path.join(str(Path.home()), ".mozilla/firefox/")
     elif detected_os == "win32":
@@ -560,7 +556,7 @@ def get_firefox_profiles_path(detected_os):
     return firefox_path
 
 
-def get_firefox_ini_path(detected_os):
+def get_firefox_ini_path():
     if detected_os == "linux":
         firefox_ini_path = os.path.join(str(Path.home()), ".mozilla/firefox/profiles.ini")
     elif detected_os == "win32":
@@ -684,29 +680,7 @@ def get_ext_uuid(profile_name, firefox_path, extension_id):
             time.sleep(1)
 
 
-def copy_ext_data(profile_name, firefox_path, temp_ext_data_folder):
-    extension_ids = os.listdir(
-        os.path.join(temp_ext_data_folder, "browser-extension-data")
-    )
-
-    for extension_id in extension_ids:
-        extension_uuid = get_ext_uuid(profile_name, firefox_path, extension_id)
-        ext_data_src_location = os.path.join(
-            temp_ext_data_folder, "browser-extension-data", extension_id
-        )
-        ext_folder_name = "moz-extension+++{}^userContextId=4294967295".format(
-            extension_uuid
-        )
-        ext_data_dst_location = os.path.join(
-            firefox_path, profile_name, "storage", "default", ext_folder_name
-        )
-        # os.mkdirs(ext_data_dst_location, exist_ok=True)
-
-        recursive_copy(ext_data_src_location, ext_data_dst_location)
-
-
 def start_firefox(
-    detected_os,
     profile_name,
     post_installation_link="https://github.com/jotyGill/privacy-fighter/#20-post-installation",
 ):
