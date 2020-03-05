@@ -26,6 +26,7 @@ detected_os = sys.platform
 # GUI-SETUP, is a tag used to find lines to change, to produce the gui-version
 # For GUI version, manually uncomment the @Gooey decorator
 gui_mode = False  # GUI-SETUP, change to 'True' for gui-version
+# from gooey import Gooey   # GUI-SETUP
 
 if detected_os == "win32":
     # Turn on gui mode for windows
@@ -33,8 +34,6 @@ if detected_os == "win32":
     gui_mode = True
     import winreg
 
-if gui_mode:
-    from gooey import Gooey
 
 repo_location = "https://raw.githubusercontent.com/jotyGill/privacy-fighter/develop/privacyfighter"
 
@@ -193,7 +192,6 @@ def run(profile_name, user_overrides_url, skip_extensions, import_profile, advan
     # if advance_setup is used and no profile name is given, name it "privacy-fighter-advance"
     if advance_setup and profile_name == "privacy-fighter":
         profile_name = "privacy-fighter-advance"
-
 
     # path to firefox profiles
     firefox_path = get_firefox_profiles_path(detected_os)
@@ -379,10 +377,36 @@ def setup_extensions(advance_setup):
             print("progress: {}/{}".format(index + 1, total_steps))
         sys.stdout.flush()
 
-    # Download the "browser-extensions-data". these are extension's configuration files
-    extensions_configs = get_file(repo_location + "/profile/browser-extension-data.zip")
+    if detected_os == "linux":
+        managed_storage_folder = os.path.join(str(Path.home()), ".mozilla/managed-storage")
+    elif detected_os == "win32":
+        managed_storage_folder = os.path.join(os.getenv("APPDATA"), "Mozilla\ManagedStorage" "\\")
+    elif detected_os == "darwin":
+        managed_storage_folder = os.path.join(str(Path.home()), "Library/Application Support/Mozilla/ManagedStorage")
+
+    os.makedirs(managed_storage_folder, exist_ok=True)
+
+    # Download extension's configurations into managed_storage_folder
+    # On linux and macos these configs automatically get loaded
+    # https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_manifests
+    extensions_configs = get_file(repo_location + "/profile/extensions-configs.zip")
     with zipfile.ZipFile(io.BytesIO(extensions_configs.content)) as thezip:
-        thezip.extractall(temp_ext_data_folder)
+        thezip.extractall(managed_storage_folder)
+
+    # For windows create registry keys to auto apply extension configs
+    # https://github.com/gorhill/uBlock/issues/2986#issuecomment-333475958
+    if detected_os == "win32":
+        extension_names = [x[:-5] for x in os.listdir(managed_storage_folder)]     # -5 to remove .json
+        for extension_name in extension_names:
+            reg_key = "Software\\Mozilla\\ManagedStorage\\{}".format(extension_name)
+            key_value = "{}{}.json".format(managed_storage_folder.replace("\\", "\\\\"), extension_name)
+            try:
+                winreg.CreateKey(winreg.HKEY_CURRENT_USER, reg_key)
+                registry_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, reg_key, 0, winreg.KEY_WRITE)
+                winreg.SetValueEx(registry_key, "", 0, winreg.REG_SZ, key_value)
+                winreg.CloseKey(registry_key)
+            except OSError:
+                print("Error while creating windows registry entry for {}".format(key_value))
 
 
 # Download files using request.get(), throw error on exceptions
