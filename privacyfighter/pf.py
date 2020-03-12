@@ -2,7 +2,6 @@
 
 import argparse
 import configparser
-import datetime
 import fileinput
 import io
 import json
@@ -125,10 +124,10 @@ def main():
 
     if gui_mode:
         install_tab.add_argument(
-            "--set-homepage",
-            dest="set_homepage",
+            "--set-searchengine",
+            dest="set_searchengine",
             default=True,
-            help="Set homepage to privacy respecting search engine (DuckDuckGo)",
+            help="Set search engine to privacy respecting DuckDuckGo",
             action="store_false",
         )
         advance_options.add_argument(
@@ -140,17 +139,17 @@ def main():
         )
     else:
         install_tab.add_argument(
-            "--no-homepage",
-            dest="set_homepage",
+            "--no-searchengine",
+            dest="set_searchengine",
             default=False,
-            help="Don't change the homepage to duckduckgo",
+            help="Don't change the search engine to duckduckgo",
             action="store_true",
         )
         advance_options.add_argument(
             "--no-ui", dest="set_ui", default=False, help="Don't customise firefox UI elements", action="store_true",
         )
 
-    set_homepage = not parser.parse_args().set_homepage
+    set_searchengine = not parser.parse_args().set_searchengine
     set_ui = not parser.parse_args().set_ui
 
     args = parser.parse_args()
@@ -160,12 +159,12 @@ def main():
         args.skip_extensions,
         args.import_profile,
         args.advance_setup,
-        set_homepage,
+        set_searchengine,
         set_ui,
     )
 
 
-def run(profile_name, user_overrides_url, skip_extensions, import_profile, advance_setup, set_homepage, set_ui):
+def run(profile_name, user_overrides_url, skip_extensions, import_profile, advance_setup, set_searchengine, set_ui):
     if firefox_is_running():
         print("Firefox is currently running, please close firefox first then run Privacy Fighter again")
         sys.exit(1)
@@ -186,7 +185,7 @@ def run(profile_name, user_overrides_url, skip_extensions, import_profile, advan
         create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_config)
         import_profile_data(import_profile, profile_name, firefox_path, firefox_ini_config)
     setup_pf_profile(
-        profile_name, firefox_path, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
+        profile_name, firefox_path, user_overrides_url, skip_extensions, advance_setup, set_searchengine, set_ui
     )
 
     # set firefox config to ask which profile to choose everytime you run firefox
@@ -206,7 +205,7 @@ def run(profile_name, user_overrides_url, skip_extensions, import_profile, advan
 
 # The actual setup: unless specified, a firefox profile with the name 'privacy-fighter' will be created and configured.
 def setup_pf_profile(
-    profile_name, firefox_path, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
+    profile_name, firefox_path, user_overrides_url, skip_extensions, advance_setup, set_searchengine, set_ui
 ):
     print("Setting up Firefox Profile '", profile_name, "'\n")
 
@@ -219,16 +218,16 @@ def setup_pf_profile(
     if not skip_extensions:
         setup_extensions(advance_setup, profile_name, firefox_path)
 
+    if set_searchengine:
+        # Download the search engine config file.
+        download_file(repo_location + "/profile/search.json.mozlz4", os.path.join(temp_folder, "search.json.mozlz4"))
+
     # privacy-fighter profile path on the os
     pf_profile_path = os.path.join(firefox_path, profile_name)
-    # backup_prefsjs(pf_profile_path)
     print("\nModified Preferences (user.js) and Extensions will now be copied to {}".format(pf_profile_path))
     recursive_copy(temp_folder, pf_profile_path)  # copies modified user.js, extensions
 
     # apply some onetime prefs directly to 'prefs.js' instead of 'user.js' so end users can change these
-    if set_homepage:
-        # set homepage to duckduckgo.com in "prefs.js"
-        override_prefs(repo_location + "/profile/set-homepage.json", os.path.join(pf_profile_path, "prefs.js"))
     if set_ui:
         # Customize Firefox UI to better fit all addons
         override_prefs(repo_location + "/profile/set-ui.json", os.path.join(pf_profile_path, "prefs.js"))
@@ -578,20 +577,6 @@ def latest_version():
             "https://github.com/jotyGill/privacy-fighter/releases/latest/ or upgrade via pip"
         )
     return False
-
-
-def backup_prefsjs(pf_profile_path):
-    prefsjs_path = os.path.join(pf_profile_path, "prefs.js")
-    prefsjs_backups_folder = os.path.join(pf_profile_path, "prefs-backups")
-    prefsjs_backup_name = os.path.join(
-        prefsjs_backups_folder, ("prefs-" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js"))
-    )
-    # create directory to store "prefs.js" backups
-    # Changed in version 3.6: Accepts a path-like object.
-    os.makedirs(prefsjs_backups_folder, exist_ok=True)
-    if os.path.exists(prefsjs_path):
-        print("\nBacking up the current 'prefs.js' to '{}'".format(prefsjs_backup_name))
-        shutil.move(prefsjs_path, prefsjs_backup_name)
 
 
 def recursive_copy(source_path, destination_path):
