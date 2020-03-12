@@ -43,10 +43,6 @@ temp_folder = tempfile.mkdtemp()
 # progress bar steps
 total_steps = 9
 
-# Create folders
-extensions_folder = os.path.join(temp_folder, "extensions")
-os.makedirs(extensions_folder, exist_ok=True)
-
 
 # # GUI-SETUP, comment out the decorator @Gooey when in cli-mode
 # @Gooey(
@@ -82,18 +78,8 @@ def main():
         parser.add_argument("-v", "--version", action="version", version="Privacy-Fighter " + __version__)
     install_tab = parser.add_argument_group(
         "Installation Info",
-        "Please make sure:\n"
-        "1. Firefox is installed but not running at the moment\n"
-        "2. After this setup finishes, Remember to follow post installation instructions",
+        "Please make sure Firefox is installed but not running at the moment\n\n",
     )
-    if gui_mode:
-        install_tab.add_argument(
-            "--show-post-installation-instructions",
-            dest="post_installation_instructions",
-            default="https://github.com/jotyGill/privacy-fighter/#70-post-installation",
-            help="You can copy this link and open it after installation",
-            type=str,
-        )
 
     advance_options = parser.add_argument_group("Advance Options", "Advance Options for the geekz")
     advance_options.add_argument(
@@ -216,7 +202,6 @@ def run(profile_name, user_overrides_url, skip_extensions, import_profile, advan
     reset_autoDisableScopes(firefox_path, profile_name)
 
     print("\n------------------DONE-------------------\n")
-    # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
 
 
 # The actual setup: unless specified, a firefox profile with the name 'privacy-fighter' will be created and configured.
@@ -232,11 +217,11 @@ def setup_pf_profile(
         setup_basic_userjs()
 
     if not skip_extensions:
-        setup_extensions(advance_setup)
+        setup_extensions(advance_setup, profile_name, firefox_path)
 
     # privacy-fighter profile path on the os
     pf_profile_path = os.path.join(firefox_path, profile_name)
-    backup_prefsjs(pf_profile_path)
+    # backup_prefsjs(pf_profile_path)
     print("\nModified Preferences (user.js) and Extensions will now be copied to {}".format(pf_profile_path))
     recursive_copy(temp_folder, pf_profile_path)  # copies modified user.js, extensions
 
@@ -356,19 +341,26 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-def setup_extensions(advance_setup):
+def setup_extensions(advance_setup, profile_name, firefox_path):
     # Download the extensions list with their download links from the repo
     ext_list = get_file(repo_location + "/profile/extensions.json")
     extensions = ext_list.json()["extensions"]
+
+    extensions_folder = os.path.join(firefox_path, profile_name, "extensions")
+    os.makedirs(extensions_folder, exist_ok=True)
 
     for index, ext in enumerate(extensions):
         # only install some extensions in 'advance_setup' mode
         if not advance_setup and ext["advance_setup"] == "True":
             continue
-        print("Downloading {}".format(ext["name"]))
-        # Download and save extension.xpi files
-        extension_xpi = get_file(ext["url"])
-        open(os.path.join(extensions_folder, ext["id"]), "wb").write(extension_xpi.content)
+        # Only download extentions if they aren't already installed
+        if not os.path.exists(os.path.join(extensions_folder, ext["id"])):
+            print("Downloading {}".format(ext["name"]))
+            # Download and save extension.xpi files
+            extension_xpi = get_file(ext["url"])
+            open(os.path.join(extensions_folder, ext["id"]), "wb").write(extension_xpi.content)
+        else:
+            print("Extension {} is already installed".format(ext["name"]))
         if gui_mode:
             print("progress: {}/{}".format(index + 1, total_steps))
         sys.stdout.flush()
@@ -387,7 +379,11 @@ def setup_extensions(advance_setup):
     # https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_manifests
     extensions_configs = get_file(repo_location + "/profile/extensions-configs.zip")
     with zipfile.ZipFile(io.BytesIO(extensions_configs.content)) as thezip:
-        thezip.extractall(managed_storage_folder)
+        thezip.extractall(managed_storage_folder)    # overrides everytime
+        # # If later we need to only add when config doesn't exist
+        # for name in thezip.namelist():
+        #     if name not in os.listdir(managed_storage_folder):
+        #         thezip.extract(name, managed_storage_folder)
 
     # For windows create registry keys to auto apply extension configs
     # https://github.com/gorhill/uBlock/issues/2986#issuecomment-333475958
