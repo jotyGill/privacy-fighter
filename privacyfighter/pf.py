@@ -18,7 +18,7 @@ import psutil
 import requests
 
 
-__version__ = "2.0.1"
+__version__ = "3.0.0"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
 detected_os = sys.platform
 
@@ -195,7 +195,7 @@ def run(profile_name, user_overrides_url, skip_extensions, import_profile, advan
     shutil.rmtree(temp_folder)
 
     start_firefox(profile_name)
-    time.sleep(3)
+    time.sleep(5)
 
     # reset autoDisableScopes values to os defaults for better security
     reset_autoDisableScopes(firefox_path, profile_name)
