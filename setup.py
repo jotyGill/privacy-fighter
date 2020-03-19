@@ -1,18 +1,8 @@
-import sys
-
 import setuptools
 
-# import os
 
-# from privacyfighter import __version__
+__version__ = "3.0.0"
 
-# pf_location = os.path.join(os.path.abspath(os.path.dirname(__file__)), "privacyfighter")
-# exec(open(os.path.join(pf_location, "version.py")).read())
-__version__ = "2.0.1"
-
-if sys.version_info < (3, 5):
-    sys.stderr.write("ERROR: requires Python 3.5 or above." + "Install using 'pip3' instead of just 'pip' \n")
-    sys.exit(1)
 
 with open("README.md", encoding="utf-8") as readme_file:
     full_description = readme_file.read()
