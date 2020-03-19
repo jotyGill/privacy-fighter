@@ -2,20 +2,17 @@
  *
  *
  *   ***/
-user_pref("privacyfighter.config.version", 70.0.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
+user_pref("privacyfighter.config.version", 74.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
 
 
 /* 0210: use Mozilla geolocation service instead of Google when geolocation is enabled
  * Optionally enable logging to the console (defaults to false) ***/
-user_pref("geo.wifi.uri", "https://location.services.mozilla.com/v1/geolocate?key=%MOZILLA_API_KEY%");
+user_pref("geo.provider.network.url", "https://location.services.mozilla.com/v1/geolocate?key=%MOZILLA_API_KEY%");
 
 /* 0320: disable about:addons' Recommendations pane (uses Google Analytics) ***/
 user_pref("extensions.getAddons.showPane", false); // [HIDDEN PREF]
-user_pref("extensions.webservice.discoverURL", "");
 
 /* 0321: disable recommendations in about:addons' Extensions and Themes panes [FF68+] ***/
-user_pref("extensions.getAddons.discovery.api_url", "");
-user_pref("extensions.htmlaboutaddons.discover.enabled", false);
 user_pref("extensions.htmlaboutaddons.recommendations.enabled", false);
 
 /* 0343: disable personalized Extension Recommendations in about:addons and AMO [FF65+]
@@ -52,17 +49,11 @@ user_pref("extensions.autoDisableScopes", 10);
 
 /* 2702: set third-party cookies (i.e ALL) (if enabled, see 2701) to session-only
    and (FF58+) set third-party non-secure (i.e HTTP) cookies to session-only
-   [NOTE] .sessionOnly overrides .nonsecureSessionOnly except when .sessionOnly=false and
-   .nonsecureSessionOnly=true. This allows you to keep HTTPS cookies, but session-only HTTP ones
  * [1] https://feeding.cloud.geek.nz/posts/tweaking-cookies-for-privacy-in-firefox/
  * [2] http://kb.mozillazine.org/Network.cookie.thirdparty.sessionOnly ***/
 user_pref("network.cookie.thirdparty.sessionOnly", true);
 user_pref("network.cookie.thirdparty.nonsecureSessionOnly", true); // [FF58+]v
 
-/* 2731: enforce websites to ask to store data for offline use
- * [1] https://support.mozilla.org/questions/1098540
- * [2] https://bugzilla.mozilla.org/959985 ***/
-user_pref("offline-apps.allow_by_default", false);
 
 /* 2802: enable Firefox to clear items on shutdown (see 2803)
  * [SETTING] Privacy & Security>History>Custom Settings>Clear history when Firefox closes ***/
