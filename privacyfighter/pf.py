@@ -34,7 +34,7 @@ if detected_os == "win32":
     import winreg
 
 
-repo_location = "https://raw.githubusercontent.com/jotyGill/privacy-fighter/develop/privacyfighter"
+repo_location = "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter"
 
 # temporary folder to download files in
 temp_folder = tempfile.mkdtemp()
@@ -51,7 +51,7 @@ total_steps = 9
 #     program_name="Privacy Fighter",
 #     requires_shell=False,
 #     tabbed_groups=True,
-#     default_size=(900, 530),
+#     default_size=(795, 548),
 #     menu=[
 #         {
 #             "name": "About",
