@@ -2,25 +2,37 @@
 
 import argparse
 import configparser
-import datetime
 import fileinput
 import io
+import json
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 from pathlib import Path
 
 import psutil
 import requests
-# GUI-SETUP, is a tag used to find lines to change, to produce the gui-version
-# from gooey import Gooey  # GUI-SETUP, comment out when producing cli version
 
-gui_mode = False  # GUI-SETUP, change to 'True' in gui-version
 
-__version__ = "2.0.1"
+__version__ = "3.0.0"
 __basefilepath__ = os.path.dirname(os.path.abspath(__file__))
+detected_os = sys.platform
+
+# GUI-SETUP, is a tag used to find lines to change, to produce the gui-version
+# For GUI version, manually uncomment the @Gooey decorator
+gui_mode = False  # GUI-SETUP, change to 'True' for gui-version
+# from gooey import Gooey   # GUI-SETUP
+
+if detected_os == "win32":
+    # Turn on gui mode for windows
+    # Remember to manually uncomment the @Gooey decorator
+    gui_mode = True
+    import winreg
+
 
 repo_location = "https://raw.githubusercontent.com/jotyGill/privacy-fighter/master/privacyfighter"
 
@@ -30,12 +42,8 @@ temp_folder = tempfile.mkdtemp()
 # progress bar steps
 total_steps = 9
 
-# Create folders
-extensions_folder = os.path.join(temp_folder, "extensions")
-os.makedirs(extensions_folder, exist_ok=True)
 
-
-# GUI-SETUP, comment out the decorator @Gooey when in cli-mode
+# # GUI-SETUP, comment out the decorator @Gooey when in cli-mode
 # @Gooey(
 #     progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
 #     progress_expr="current / total * 100",
@@ -43,7 +51,7 @@ os.makedirs(extensions_folder, exist_ok=True)
 #     program_name="Privacy Fighter",
 #     requires_shell=False,
 #     tabbed_groups=True,
-#     default_size=(900, 530),
+#     default_size=(795, 548),
 #     menu=[
 #         {
 #             "name": "About",
@@ -69,18 +77,8 @@ def main():
         parser.add_argument("-v", "--version", action="version", version="Privacy-Fighter " + __version__)
     install_tab = parser.add_argument_group(
         "Installation Info",
-        "Please make sure:\n"
-        "1. Firefox is installed but not running at the moment\n"
-        "2. After this setup finishes, Remember to follow post installation instructions",
+        "Please make sure Firefox is installed but not running at the moment\n\n",
     )
-    if gui_mode:
-        install_tab.add_argument(
-            "--show-post-installation-instructions",
-            dest="post_installation_instructions",
-            default="https://github.com/jotyGill/privacy-fighter/#70-post-installation",
-            help="You can copy this link and open it after installation",
-            type=str,
-        )
 
     advance_options = parser.add_argument_group("Advance Options", "Advance Options for the geekz")
     advance_options.add_argument(
@@ -126,10 +124,10 @@ def main():
 
     if gui_mode:
         install_tab.add_argument(
-            "--set-homepage",
-            dest="set_homepage",
+            "--set-searchengine",
+            dest="set_searchengine",
             default=True,
-            help="Set homepage to privacy respecting search engine (DuckDuckGo)",
+            help="Set search engine to privacy respecting DuckDuckGo",
             action="store_false",
         )
         advance_options.add_argument(
@@ -141,17 +139,17 @@ def main():
         )
     else:
         install_tab.add_argument(
-            "--no-homepage",
-            dest="set_homepage",
+            "--no-searchengine",
+            dest="set_searchengine",
             default=False,
-            help="Don't change the homepage to duckduckgo",
+            help="Don't change the search engine to duckduckgo",
             action="store_true",
         )
         advance_options.add_argument(
             "--no-ui", dest="set_ui", default=False, help="Don't customise firefox UI elements", action="store_true",
         )
 
-    set_homepage = not parser.parse_args().set_homepage
+    set_searchengine = not parser.parse_args().set_searchengine
     set_ui = not parser.parse_args().set_ui
 
     args = parser.parse_args()
@@ -161,12 +159,12 @@ def main():
         args.skip_extensions,
         args.import_profile,
         args.advance_setup,
-        set_homepage,
+        set_searchengine,
         set_ui,
     )
 
 
-def run(profile_name, user_overrides_url, skip_extensions, import_profile, advance_setup, set_homepage, set_ui):
+def run(profile_name, user_overrides_url, skip_extensions, import_profile, advance_setup, set_searchengine, set_ui):
     if firefox_is_running():
         print("Firefox is currently running, please close firefox first then run Privacy Fighter again")
         sys.exit(1)
@@ -177,19 +175,17 @@ def run(profile_name, user_overrides_url, skip_extensions, import_profile, advan
     if advance_setup and profile_name == "privacy-fighter":
         profile_name = "privacy-fighter-advance"
 
-    detected_os = sys.platform
-
     # path to firefox profiles
-    firefox_path = get_firefox_profiles_path(detected_os)
+    firefox_path = get_firefox_profiles_path()
 
-    firefox_ini_path = get_firefox_ini_path(detected_os)
+    firefox_ini_path = get_firefox_ini_path()
     firefox_ini_config = parse_firefox_ini_config(firefox_ini_path)
 
     if not pf_profile_exists(profile_name, firefox_ini_config):
-        create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_config, detected_os)
+        create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_config)
         import_profile_data(import_profile, profile_name, firefox_path, firefox_ini_config)
     setup_pf_profile(
-        profile_name, firefox_path, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
+        profile_name, firefox_path, user_overrides_url, skip_extensions, advance_setup, set_searchengine, set_ui
     )
 
     # set firefox config to ask which profile to choose everytime you run firefox
@@ -198,18 +194,18 @@ def run(profile_name, user_overrides_url, skip_extensions, import_profile, advan
     # cleanup
     shutil.rmtree(temp_folder)
 
+    start_firefox(profile_name)
+    time.sleep(5)
+
+    # reset autoDisableScopes values to os defaults for better security
+    reset_autoDisableScopes(firefox_path, profile_name)
+
     print("\n------------------DONE-------------------\n")
-    # here subprocess.run("firefox -p -no-remote"), ask user to create another profile TEMP, https://github.com/mhammond/pywin32
-    print(
-        "You can now close this and run Firefox :)\n\n"
-        "Remember to follow the post installation instructions (visit this link)\n"
-        "https://github.com/jotyGill/privacy-fighter/#70-post-installation"
-    )
 
 
 # The actual setup: unless specified, a firefox profile with the name 'privacy-fighter' will be created and configured.
 def setup_pf_profile(
-    profile_name, firefox_path, user_overrides_url, skip_extensions, advance_setup, set_homepage, set_ui
+    profile_name, firefox_path, user_overrides_url, skip_extensions, advance_setup, set_searchengine, set_ui
 ):
     print("Setting up Firefox Profile '", profile_name, "'\n")
 
@@ -220,19 +216,21 @@ def setup_pf_profile(
         setup_basic_userjs()
 
     if not skip_extensions:
-        setup_extensions(advance_setup)
+        setup_extensions(advance_setup, profile_name, firefox_path)
+
+    if set_searchengine:
+        # Download the search engine config file.
+        download_file(repo_location + "/profile/search.json.mozlz4", os.path.join(temp_folder, "search.json.mozlz4"))
 
     # privacy-fighter profile path on the os
     pf_profile_path = os.path.join(firefox_path, profile_name)
-    backup_prefsjs(pf_profile_path)
     print("\nModified Preferences (user.js) and Extensions will now be copied to {}".format(pf_profile_path))
-    recusive_copy(temp_folder, pf_profile_path)  # copies modified user.js, extensions
-    if set_homepage:
-        # set homepage to duckduckgo.com
-        apply_one_time_prefs(pf_profile_path, repo_location + "/profile/set-homepage.json")
+    recursive_copy(temp_folder, pf_profile_path)  # copies modified user.js, extensions
+
+    # apply some onetime prefs directly to 'prefs.js' instead of 'user.js' so end users can change these
     if set_ui:
         # Customize Firefox UI to better fit all addons
-        apply_one_time_prefs(pf_profile_path, repo_location + "/profile/set-ui.json")
+        override_prefs(repo_location + "/profile/set-ui.json", os.path.join(pf_profile_path, "prefs.js"))
 
 
 def parse_firefox_ini_config(firefox_ini_path):
@@ -253,7 +251,7 @@ def pf_profile_exists(profile_name, firefox_ini_config):
     return False
 
 
-def create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_config, detected_os):
+def create_pf_profile(profile_name, firefox_path, firefox_ini_path, firefox_ini_config):
     all_sections = firefox_ini_config.sections()
     # print(config.sections())
 
@@ -342,27 +340,64 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-def setup_extensions(advance_setup):
+def setup_extensions(advance_setup, profile_name, firefox_path):
     # Download the extensions list with their download links from the repo
     ext_list = get_file(repo_location + "/profile/extensions.json")
     extensions = ext_list.json()["extensions"]
+
+    extensions_folder = os.path.join(firefox_path, profile_name, "extensions")
+    os.makedirs(extensions_folder, exist_ok=True)
 
     for index, ext in enumerate(extensions):
         # only install some extensions in 'advance_setup' mode
         if not advance_setup and ext["advance_setup"] == "True":
             continue
-        print("Downloading {}".format(ext["name"]))
-        # Download and save extension.xpi files
-        extension_xpi = get_file(ext["url"])
-        open(os.path.join(extensions_folder, ext["id"]), "wb").write(extension_xpi.content)
+        # Only download extentions if they aren't already installed
+        if not os.path.exists(os.path.join(extensions_folder, ext["id"])):
+            print("Downloading {}".format(ext["name"]))
+            # Download and save extension.xpi files
+            extension_xpi = get_file(ext["url"])
+            open(os.path.join(extensions_folder, ext["id"]), "wb").write(extension_xpi.content)
+        else:
+            print("Extension {} is already installed".format(ext["name"]))
         if gui_mode:
             print("progress: {}/{}".format(index + 1, total_steps))
         sys.stdout.flush()
 
-    # Download the "browser-extensions-data". these are extension's configuration files
-    extensions_configs = get_file(repo_location + "/profile/browser-extension-data.zip")
+    if detected_os == "linux":
+        managed_storage_folder = os.path.join(str(Path.home()), ".mozilla/managed-storage")
+    elif detected_os == "win32":
+        managed_storage_folder = os.path.join(os.getenv("APPDATA"), "Mozilla\ManagedStorage" "\\")
+    elif detected_os == "darwin":
+        managed_storage_folder = os.path.join(str(Path.home()), "Library/Application Support/Mozilla/ManagedStorage")
+
+    os.makedirs(managed_storage_folder, exist_ok=True)
+
+    # Download extension's configurations into managed_storage_folder
+    # On linux and macos these configs automatically get loaded
+    # https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Native_manifests
+    extensions_configs = get_file(repo_location + "/profile/extensions-configs.zip")
     with zipfile.ZipFile(io.BytesIO(extensions_configs.content)) as thezip:
-        thezip.extractall(temp_folder)
+        thezip.extractall(managed_storage_folder)    # overrides everytime
+        # # If later we need to only add when config doesn't exist
+        # for name in thezip.namelist():
+        #     if name not in os.listdir(managed_storage_folder):
+        #         thezip.extract(name, managed_storage_folder)
+
+    # For windows create registry keys to auto apply extension configs
+    # https://github.com/gorhill/uBlock/issues/2986#issuecomment-333475958
+    if detected_os == "win32":
+        extension_names = [x[:-5] for x in os.listdir(managed_storage_folder)]     # -5 to remove .json
+        for extension_name in extension_names:
+            reg_key = "Software\\Mozilla\\ManagedStorage\\{}".format(extension_name)
+            key_value = "{}{}.json".format(managed_storage_folder.replace("\\", "\\\\"), extension_name)
+            try:
+                winreg.CreateKey(winreg.HKEY_CURRENT_USER, reg_key)
+                registry_key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, reg_key, 0, winreg.KEY_WRITE)
+                winreg.SetValueEx(registry_key, "", 0, winreg.REG_SZ, key_value)
+                winreg.CloseKey(registry_key)
+            except OSError:
+                print("Error while creating windows registry entry for {}".format(key_value))
 
 
 # Download files using request.get(), throw error on exceptions
@@ -451,26 +486,22 @@ def extract_user_overrides():
     return remove_prefs
 
 
-# apply some prefs directly to "pref.js", users can change these later.
-def apply_one_time_prefs(profile, prefjs):
-    # prefs to be applied directly to 'prefs.js' instead of 'user.js' so end users can change these
-    # contains 'exists' to change if found and turn 'exists' True. the ones not found will be later added
-    # keep this in profile loop, so 'exists' True resets for next profile
+# download and apply prefs from a json file to a local file ("user.js"/"prefs.js")
+def override_prefs(src_js, dst_js):
+    # contains 'exists' to change if found and turn 'exists' True. the ones not found then get appended
 
     # Download the config file containing preferences from the location
-    r = get_file(prefjs)
-    one_time_prefs = r.json()["prefs"]
-
-    prefsjs_file = os.path.join(profile, "prefs.js")
+    r = get_file(src_js)
+    new_prefs = r.json()["prefs"]
 
     # touch prefs.js because the old one was moved to prefs-backups
-    if not os.path.exists(prefsjs_file):
-        Path(prefsjs_file).touch()
+    if not os.path.exists(dst_js):
+        Path(dst_js).touch()
 
     # If pref exists, overwrite it
-    with fileinput.input(prefsjs_file, inplace=True) as prefs_file:
+    with fileinput.input(dst_js, inplace=True) as prefs_file:
         for line in prefs_file:
-            for i in one_time_prefs:
+            for i in new_prefs:
                 if i["pref"] in line:
                     line = "user_pref({}, {});\n".format(i["pref"], i["value"])
                     # it is found, turn 'exists' to True
@@ -479,15 +510,32 @@ def apply_one_time_prefs(profile, prefjs):
             sys.stdout.write(line)
 
     # now append the rest of preferences
-    with open(prefsjs_file, "a") as prefsjs:
-        for i in one_time_prefs:
+    with open(dst_js, "a") as prefsjs:
+        for i in new_prefs:
             if not i["exists"]:
                 line = "user_pref({}, {});\n".format(i["pref"], i["value"])
                 # print(i)      # pref being added
                 prefsjs.write(line)
 
 
-def get_firefox_profiles_path(detected_os):
+# reset value of autoDisableScopes back to OS defaults
+def reset_autoDisableScopes(firefox_path, profile_name):
+    if detected_os == "win32":
+        autoDisableScopes = {"pref": "\"extensions.autoDisableScopes\"", "value": "15"}
+    else:
+        autoDisableScopes = {"pref": "\"extensions.autoDisableScopes\"", "value": "3"}
+
+    dst_js = os.path.join(firefox_path, profile_name, "prefs.js")
+
+    # overwrite autoDisableScopes
+    with fileinput.input(dst_js, inplace=True) as prefs_file:
+        for line in prefs_file:
+            if autoDisableScopes["pref"] in line:
+                line = "user_pref({}, {});\n".format(autoDisableScopes["pref"], autoDisableScopes["value"])
+            sys.stdout.write(line)
+
+
+def get_firefox_profiles_path():
     if detected_os == "linux":
         firefox_path = os.path.join(str(Path.home()), ".mozilla/firefox/")
     elif detected_os == "win32":
@@ -503,7 +551,7 @@ def get_firefox_profiles_path(detected_os):
     return firefox_path
 
 
-def get_firefox_ini_path(detected_os):
+def get_firefox_ini_path():
     if detected_os == "linux":
         firefox_ini_path = os.path.join(str(Path.home()), ".mozilla/firefox/profiles.ini")
     elif detected_os == "win32":
@@ -531,21 +579,7 @@ def latest_version():
     return False
 
 
-def backup_prefsjs(pf_profile_path):
-    prefsjs_path = os.path.join(pf_profile_path, "prefs.js")
-    prefsjs_backups_folder = os.path.join(pf_profile_path, "prefs-backups")
-    prefsjs_backup_name = os.path.join(
-        prefsjs_backups_folder, ("prefs-" + str(datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") + ".js"))
-    )
-    # create directory to store "prefs.js" backups
-    # Changed in version 3.6: Accepts a path-like object.
-    os.makedirs(prefsjs_backups_folder, exist_ok=True)
-    if os.path.exists(prefsjs_path):
-        print("\nBacking up the current 'prefs.js' to '{}'".format(prefsjs_backup_name))
-        shutil.move(prefsjs_path, prefsjs_backup_name)
-
-
-def recusive_copy(source_path, destination_path):
+def recursive_copy(source_path, destination_path):
     for dirpath, dirnames, filenames in os.walk(source_path):
         for dirname in dirnames:
             pass
@@ -601,6 +635,59 @@ def dont_autoselect_profiles(firefox_ini_path, firefox_ini_config):
         firefox_ini_config["General"]["StartWithLastProfile"] = "0"
 
     firefox_ini_config.write(open(firefox_ini_path, "w"), space_around_delimiters=False)
+
+
+def get_ext_uuid(profile_name, firefox_path, extension_id):
+    prefsjs = os.path.join(firefox_path, profile_name, "prefs.js")
+    for i in range(3):
+        try:
+            with open(prefsjs, "r") as outfile:
+                text = outfile.readlines()
+                for line in text:
+                    if "extensions.webextensions.uuids" in line:
+                        # print(line)
+                        uuids_text = line
+
+                uuids_str = json.loads(
+                    uuids_text[uuids_text.find("{") - 1: uuids_text.rfind("}") + 2]
+                )
+
+                uuids_dic = json.loads(uuids_str)
+
+                print(uuids_dic.get(extension_id))
+                # print(uuids_dic)
+                return uuids_dic.get(extension_id)
+        except:
+            time.sleep(1)
+
+
+def start_firefox(
+    profile_name,
+    post_installation_link="https://github.com/jotyGill/privacy-fighter/#20-post-installation",
+):
+    if detected_os == "linux":
+        subprocess.Popen(["firefox", "-p", profile_name, post_installation_link])
+    elif detected_os == "win32":
+        try:
+            subprocess.Popen(
+                [
+                    "C:\\Program Files\\Mozilla Firefox\\firefox.exe",
+                    "-p",
+                    profile_name,
+                    post_installation_link,
+                ]
+            )
+        except FileNotFoundError:
+            subprocess.Popen(
+                [
+                    "C:\\Program Files (x86)\\Mozilla Firefox\\firefox.exe",
+                    "-p",
+                    profile_name,
+                    post_installation_link,
+                ]
+            )
+    elif detected_os == "darwin":
+        subprocess.Popen(["firefox", "-p", profile_name, post_installation_link])
 
 
 if __name__ == "__main__":

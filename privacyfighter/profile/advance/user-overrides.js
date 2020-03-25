@@ -165,7 +165,11 @@ user_pref("privacyfighter.config.version", 70.0.0); // corresponds to firefox ve
 //// --- comment-out --- 'security.csp.experimentalEnabled'
 
 //// --- comment-out --- 'extensions.enabledScopes'
-//// --- comment-out --- 'extensions.autoDisableScopes'
+
+// Temporarily Auto enable extensions from user profile
+// This will get overwritten after installation for better security
+// For windows value will be set to default 15. For linux 11
+user_pref("extensions.autoDisableScopes", 10);
 
 
 // [SECTION 2700]: PERSISTENT STORAGE

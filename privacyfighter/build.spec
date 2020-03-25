@@ -6,7 +6,7 @@ gooey_images = Tree(os.path.join(gooey_root, 'images'), prefix = 'gooey/images')
 
 a = Analysis(['pf.py'],
              pathex=[''],
-             hiddenimports=[],
+             hiddenimports=['winreg'],
              hookspath=None,
              runtime_hooks=None,
              )
