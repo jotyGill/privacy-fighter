@@ -20,8 +20,6 @@ The basic setup installs the following addons and some [user.js configurations](
 
 **For further details about the project see [DOCS](https://github.com/jotyGill/privacy-fighter/tree/master/docs)**
 
-**NOTE: From version 2.0 Privacy-Fighter is installed in a separate Firefox profile called "privacy-fighter". When upgrading from version 1.x to 2.x I recommend that you refresh your 'default' Firefox profile.
-visit `about:support` and click "Refresh Firefox" (right corner)**
 
 ### 1.0 Installation<a name="installation"></a>
 Advance users can check out the [Advance Options](https://github.com/jotyGill/privacy-fighter/tree/master/docs#advance). For the basic setup just follow the following instructions.
@@ -31,7 +29,6 @@ Advance users can check out the [Advance Options](https://github.com/jotyGill/pr
 1. If you don't have Firefox installed, First download and install [Firefox](https://www.mozilla.org/en-US/firefox/new/).
 2. Download [Privacy-Fighter.exe](https://github.com/jotyGill/privacy-fighter/releases/latest/download/Privacy-Fighter.exe).
 3. Close Firefox and run the downloaded file Privacy-Fighter.exe
-4. **After the installation finishes, follow the ["Post Installation"](#post-installation) section.**
 
 ### 1.2 Installation Steps for GNU/Linux and MacOS<a name="linux"></a>
 
@@ -49,16 +46,15 @@ wget https://github.com/jotyGill/privacy-fighter/releases/latest/download/privac
 chmod +x ./privacyfighter-macos
 ./privacyfighter-macos
 ```
-4. **After the installation finishes, follow the ["Post Installation"](#post-installation) section.**
 
 
 ### 2.0 Post Installation<a name="post-installation"></a>
-1. After installation is done, open Firefox then "addons" (press Ctr+Shift+A) and enable all of them and allow them in private windows.
-2. Open **Bookmarks Manager (press Ctr+Shift+O)** > **"Import and Backup"** (top menu item) > **Import Data from Another Browser**, follow wizard to import your bookmarks and history from your existing browser (Chrome/Edge/Safari).
-3. You can change the default search engine from Google to DuckDuckGo.
- (Menu > Preferences > Search > Default Search Engine > DuckDuckGo)
+1. Open **Bookmarks Manager (press Ctr+Shift+O)** > **"Import and Backup"** (top menu item) > **Import Data from Another Browser**, follow wizard to import your bookmarks and history from your existing browser (Chrome/Edge/Safari).
 
 
 ### 3.0 Usage And Troubleshooting
 After installing and following post installation setups. Every time you open Firefox, it will ask you to choose a profile.
 Select "privacy-fighter" profile. If you ever encounter a webpage breakage simple copy the link, close Firefox then open the link in "default-release" profile.
+
+**NOTE: From version 2.0 Privacy-Fighter is installed in a separate Firefox profile called "privacy-fighter". When upgrading from version 1.x to 2.x I recommend that you refresh your 'default' Firefox profile.
+visit `about:support` and click "Refresh Firefox" (right corner)**
