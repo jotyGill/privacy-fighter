@@ -1,8 +1,13 @@
 
+/* PRIVACYFIGHTER user-overrides.js
+ *
+ *  user-overrides.js: This is the overrides.js file used on top of ghack's user.js when installing PF in --advance mode.
+ *  These configs are setup to minimize webpage breakages and exlude persionalizations while still retaining most of privacy related benifits of ghack's user.js
+ *
+ *   ***/
 
-/* PRIVACY FIGHTHER USER-OVERRIDES.JS START ***/
 user_pref("_user.js.parrot", "overrides section syntax error");
-user_pref("privacyfighter.config.version", 70.0.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
+user_pref("privacyfighter.config.version", "74.0"); // corresponds to firefox version, run PF again to fetch latest configuration sets
 
 
 // SECTION 0100: STARTUP
@@ -56,7 +61,6 @@ user_pref("privacyfighter.config.version", 70.0.0); // corresponds to firefox ve
 //// --- comment-out --- 'browser.urlbar.suggest.searches'
 //// --- comment-out --- 'network.file.disable_unc_paths'
 //// --- comment-out --- 'browser.formfill.enable'
-// //// --- comment-out --- 'dom.forms.datetime'    // TODO See if problematic
 
 
 // [SECTION 0900]: PASSWORDS
@@ -96,8 +100,6 @@ user_pref("privacyfighter.config.version", 70.0.0); // corresponds to firefox ve
 
 // [SECTION 1700]: CONTAINERS
 // [SECTION 1800]: PLUGINS
-//// --- comment-out --- 'plugin.sessionPermissionNow.intervalInMinutes'
-
 //// --- comment-out --- 'plugin.state.flash'  // dont force disable flash
 
 // dont disable widevine CDM (Content Decryption Module)
@@ -116,10 +118,8 @@ user_pref("privacyfighter.config.version", 70.0.0); // corresponds to firefox ve
 
 // dont disable webGL
 //// --- comment-out --- 'webgl.disabled'
-//// --- comment-out --- 'webgl.dxgl.enabled'
 //// --- comment-out --- 'webgl.enable-webgl2'
 //// --- comment-out --- 'webgl.min_capability_mode'
-//// --- comment-out --- 'webgl.disable-extensions'
 //// --- comment-out --- 'webgl.disable-fail-if-major-performance-caveat'
 
 // dont disable screensharing
@@ -162,7 +162,6 @@ user_pref("privacyfighter.config.version", 70.0.0); // corresponds to firefox ve
 //// --- comment-out --- 'network.protocol-handler.external.ms-windows-store'
 
 //// --- comment-out --- 'browser.download.manager.addToRecentDocs'
-//// --- comment-out --- 'security.csp.experimentalEnabled'
 
 //// --- comment-out --- 'extensions.enabledScopes'
 

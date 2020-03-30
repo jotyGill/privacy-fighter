@@ -1,8 +1,11 @@
 /* PRIVACYFIGHTER user.js
  *
- *
+ *  basic-user.js: This is the default user.js file in Privacy-Fighter.
+ *  These configs basically clear trackable offline data (Cookies/Caches), each time Firefox is closed.
+ *  And enforce some privacy settings such as privacy.resistFingerprinting
  *   ***/
-user_pref("privacyfighter.config.version", 74.0); // corresponds to firefox version, run PF again to fetch latest configuration sets
+
+user_pref("privacyfighter.config.version", "74.0"); // corresponds to firefox version, run PF again to fetch latest configuration sets
 
 
 /* 0210: use Mozilla geolocation service instead of Google when geolocation is enabled
