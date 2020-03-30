@@ -2,10 +2,10 @@
   "extensions":
   [
     {"name": "Decentraleyes", "id": "jid1-BoFifL9Vbdl2zQ@jetpack.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3423038/decentraleyes-2.0.13-an+fx.xpi"},
-    {"name": "HTTPS Everywhere", "id": "https-everywhere@eff.org.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3442258/https_everywhere-2019.11.7-an+fx.xpi"},
+    {"name": "HTTPS Everywhere", "id": "https-everywhere@eff.org.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3528100/https_everywhere-2020.3.16-an+fx.xpi"},
     {"name": "uBlock Origin", "id": "uBlock0@raymondhill.net.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3521827/ublock_origin-1.25.2-an+fx.xpi"},
-    {"name": "CanvasBlocker", "id": "CanvasBlocker@kkapsner.de.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3495172/canvasblocker-1.1-an+fx.xpi"},
-    {"name": "ClearURLs", "id": "{74145f27-f039-47ce-a470-a662b129930a}.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3507273/clearurls-1.15.0-an+fx.xpi"},
+    {"name": "CanvasBlocker", "id": "CanvasBlocker@kkapsner.de.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3528876/canvasblocker-1.2-an+fx.xpi"},
+    {"name": "ClearURLs", "id": "{74145f27-f039-47ce-a470-a662b129930a}.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3530384/clearurls-1.16.0-an+fx.xpi"},
     {"name": "Temporary Containers", "id": "{c607c8df-14a7-4f28-894f-29e8722976af}.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/3511233/temporary_containers-1.8-fx.xpi"},
     {"name": "Terms of Service Didnt Read", "id": "jid0-3GUEt1r69sQNSrca5p8kx9Ezc3U@jetpack.xpi", "advance_setup": "False", "url": "https://addons.mozilla.org/firefox/downloads/file/1050617/terms_of_service_didnt_read-2.0.0-an+fx.xpi"},
     {"name": "Toggle Fonts", "id": "{e7625f06-e252-479d-ac7a-db68aeaff2cb}.xpi", "advance_setup": "True", "url": "https://addons.mozilla.org/firefox/downloads/file/3406214/toggle_fonts-2.1.0-an+fx.xpi"},
