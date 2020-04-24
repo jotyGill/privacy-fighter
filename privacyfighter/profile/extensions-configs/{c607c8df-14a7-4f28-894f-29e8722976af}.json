@@ -9,7 +9,7 @@
   "preferences": {
     "automaticMode": {
       "active": true,
-      "newTab": "created"
+      "newTab": "navigation"
     },
     "notifications": true,
     "container": {
@@ -23,7 +23,7 @@
       "numberMode": "reuse",
       "removal": 300000
     },
-    "iconColor": "default",
+    "iconColor": "blue-simple",
     "isolation": {
       "active": true,
       "global": {
